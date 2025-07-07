@@ -21,7 +21,6 @@ from core.rag_services import build_rag_chain_with_model_choice, process_scheme_
 from core.tts_services import generate_audio_response, TTS_AVAILABLE
 from core.transcription import transcribe_audio, validate_language
 from utils.config import load_env_vars, GROQ_API_KEY
-from utils.helpers import check_rate_limit_delay, LANG_CODE_TO_NAME, ALLOWED_TTS_LANGS
 
 load_env_vars()
 
@@ -273,14 +272,18 @@ def generate_model_key(model: str, enhanced: bool, pdf_name: str, txt_name: str)
     key_string = f"{model}_{enhanced}_{pdf_name}_{txt_name}"
     return hashlib.md5(key_string.encode()).hexdigest()
 
-def improved_rate_limit_check(session_id: str) -> Optional[float]:
-    if redis_manager.is_available():
-        if redis_manager.check_rate_limit(session_id):
-            return 5.0
-        redis_manager.set_rate_limit(session_id, 5)
-        return None
-    else:
-        return check_rate_limit_delay()
+_last_query_time = {}
+
+def check_rate_limit_delay(session_id="default", min_delay=2):
+    """Check if we need to wait before making another query (fallback, per session_id)"""
+    current_time = time.time()
+    last_time = _last_query_time.get(session_id, 0)
+    time_since_last = current_time - last_time
+    if time_since_last < min_delay:
+        wait_time = min_delay - time_since_last
+        return wait_time
+    _last_query_time[session_id] = current_time
+    return 0
 
 class QueryRequest(BaseModel):
     input_text: str
