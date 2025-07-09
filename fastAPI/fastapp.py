@@ -18,8 +18,8 @@ import logging
 
 # Core services
 from core.rag_services import build_rag_chain_with_model_choice, process_scheme_query_with_retry
-from core.tts_services import generate_audio_response, TTS_AVAILABLE
-from core.transcription import transcribe_audio, validate_language
+from core.tts_services import generate_audio_response, TTS_AVAILABLE, detect_language
+from core.transcription import transcribe_audio
 from utils.config import load_env_vars, GROQ_API_KEY
 
 load_env_vars()
@@ -369,17 +369,21 @@ async def upload_files_optimized(
         logging.error(traceback.format_exc())
         return JSONResponse(status_code=500, content={"error": f"Failed to build RAG system: {str(e)}"})
 
+def validate_language(text: str) -> bool:
+    """Basic language validation placeholder"""
+    return len(text.strip()) > 0  # Or implement a more specific validation if required
+
 @app.post("/query/")
 async def get_answer_optimized(req: QueryRequest):
     input_text = req.input_text.strip()
     if not input_text:
         return JSONResponse(status_code=400, content={"error": "Empty query input."})
 
-    # --- Block user queries in unsupported languages ---
+    # --- Simplified language validation ---
     if not validate_language(input_text):
         return JSONResponse(
             status_code=400,
-            content={"error": "Only English, Hindi, or Marathi are supported. Please ask your question in one of these languages."}
+            content={"error": "Invalid input. Please provide a valid query."}
         )
     # ---------------------------------------------------
 
@@ -407,17 +411,22 @@ async def get_answer_optimized(req: QueryRequest):
             )
         # -------------------------------------------------
 
+        # Detect language of user input for TTS
+        detected_lang = detect_language(input_text)
+
         message = {
             "user": input_text,
             "assistant": assistant_reply,
             "model": req.model,
-            "timestamp": time.strftime("%H:%M:%S")
+            "timestamp": time.strftime("%H:%M:%S"),
+            "lang": detected_lang
         }
         state_manager.add_chat_message(message, session_id)
         return {
             "reply": assistant_reply,
             "session_id": session_id,
-            "model_key": model_key
+            "model_key": model_key,
+            "lang": detected_lang
         }
     except Exception as e:
         logging.error(f"Query processing error: {e}")
@@ -437,9 +446,13 @@ async def get_audio(text: str = Form(...), lang_preference: str = Form("auto")):
     if not TTS_AVAILABLE:
         return JSONResponse(status_code=501, content={"error": "TTS not available."})
     try:
+        # If lang_preference is 'auto', detect language from text
+        lang_pref = lang_preference
+        if lang_preference == 'auto':
+            lang_pref = detect_language(text)
         audio_data, lang_used, cache_hit = generate_audio_response(
             text=text,
-            lang_preference=lang_preference
+            lang_preference=lang_pref
         )
         return JSONResponse(content={
             "lang_used": lang_used,
@@ -449,21 +462,14 @@ async def get_audio(text: str = Form(...), lang_preference: str = Form("auto")):
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": f"TTS generation failed: {str(e)}"})
 
-@app.get("/health/")
-async def health_check():
-    return {
-        "status": "ok",
-        "redis_available": redis_manager.is_available(),
-        "timestamp": time.time()
-    }
-
 @app.post("/transcribe/")
-async def transcribe_audio_endpoint(
-    audio_file: UploadFile = File(...),
-    groq_client: Groq = Depends(get_groq_client)
-):
+async def transcribe_audio_endpoint(audio_file: UploadFile = File(...)):
     try:
         audio_bytes = await audio_file.read()
+        # You may need to pass a client if your transcribe_audio requires it
+        # For now, assuming it does not, or you can adjust as needed
+        from groq import Groq
+        groq_client = Groq(api_key=GROQ_API_KEY)
         success, result = transcribe_audio(groq_client, audio_bytes)
         if success:
             return {"transcription": result}
@@ -471,6 +477,14 @@ async def transcribe_audio_endpoint(
             return JSONResponse(status_code=400, content={"error": result})
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": f"Transcription failed: {str(e)}"})
+
+@app.get("/health/")
+async def health_check():
+    return {
+        "status": "ok",
+        "redis_available": redis_manager.is_available(),
+        "timestamp": time.time()
+    }
 
 @app.get("/sessions/")
 async def list_sessions():

@@ -29,24 +29,19 @@ def detect_language(text):
     """
     if not TTS_AVAILABLE:
         return 'en'
-    
     try:
-        # Clean text for better detection
-        clean_text = re.sub(r'[^\w\s]', '', text)
-        if len(clean_text.strip()) < 10:
-            return 'en'  # Default for short text
-        
-        detected = detect(clean_text)
-        
-        # Map some common languages
-        lang_mapping = {
-            'hi': 'hi',  # Hindi
-            'mr': 'mr',  # Marathi
-            'en': 'en'  # English
-        }
-        
-        return lang_mapping.get(detected, 'en')
-        
+        # Devanagari script detection
+        devanagari = re.search(r'[\u0900-\u097F]', text)
+        if devanagari:
+            # Marathi keyword check (add more as needed)
+            marathi_keywords = ['च्या', 'आहे', 'नाही', 'होय', 'माझ्या', 'तुमच्या', 'आपल्या', 'कृपया', 'कारण', 'म्हणून']
+            if any(word in text for word in marathi_keywords):
+                return 'mr'
+            return 'hi'
+        # English script
+        if re.search(r'[A-Za-z]', text):
+            return 'en'
+        return 'en'
     except Exception as e:
         print(f"Language detection failed: {e}")
         return 'en'  # Fallback to English
@@ -65,17 +60,26 @@ def text_to_speech(text, lang=None, auto_detect=True, speed=1.0):
             detected_lang = detect_language(text)
             lang = detected_lang
 
+        # Only allow TTS for en, hi, mr
+        if lang not in {'en', 'hi', 'mr'}:
+            raise ValueError(f"TTS only supports English, Hindi, and Marathi. Detected: {lang}")
+
         # Use cache directly
         audio_hash = get_audio_hash(text, lang, speed)
         cached_audio = get_cached_audio(audio_hash)
         if cached_audio:
             return cached_audio, lang, 'cached'
 
-        # Generate TTS with speed control
-        # Note: gTTS doesn't directly support speed, but we can simulate it
-        slow_speech = speed < 0.8 # gTTS only has slow=True/False. True is ~0.7x
-        tts = gTTS(text=text, lang=lang, slow=slow_speech)
-        
+        # Use gTTS with explicit language agent
+        if lang == 'en':
+            tts = gTTS(text=text, lang='en', slow=speed < 0.8)
+        elif lang == 'hi':
+            tts = gTTS(text=text, lang='hi', slow=speed < 0.8)
+        elif lang == 'mr':
+            tts = gTTS(text=text, lang='mr', slow=speed < 0.8)
+        else:
+            raise ValueError(f"Unsupported language: {lang}")
+
         # Save to BytesIO buffer
         audio_buffer = BytesIO()
         tts.write_to_fp(audio_buffer)
@@ -89,24 +93,7 @@ def text_to_speech(text, lang=None, auto_detect=True, speed=1.0):
         print(f"TTS Error: {e}")
         return None, lang or 'en', f'error: {str(e)}'
 
-def get_voice_params(lang):
-    if lang == "mr":
-        return {
-            "language_code": "mr-IN", 
-            "name": "mr-IN-Wavenet-A"  # Indian Marathi (Maharashtra) voice
-        }
-    elif lang == "hi":
-        return {
-            "language_code": "hi-IN", 
-            "name": "hi-IN-Wavenet-A"
-        }
-    else:
-        return {
-            "language_code": "en-US", 
-            "name": "en-US-Wavenet-D"
-        }
-
-def generate_audio_response(text, lang_preference="auto", speed=1.0):
+def generate_audio_response(text, lang_preference=None, speed=1.0):
     """
     Generate audio response for given text.
     Returns: (audio_data, detected_lang, cache_hit) tuple
@@ -125,8 +112,6 @@ def generate_audio_response(text, lang_preference="auto", speed=1.0):
 
         target_lang = lang_preference if lang_preference and lang_preference != 'auto' else None
         
-        text = separate_digits(text)
-
         audio_bytes, final_lang, cache_status = text_to_speech(
             clean_text,
             lang=target_lang, # Pass specific lang if chosen, else None for auto-detect
@@ -136,9 +121,6 @@ def generate_audio_response(text, lang_preference="auto", speed=1.0):
 
         cache_hit = cache_status == 'cached'
         
-        voice_params = get_voice_params(final_lang)
-        # Use voice_params in your TTS API call
-        
         # If lang_preference was 'auto', final_lang is the detected one.
         # If a specific lang was preferred, final_lang is that preferred one (or fallback if error).
         return audio_bytes, final_lang, cache_hit
@@ -146,7 +128,3 @@ def generate_audio_response(text, lang_preference="auto", speed=1.0):
     except Exception as e:
         print(f"Error generating audio in generate_audio_response: {str(e)}")
         return None, (lang_preference if lang_preference != 'auto' else 'en'), False
-
-def separate_digits(text):
-    # Replace sequences of digits with space-separated digits
-    return re.sub(r'\d+', lambda m: ' '.join(m.group(0)), text)

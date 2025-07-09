@@ -104,18 +104,15 @@ def render_file_uploaders(st_obj):
         txt_file = next((f for f in st_obj.session_state.uploaded_files if f.name.lower().endswith(".txt")), None)
         return pdf_file, txt_file
 
-def render_query_input(st_obj, whisper_client, transcribe_audio_func):
-    """Renders audio input above text input, and centers the Get Answer button below."""
+def render_query_input(st_obj):
+    """Renders only text input and Get Answer button. Audio input and transcription removed."""
     if not st_obj.session_state.get('chat_history', []):
-        st_obj.markdown("### Ask a question by typing or using audio input")
+        st_obj.markdown("### Ask a question by typing below")
 
     input_container = st_obj.container()
 
     with input_container:
-        # Audio input on top
-        audio_value = st_obj.audio_input("🎤 Record your query", key="audio_input")
-
-        # Text input below audio
+        # Only text input
         default_value = st_obj.session_state.suggested_query if st_obj.session_state.suggested_query else ""
         user_input = st_obj.text_input(
             "Enter your question",
@@ -160,27 +157,11 @@ def render_query_input(st_obj, whisper_client, transcribe_audio_func):
         </style>
         """, unsafe_allow_html=True)
 
-    user_text = None
-    if audio_value is not None:
-        try:
-            with st_obj.spinner("🎧 Transcribing audio..."):
-                succes, transcription = user_text = transcribe_audio_func(whisper_client, audio_value.getvalue())
-                if not succes:
-                    st_obj.error(transcription)
-                    user_text = ""
-                else:
-                    st_obj.success(f"🎧 Transcribed: {transcription}")
-                    user_text = transcription
-        except Exception as e:
-            st_obj.error(f"Transcription Error: {str(e)}")
-
     if user_input:
         st_obj.session_state.last_user_input = user_input
-    elif user_text:
-        st_obj.session_state.last_user_input = user_text
 
     # Return the button state so main.py can use it
-    return user_input, user_text, get_answer_clicked
+    return user_input, None, get_answer_clicked
 def render_answer_section(
     st_obj, 
     assistant_reply, 

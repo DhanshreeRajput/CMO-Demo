@@ -73,43 +73,35 @@ function App() {
     }
   };
 
-  // Utility: detect language (very basic, for demo)
+  // Utility: detect language (returns 'mr', 'hi', or 'en')
   function detectLanguage(text) {
-    // Unicode ranges: Marathi (Devanagari), Hindi (Devanagari), English (A-Z, a-z)
-    const marathiHindiRegex = /[\u0900-\u097F]/;
-    const englishRegex = /[A-Za-z]/;
-    if (marathiHindiRegex.test(text)) {
-      // Could be Marathi or Hindi, allow
-      return 'mr_hi';
-    } else if (englishRegex.test(text)) {
-      return 'en';
-    } else if (text.trim() !== '') {
-      return 'other';
+    const marathiRegex = /[\u0900-\u097F]/;
+    if (marathiRegex.test(text)) {
+      // You may want to further distinguish Hindi/Marathi if needed
+      return 'mr'; // or 'hi' based on your needs
     }
-    return 'empty';
+    const englishRegex = /[A-Za-z]/;
+    if (englishRegex.test(text)) {
+      return 'en';
+    }
+    return 'en'; // fallback
   }
 
   const handleQuery = async (inputText) => {
     if (!inputText.trim()) return;
-    // Language check
-    const lang = detectLanguage(inputText);
-    setCurrentQuestion(inputText); // Always set the question first!
-    if (lang === 'other') {
-      setLangWarning('⚠️ Please use only Marathi, Hindi, or English for your questions.');
-      setCurrentAnswer('');
-      return;
-    } else {
-      setLangWarning('');
-    }
+    setCurrentQuestion(inputText);
+    setLangWarning('');
     setIsLoading(true);
     try {
-      const textPromise = apiClient.query(inputText, modelKey);
-      const ttsPromise = apiClient.generateTTS(inputText);
-      const [result, ttsResult] = await Promise.all([textPromise, ttsPromise]);
+      // Step 1: Get answer from backend
+      const result = await apiClient.query(inputText, modelKey);
       setCurrentAnswer(result.reply);
-      setShouldAutoPlay(true); // <-- Enable autoPlay only after new answer
-
-      // Prepare audio
+      // Step 2: Generate TTS for the answer (not the question)
+      const answerText = result.reply;
+      const lang = detectLanguage(answerText);
+      const ttsResult = await apiClient.generateTTS(answerText, lang);
+      setShouldAutoPlay(true);
+      // Step 3: Prepare audio
       if (ttsResult && ttsResult.audio_base64) {
         if (audioUrl) {
           URL.revokeObjectURL(audioUrl);
@@ -123,7 +115,6 @@ function App() {
       } else {
         setAudioUrl(null);
       }
-
       const newEntry = {
         user: inputText,
         assistant: result.reply,
@@ -307,6 +298,7 @@ function App() {
                     onGenerateTTS={handleGenerateTTS}
                     audioUrl={audioUrl}
                     autoPlay={shouldAutoPlay}
+                    onAudioUrl={setAudioUrl} // Pass setAudioUrl to AnswerSection
                   />
                 )}
               </div>

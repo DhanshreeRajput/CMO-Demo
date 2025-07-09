@@ -1,48 +1,35 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Volume2, VolumeX, Copy, CheckCircle, Loader2, Pause, RotateCcw, Play, Download } from 'lucide-react';
+import {
+  Volume2, VolumeX, Copy, CheckCircle, Loader2,
+  Pause, RotateCcw, Play, Download
+} from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import './AnswerSection.css';
 
-// Simple language detector for Marathi, Hindi, English
 function detectLang(text) {
   if (/[\u0900-\u097F]/.test(text)) {
-    // Devanagari: could be Marathi or Hindi, default to Marathi if "च्या", else Hindi
     if (text.includes('च्या') || text.includes('आहे')) return 'mr';
     return 'hi';
   }
   if (/[A-Za-z]/.test(text)) return 'en';
-  return 'en'; // fallback
+  return 'en';
 }
 
-const langCodeToNameMap = {
-  en: "English",
-  hi: "Hindi",
-  mr: "Marathi",
-};
-
-const AnswerSection = ({ answer, question, onGenerateTTS, audioUrl, autoPlay }) => {
+const AnswerSection = ({ answer, question, onGenerateTTS, audioUrl, autoPlay, onAudioUrl }) => {
   const [isPlayingTTS, setIsPlayingTTS] = useState(false);
   const [isGeneratingTTS, setIsGeneratingTTS] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [audioUrlState, setAudioUrl] = useState(null);
   const [audioProgress, setAudioProgress] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1.0);
+  const [hasAutoplayed, setHasAutoplayed] = useState(false);
+
   const audioRef = useRef(null);
-  const playedOnce = useRef({});
+  const shouldAutoplayRef = useRef(false);
 
-  // Global audio playing flag
-  const isAnyAudioPlaying = () => window.isAnyAudioPlaying;
-  const setAnyAudioPlaying = (val) => { window.isAnyAudioPlaying = val; };
-
-  // Clean [Cached] text from answer (copy from ChatHistory)
-  function cleanAnswer(text) {
-    if (typeof text === 'string') {
-      return text.replace(/^\[Cached\]\s*/, '');
-    }
-    return text;
-  }
+  const cleanAnswer = (text) =>
+    typeof text === 'string' ? text.replace(/^\[Cached\]\s*/, '') : JSON.stringify(text);
 
   const handleCopyAnswer = async () => {
     try {
@@ -50,92 +37,125 @@ const AnswerSection = ({ answer, question, onGenerateTTS, audioUrl, autoPlay }) 
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy text:', error);
+      console.error('Copy failed:', error);
     }
   };
 
-  // When audioUrl changes, create a new Audio object
   useEffect(() => {
-    if (!audioUrlState) return;
-
-    // Use a unique key for the answer (could be answer text or a hash)
-    const answerKey = cleanAnswer(answer);
-
-    // Pause any global audio before starting new one
-    if (window.currentlyPlayingAudio && typeof window.currentlyPlayingAudio.pause === 'function') {
-      window.currentlyPlayingAudio.pause();
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
     }
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
-    const audio = new Audio(audioUrlState);
-    audio.playbackRate = playbackRate; // Set initial playback rate
-    audioRef.current = audio;
-    window.currentlyPlayingAudio = audio;
 
-    audio.addEventListener('timeupdate', () => {
+    const audio = audioRef.current;
+
+    const handlePlay = () => setIsPlayingTTS(true);
+    const handlePause = () => setIsPlayingTTS(false);
+    const handleEnded = () => setIsPlayingTTS(false);
+    const handleTimeUpdate = () => {
       setAudioProgress(audio.currentTime);
       setAudioDuration(audio.duration || 0);
-    });
-    audio.addEventListener('ended', () => setIsPlayingTTS(false));
-    audio.addEventListener('pause', () => setIsPlayingTTS(false));
-    audio.addEventListener('play', () => setIsPlayingTTS(true));
+    };
 
-    // Autoplay only once per answer
-    if (!playedOnce.current[answerKey]) {
-      const tryPlay = () => {
-        audio.load();
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {
-            // Show a UI hint to the user and retry on interaction
-            if (!window.__audio_autoplay_hint_shown) {
-              alert('🔊 Please click anywhere on the page to enable audio playback (browser autoplay policy).');
-              window.__audio_autoplay_hint_shown = true;
-            }
-            const onUserInteract = () => {
-              audio.play();
-              window.removeEventListener('click', onUserInteract);
-              window.removeEventListener('keydown', onUserInteract);
-            };
-            window.addEventListener('click', onUserInteract);
-            window.addEventListener('keydown', onUserInteract);
-          });
-        }
-        playedOnce.current[answerKey] = true; // Mark as played
-      };
-      if (audio.readyState >= 1) {
-        tryPlay();
-      } else {
-        audio.addEventListener('loadedmetadata', tryPlay, { once: true });
-      }
-    }
-
-    // Update playback rate if changed
-    audio.playbackRate = playbackRate;
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
 
     return () => {
       audio.pause();
-      audioRef.current = null;
-      if (window.currentlyPlayingAudio === audio) {
-        window.currentlyPlayingAudio = null;
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+    };
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !audioUrl) return;
+
+    const tryAutoplay = async () => {
+      if ((autoPlay || shouldAutoplayRef.current) && !hasAutoplayed) {
+        try {
+          await audio.play();
+          setHasAutoplayed(true);
+          shouldAutoplayRef.current = false;
+        } catch (err) {
+          console.warn('Autoplay blocked:', err);
+          shouldAutoplayRef.current = false;
+        }
       }
     };
-  }, [audioUrlState, answer, playbackRate]); // <-- add playbackRate as dependency
 
-  // Play/Pause handler
-  const handlePlayPause = () => {
+    const setupAudio = () => {
+      if (audio.src !== audioUrl) {
+        audio.src = audioUrl;
+        audio.load();
+        setAudioProgress(0);
+        setAudioDuration(0);
+      }
+
+      audio.playbackRate = playbackRate;
+
+      if (audio.readyState >= 3) {
+        tryAutoplay();
+      } else {
+        audio.addEventListener('canplaythrough', tryAutoplay, { once: true });
+      }
+    };
+
+    setupAudio();
+
+    return () => {
+      audio.removeEventListener('canplaythrough', tryAutoplay);
+    };
+  }, [audioUrl, autoPlay, playbackRate, hasAutoplayed]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+
+    setAudioProgress(0);
+    setAudioDuration(0);
+    setIsPlayingTTS(false);
+    setHasAutoplayed(false);
+    shouldAutoplayRef.current = true;
+  }, [answer, audioUrl]);
+
+  const handlePlayPause = async () => {
     const audio = audioRef.current;
     if (!audio) return;
+
     if (audio.paused) {
-      audio.play();
+      if (audio.readyState < 2) {
+        await new Promise(resolve =>
+          audio.addEventListener('canplaythrough', resolve, { once: true })
+        );
+      }
+      try {
+        await audio.play();
+      } catch (err) {
+        console.warn('Play error:', err);
+      }
     } else {
       audio.pause();
     }
   };
 
-  // Seek handler
+  const handleReplay = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.currentTime = 0;
+    try {
+      await audio.play();
+    } catch (err) {
+      console.warn('Replay error:', err);
+    }
+  };
+
   const handleSeek = (e) => {
     const audio = audioRef.current;
     if (!audio || !audioDuration) return;
@@ -144,103 +164,78 @@ const AnswerSection = ({ answer, question, onGenerateTTS, audioUrl, autoPlay }) 
     const seekTime = percent * audioDuration;
     audio.currentTime = seekTime;
     setAudioProgress(seekTime);
-    if (isPlayingTTS) audio.play();
   };
 
-  // Generate TTS and set audioUrl, then play immediately if autoPlay or user requested
-  const handleGenerateTTS = async (playAfter = false) => {
+  // Language check for TTS (strict)
+  const lang = detectLang(cleanAnswer(answer));
+  const isSupportedLang = lang === 'en' || lang === 'hi' || lang === 'mr';
+
+  const handleGenerateTTS = async () => {
+    if (!isSupportedLang) {
+      alert('❌ Only English, Hindi, and Marathi are supported for TTS.');
+      return;
+    }
     setIsGeneratingTTS(true);
     try {
-      // Always pause and clean up previous audio before generating new
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-      if (audioUrlState) {
-        URL.revokeObjectURL(audioUrlState);
-        setAudioUrl(null);
-      }
-
       const cleanedAnswer = cleanAnswer(answer);
-      const lang = detectLang(cleanedAnswer);
-      const ttsResult = await onGenerateTTS(cleanedAnswer, lang);
-      if (ttsResult && ttsResult.audio_base64) {
+      const ttsResult = await onGenerateTTS(cleanedAnswer);
+      if (ttsResult?.audio_base64) {
         const audioBlob = new Blob(
           [Uint8Array.from(atob(ttsResult.audio_base64), c => c.charCodeAt(0))],
           { type: 'audio/wav' }
         );
         const url = URL.createObjectURL(audioBlob);
-        setAudioUrl(url);
-        if (playAfter) {
-          setTimeout(() => {
-            if (audioRef.current) audioRef.current.play();
-          }, 100);
+        if (typeof onAudioUrl === 'function') {
+          onAudioUrl(url);
         }
+
+        const audio = audioRef.current;
+        audio.src = url;
+        audio.load();
+        audio.playbackRate = playbackRate;
+        setAudioProgress(0);
+        setAudioDuration(0);
+        shouldAutoplayRef.current = true;
       }
     } catch (error) {
       console.error('TTS generation failed:', error);
+      alert('❌ TTS generation failed. Please use English, Hindi, or Marathi.');
     } finally {
       setIsGeneratingTTS(false);
     }
   };
 
-  // Cleanup on answer change
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
-    if (audioUrlState) {
-      URL.revokeObjectURL(audioUrlState);
-      setAudioUrl(null);
-    }
-    setAudioProgress(0);
-    setAudioDuration(0);
-    setIsPlayingTTS(false);
-  }, [answer]);
-
-  // Auto-generate and play TTS when answer changes and autoPlay is true
-  useEffect(() => {
-    if (autoPlay && answer && !audioUrlState && !isGeneratingTTS) {
-      handleGenerateTTS(true); // Pass true to play after generating
-    }
-    // eslint-disable-next-line
-  }, [answer, autoPlay]);
-
   if (!answer) return null;
 
   return (
     <div className="flex flex-col items-end space-y-2 w-full">
-      {/* User Question Bubble */}
       {question && (
         <div className="flex w-full justify-end">
-          <div className="bg-blue-50 text-blue-900 rounded-2xl px-5 py-3 shadow max-w-2xl text-right animate-fade-in">
+          <div className="bg-blue-50 text-blue-900 rounded-2xl px-5 py-3 shadow max-w-2xl text-right">
             <span className="block font-semibold text-blue-700 mb-1">You</span>
             <span className="whitespace-pre-wrap break-words">{question}</span>
           </div>
         </div>
       )}
-      {/* AI Answer Bubble */}
       <div className="flex w-full justify-start">
-        <div className="bg-green-50 text-green-900 rounded-2xl px-5 py-3 shadow max-w-2xl animate-fade-in relative">
+        <div className="bg-green-50 text-green-900 rounded-2xl px-5 py-3 shadow max-w-2xl relative">
           <span className="block font-semibold text-green-700 mb-1">AI Assistant</span>
           <div className="prose prose-blue max-w-none">
             <div className="text-gray-700 leading-relaxed">
-              <div className="markdown-content" lang={detectLang(cleanAnswer(answer))}>
-                <ReactMarkdown 
+              <div className="markdown-content" lang={lang}>
+                <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{
-                    h1: ({node, ...props}) => <h1 className="text-2xl font-bold text-gray-800 mb-4 mt-8 first:mt-0" {...props} />,
-                    h2: ({node, ...props}) => <h2 className="text-xl font-bold text-gray-800 mb-3 mt-6 first:mt-0" {...props} />,
-                    h3: ({node, ...props}) => <h3 className="text-lg font-bold text-gray-800 mb-2 mt-5 first:mt-0" {...props} />,
-                    h4: ({node, ...props}) => <h4 className="text-base font-bold text-gray-800 mb-2 mt-4 first:mt-0" {...props} />,
-                    p: ({node, ...props}) => <p className="mb-4 leading-relaxed" {...props} />,
-                    ul: ({node, ...props}) => <ul className="list-disc list-inside mb-6 space-y-2" {...props} />,
-                    ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-6 space-y-2" {...props} />,
-                    li: ({node, ...props}) => <li className="mb-2 leading-relaxed" {...props} />,
-                    strong: ({node, ...props}) => <strong className="font-bold text-gray-900" {...props} />,
-                    em: ({node, ...props}) => <em className="italic" {...props} />,
-                    blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-600 my-6" {...props} />,
+                    h1: (props) => <h1 className="text-2xl font-bold mb-4 mt-8" {...props} />,
+                    h2: (props) => <h2 className="text-xl font-bold mb-3 mt-6" {...props} />,
+                    h3: (props) => <h3 className="text-lg font-bold mb-2 mt-5" {...props} />,
+                    p: (props) => <p className="mb-4" {...props} />,
+                    ul: (props) => <ul className="list-disc list-inside mb-6 space-y-2" {...props} />,
+                    ol: (props) => <ol className="list-decimal list-inside mb-6 space-y-2" {...props} />,
+                    li: (props) => <li className="mb-2" {...props} />,
+                    strong: (props) => <strong className="font-bold" {...props} />,
+                    em: (props) => <em className="italic" {...props} />,
+                    blockquote: (props) => <blockquote className="border-l-4 border-blue-500 pl-4 italic my-6" {...props} />,
                   }}
                 >
                   {cleanAnswer(answer)}
@@ -248,55 +243,55 @@ const AnswerSection = ({ answer, question, onGenerateTTS, audioUrl, autoPlay }) 
               </div>
             </div>
           </div>
+
           {/* Controls */}
           <div className="flex flex-col space-y-1 mt-2">
+            {!isSupportedLang && (
+              <div className="text-red-600 font-semibold text-sm mb-2">
+                ❌ Only English, Hindi, and Marathi are supported for audio. TTS is disabled for this answer.
+              </div>
+            )}
             <div className="flex items-center space-x-2">
               <button
-                onClick={audioUrlState ? handlePlayPause : () => handleGenerateTTS(true)}
-                disabled={isGeneratingTTS}
-                className="p-2 rounded-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors disabled:opacity-50"
-                title={isPlayingTTS ? 'Pause Audio' : 'Play Audio'}
-              >
-                {isGeneratingTTS ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : isPlayingTTS ? (
-                  <Pause className="w-4 h-4" />
-                ) : (
-                  <Play className="w-4 h-4" />
-                )}
-              </button>
-              <button
-                onClick={() => {
-                  const audio = audioRef.current;
-                  if (audio) {
-                    audio.currentTime = 0;
-                    audio.play();
+                onClick={async () => {
+                  if (!isSupportedLang) return;
+                  if (audioUrl) {
+                    await handlePlayPause();
+                  } else {
+                    await handleGenerateTTS();
                   }
                 }}
-                disabled={!audioUrlState}
+                disabled={isGeneratingTTS || !isSupportedLang}
+                className="p-2 rounded-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors disabled:opacity-50"
+                title={isSupportedLang ? (isPlayingTTS ? 'Pause Audio' : 'Play Audio') : 'TTS not allowed for this language'}
+              >
+                {isGeneratingTTS ? <Loader2 className="w-4 h-4 animate-spin" /> :
+                  isPlayingTTS ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              </button>
+
+              <button
+                onClick={isSupportedLang ? handleReplay : undefined}
+                disabled={!audioUrl || !isSupportedLang}
                 className="p-2 rounded-lg bg-purple-100 text-purple-600 hover:bg-purple-200 transition-colors disabled:opacity-50"
-                title="Replay Audio"
+                title={isSupportedLang ? 'Replay Audio' : 'TTS not allowed for this language'}
               >
                 <RotateCcw className="w-4 h-4" />
               </button>
+
               <button
                 onClick={handleCopyAnswer}
                 className="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
                 title="Copy Answer"
               >
-                {isCopied ? (
-                  <CheckCircle className="w-4 h-4" />
-                ) : (
-                  <Copy className="w-4 h-4" />
-                )}
+                {isCopied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </button>
-              {/* Playback Speed Selector */}
+
               <select
                 value={playbackRate}
-                onChange={e => setPlaybackRate(Number(e.target.value))}
+                onChange={(e) => setPlaybackRate(Number(e.target.value))}
                 className="p-1 rounded bg-gray-100 text-gray-700 text-xs border border-gray-200"
                 title="Playback Speed"
-                style={{ width: 70 }}
+                disabled={!isSupportedLang}
               >
                 <option value={0.75}>0.75x</option>
                 <option value={1.0}>1x</option>
@@ -305,8 +300,9 @@ const AnswerSection = ({ answer, question, onGenerateTTS, audioUrl, autoPlay }) 
                 <option value={2.0}>2x</option>
               </select>
             </div>
-            {/* Audio Player Bar */}
-            {audioUrlState && (
+
+            {/* Audio Progress Bar */}
+            {audioUrl && isSupportedLang && (
               <>
                 <div className="flex items-center space-x-2 w-full">
                   <span className="text-xs text-gray-500 w-10 text-right">
@@ -325,13 +321,12 @@ const AnswerSection = ({ answer, question, onGenerateTTS, audioUrl, autoPlay }) 
                     {audioDuration ? new Date(audioDuration * 1000).toISOString().substr(14, 5) : '00:00'}
                   </span>
                 </div>
-                {/* Download Audio Button */}
                 <div className="flex justify-end mt-1">
                   <a
-                    href={audioUrlState}
-                    download="answer-audio.mp3"
+                    href={audioUrl}
+                    download="answer-audio.wav"
                     className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-xs font-medium transition-colors"
-                    title="Download Audio as MP3"
+                    title="Download Audio"
                   >
                     <Download className="w-4 h-4" />
                   </a>

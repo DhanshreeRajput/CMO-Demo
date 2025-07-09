@@ -12,6 +12,7 @@ const QueryInput = ({
 }) => {
   const [inputText, setInputText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const textareaRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const socketRef = useRef(null);
@@ -34,10 +35,29 @@ const QueryInput = ({
     }
   };
 
-  const handleTranscription = (transcription) => {
-    setInputText(transcription);
-    if (textareaRef.current) {
-      textareaRef.current.focus();
+  const handleTranscription = async (audioBlob) => {
+    if (!audioBlob) return;
+    setIsTranscribing(true);
+    try {
+      const formData = new FormData();
+      formData.append('audio_file', audioBlob, 'audio.wav');
+      const response = await fetch('http://localhost:8000/transcribe/', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (response.ok && data.transcription) {
+        setInputText(data.transcription);
+        if (textareaRef.current) textareaRef.current.focus();
+      } else {
+        setInputText('');
+        alert(data.error || 'Transcription failed.');
+      }
+    } catch (err) {
+      setInputText('');
+      alert('Transcription failed.');
+    } finally {
+      setIsTranscribing(false);
     }
   };
 
@@ -51,48 +71,43 @@ const QueryInput = ({
         </div>
       )}
 
+      {/* Show loader when transcribing audio */}
+      {isTranscribing && (
+        <div className="flex items-center space-x-2 text-blue-600 text-lg font-semibold mb-2">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <span>Transcribing audio...</span>
+        </div>
+      )}
+
       {/* Microphone button */}
       <div className="w-full flex justify-center mb-2">
         <MicrophoneButton
           isRecording={isRecording}
           setIsRecording={setIsRecording}
-          onTranscription={setInputText}
-          disabled={isLoading || isRagBuilding}
+          onTranscription={handleTranscription}
+          disabled={isLoading || isRagBuilding || isTranscribing}
         />
       </div>
 
       {/* Text input and send button below */}
-      <form onSubmit={handleSubmit} className="w-full flex flex-col space-y-2">
+      <form onSubmit={handleSubmit} className="w-full flex flex-col items-center">
         <textarea
           ref={textareaRef}
+          className="w-full p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 mb-2"
+          rows={2}
+          placeholder={placeholderText || 'Enter your question here...'}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={placeholderText || 'Enter your question here...'}
-          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-base"
-          rows="2"
-          disabled={isLoading}
+          disabled={isLoading || isRagBuilding || isTranscribing}
         />
         <button
           type="submit"
-          disabled={!((inputText || '').trim()) || isLoading}
-          className={`px-6 py-3 rounded-lg font-medium transition-all flex items-center space-x-2 w-full justify-center
-            ${!((inputText || '').trim()) || isLoading
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl'}
-          `}
+          className="w-full py-2 px-4 rounded bg-blue-500 text-white font-semibold flex items-center justify-center disabled:opacity-50"
+          disabled={isLoading || isRagBuilding || isTranscribing || !inputText.trim()}
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Processing...</span>
-            </>
-          ) : (
-            <>
-              <Send className="w-4 h-4" />
-              <span>Send Question</span>
-            </>
-          )}
+          {isLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Send className="w-5 h-5 mr-2" />}
+          Send Question
         </button>
       </form>
 
