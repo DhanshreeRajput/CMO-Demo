@@ -373,19 +373,65 @@ def validate_language(text: str) -> bool:
     """Basic language validation placeholder"""
     return len(text.strip()) > 0  # Or implement a more specific validation if required
 
+def remove_conversational_elements(text: str) -> str:
+    """Remove conversational elements from text"""
+    text = text.replace("my friend", "")
+    text = text.replace("let me tell you", "")
+    text = text.replace("Arre", "")
+    text = text.replace("yaar", "")
+    text = text.replace("Plus", "Additionally")
+    return text.strip()
+
+def validate_knowledge_query(text: str) -> bool:
+    """Validate that the query is strictly knowledge-based and related to documents"""
+    text = text.lower().strip()
+    
+    # Block non-document related queries
+    blocked_patterns = [
+        "how are you", "hello", "hi ", "hey", "good morning", "good evening",
+        "what's up", "talk to me", "chat", "tell me about yourself",
+        "who are you", "your name", "introduce yourself", "what can you do",
+        "help me", "what are your capabilities", "tell me a joke", "tell me a story",
+        "sing a song", "write a poem", "write code", "create a program",
+        "current time", "current date", "weather", "news", "sports",
+        "what do you think", "your opinion", "do you like", "do you know",
+        "talk like", "speak like", "act like", "pretend to be", "roleplay",
+        "my friend", "yaar", "arre", "bro", "dude"
+    ]
+    
+    # Check if query contains blocked patterns
+    for pattern in blocked_patterns:
+        if pattern in text:
+            return False
+    
+    # Only allow specific information-seeking patterns
+    allowed_patterns = [
+        "what is", "how does", "when is", "where is", "who is",
+        "explain", "describe", "show", "list", "give information about",
+        "provide details", "tell about"
+    ]
+    
+    return any(pattern in text for pattern in allowed_patterns)
+
 @app.post("/query/")
 async def get_answer_optimized(req: QueryRequest):
     input_text = req.input_text.strip()
     if not input_text:
         return JSONResponse(status_code=400, content={"error": "Empty query input."})
 
-    # --- Simplified language validation ---
+    # Validate query is knowledge-based
+    if not validate_knowledge_query(input_text):
+        return JSONResponse(
+            status_code=400, 
+            content={"error": "Please ask a direct question about the document content. Example: 'What is particular scheme?' or 'Explain the benefits of particular scheme'"}
+        )
+    
+    # Validate language
     if not validate_language(input_text):
         return JSONResponse(
             status_code=400,
             content={"error": "Invalid input. Please provide a valid query."}
         )
-    # ---------------------------------------------------
 
     session_id = req.session_id or "default"
     wait_time = check_rate_limit_delay(session_id)
@@ -395,6 +441,7 @@ async def get_answer_optimized(req: QueryRequest):
     model_key = req.model_key
     if not model_key:
         return JSONResponse(status_code=400, content={"error": "model_key is required. Please upload files first."})
+    
     rag_chain = state_manager.get_rag_chain(model_key, GROQ_API_KEY)
     if not rag_chain:
         return JSONResponse(status_code=400, content={"error": "No RAG system found. Please upload files first."})
@@ -402,14 +449,9 @@ async def get_answer_optimized(req: QueryRequest):
     try:
         result = process_scheme_query_with_retry(rag_chain, input_text)
         assistant_reply = result[0] if isinstance(result, tuple) else result or "No response received"
-
-        # --- Block AI answers in unsupported languages ---
-        if not validate_language(assistant_reply):
-            return JSONResponse(
-                status_code=400,
-                content={"error": "Only English, Hindi, or Marathi answers are supported. Please rephrase your question."}
-            )
-        # -------------------------------------------------
+        
+        # Clean up response to remove conversational elements
+        assistant_reply = remove_conversational_elements(assistant_reply)
 
         # Detect language of user input for TTS
         detected_lang = detect_language(input_text)
