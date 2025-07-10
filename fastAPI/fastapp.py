@@ -15,6 +15,7 @@ from contextlib import asynccontextmanager
 import os
 from groq import Groq
 import logging
+import re
 
 # Core services
 from core.rag_services import build_rag_chain_with_model_choice, process_scheme_query_with_retry
@@ -370,17 +371,19 @@ async def upload_files_optimized(
         return JSONResponse(status_code=500, content={"error": f"Failed to build RAG system: {str(e)}"})
 
 def validate_language(text: str) -> bool:
-    """Basic language validation placeholder"""
-    return len(text.strip()) > 0  # Or implement a more specific validation if required
-
-def remove_conversational_elements(text: str) -> str:
-    """Remove conversational elements from text"""
-    text = text.replace("my friend", "")
-    text = text.replace("let me tell you", "")
-    text = text.replace("Arre", "")
-    text = text.replace("yaar", "")
-    text = text.replace("Plus", "Additionally")
-    return text.strip()
+    """Validate input language and format"""
+    text = text.strip()
+    if not text:
+        return False
+    
+    # Check if text contains any supported language patterns
+    supported_patterns = {
+        'en': r'[a-zA-Z\s\?]+',  # English
+        'hi': r'[\u0900-\u097F\s\?]+',  # Hindi
+        'mr': r'[\u0900-\u097F\s\?]+'   # Marathi (Devanagari script)
+    }
+    
+    return any(re.search(pattern, text) for pattern in supported_patterns.values())
 
 def validate_knowledge_query(text: str) -> bool:
     """Validate that the query is strictly knowledge-based and related to documents"""
@@ -404,33 +407,71 @@ def validate_knowledge_query(text: str) -> bool:
         if pattern in text:
             return False
     
-    # Only allow specific information-seeking patterns
-    allowed_patterns = [
-        "what is", "how does", "when is", "where is", "who is",
-        "explain", "describe", "show", "list", "give information about",
-        "provide details", "tell about"
-    ]
+    # Information seeking patterns in multiple languages
+    allowed_patterns = {
+        'en': [
+            "what is", "how does", "when is", "where is", "who is",
+            "explain", "describe", "show", "list", "give information about",
+            "provide details", "tell about"
+        ],
+        'hi': [
+            "क्या है", "कैसे", "कब", "कहाँ", "कौन",
+            "बताएं", "विवरण", "जानकारी", "के बारे में"
+        ],
+        'mr': [
+            "काय आहे", "कसे", "केव्हा", "कुठे", "कोण",
+            "सांगा", "माहिती", "विषयी", "बद्दल"
+        ]
+    }
     
-    return any(pattern in text for pattern in allowed_patterns)
+    # Check if query contains any allowed pattern in any supported language
+    has_valid_pattern = any(
+        any(pattern in text for pattern in patterns)
+        for patterns in allowed_patterns.values()
+    )
+    
+    return has_valid_pattern
+
+def process_response(text: str) -> str:
+    """Process and clean the response"""
+    # Remove conversational elements
+    text = text.replace("my friend", "")
+    text = text.replace("let me tell you", "")
+    text = text.replace("Arre", "")
+    text = text.replace("yaar", "")
+    text = text.replace("Plus", "Additionally")
+    
+    # Remove any casual language markers
+    casual_words = ["well,", "you see,", "basically,", "actually,", "you know,"]
+    for word in casual_words:
+        text = text.replace(word, "")
+    
+    # Ensure proper sentence structure
+    sentences = text.split('.')
+    cleaned_sentences = [s.strip() for s in sentences if s.strip()]
+    text = '. '.join(cleaned_sentences) + ('.' if text.strip().endswith('.') else '')
+    
+    return text.strip()
 
 @app.post("/query/")
 async def get_answer_optimized(req: QueryRequest):
     input_text = req.input_text.strip()
     if not input_text:
-        return JSONResponse(status_code=400, content={"error": "Empty query input."})
+        return JSONResponse(status_code=400, content={"Empty query input."})
+
+    # Detect language and validate
+    detected_lang = detect_language(input_text)
+    if not validate_language(input_text):
+        return JSONResponse(
+            status_code=400,
+            content={"Please provide a valid query in English, Hindi, or Marathi."}
+        )
 
     # Validate query is knowledge-based
     if not validate_knowledge_query(input_text):
         return JSONResponse(
             status_code=400, 
-            content={"error": "Please ask a direct question about the document content. Example: 'What is particular scheme?' or 'Explain the benefits of particular scheme'"}
-        )
-    
-    # Validate language
-    if not validate_language(input_text):
-        return JSONResponse(
-            status_code=400,
-            content={"error": "Invalid input. Please provide a valid query."}
+            content={"I'm sorry, I cannot assist with that topic. For more details, please contact the 104/102 helpline numbers."}
         )
 
     session_id = req.session_id or "default"
@@ -450,11 +491,20 @@ async def get_answer_optimized(req: QueryRequest):
         result = process_scheme_query_with_retry(rag_chain, input_text)
         assistant_reply = result[0] if isinstance(result, tuple) else result or "No response received"
         
-        # Clean up response to remove conversational elements
-        assistant_reply = remove_conversational_elements(assistant_reply)
+        # Process and clean the response
+        assistant_reply = process_response(assistant_reply)
+        
+        # If no meaningful response was generated
+        if len(assistant_reply.strip()) < 10:
+            return JSONResponse(
+                status_code=400,
+                content={"No relevant information found in the documents. Please try a different question."}
+            )
 
-        # Detect language of user input for TTS
-        detected_lang = detect_language(input_text)
+        # Translate answer to user's language if needed
+        from utils.helpers import translate_text
+        if detect_language(assistant_reply) != detected_lang:
+            assistant_reply = translate_text(assistant_reply, detected_lang)
 
         message = {
             "user": input_text,
@@ -492,6 +542,13 @@ async def get_audio(text: str = Form(...), lang_preference: str = Form("auto")):
         lang_pref = lang_preference
         if lang_preference == 'auto':
             lang_pref = detect_language(text)
+        # Force correct accent for Hindi, Marathi, and English
+        if lang_pref in ["hi", "hindi", "hin"]:
+            lang_pref = "hi"
+        elif lang_pref in ["mr", "marathi", "mar"]:
+            lang_pref = "mr"
+        elif lang_pref in ["en", "english", "eng"]:
+            lang_pref = "en"
         audio_data, lang_used, cache_hit = generate_audio_response(
             text=text,
             lang_preference=lang_pref

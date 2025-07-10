@@ -45,3 +45,12 @@ def safe_get_cache_stats(get_audio_cache_stats_func):
 # Language name mapping for display
 LANG_CODE_TO_NAME = {'en': 'English', 'hi': 'Hindi', 'mr': 'Marathi', 'auto': 'Auto-Detected'}
 ALLOWED_TTS_LANGS = {'en', 'hi', 'mr'}
+
+def translate_text(text: str, target_lang: str) -> str:
+    """
+    Dummy translation function. Replace with real translation API/service.
+    Supported: 'hi' (Hindi), 'mr' (Marathi), 'en' (English)
+    """
+    # For now, just return the original text (no translation)
+    # Integrate with Google Translate, Microsoft Translator, or similar for real use
+    return text
