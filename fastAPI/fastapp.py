@@ -464,14 +464,14 @@ async def get_answer_optimized(req: QueryRequest):
     if not validate_language(input_text):
         return JSONResponse(
             status_code=400,
-            content={"Please provide a valid query in English, Hindi, or Marathi."}
+            content={"error":"Please provide a valid query in English, Hindi, or Marathi."}
         )
 
     # Validate query is knowledge-based
     if not validate_knowledge_query(input_text):
         return JSONResponse(
             status_code=400, 
-            content={"I'm sorry, I cannot assist with that topic. For more details, please contact the 104/102 helpline numbers."}
+            content={"error":"I'm sorry, I cannot assist with that topic. For more details, please contact the 104/102 helpline numbers."}
         )
 
     session_id = req.session_id or "default"
@@ -577,6 +577,8 @@ async def transcribe_audio_endpoint(audio_file: UploadFile = File(...)):
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": f"Transcription failed: {str(e)}"})
 
+
+
 @app.get("/health/")
 async def health_check():
     return {
@@ -613,3 +615,4 @@ async def clear_session(session_id: str):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+    
