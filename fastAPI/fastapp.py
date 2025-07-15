@@ -22,6 +22,7 @@ from core.rag_services import build_rag_chain_with_model_choice, process_scheme_
 from core.tts_services import generate_audio_response, TTS_AVAILABLE, detect_language
 from core.transcription import transcribe_audio
 from utils.config import load_env_vars, GROQ_API_KEY
+from utils.helpers import translate_text
 
 load_env_vars()
 
@@ -386,51 +387,8 @@ def validate_language(text: str) -> bool:
     return any(re.search(pattern, text) for pattern in supported_patterns.values())
 
 def validate_knowledge_query(text: str) -> bool:
-    """Validate that the query is strictly knowledge-based and related to documents"""
-    text = text.lower().strip()
-    
-    # Block non-document related queries
-    blocked_patterns = [
-        "how are you", "hello", "hi ", "hey", "good morning", "good evening",
-        "what's up", "talk to me", "chat", "tell me about yourself",
-        "who are you", "your name", "introduce yourself", "what can you do",
-        "help me", "what are your capabilities", "tell me a joke", "tell me a story",
-        "sing a song", "write a poem", "write code", "create a program",
-        "current time", "current date", "weather", "news", "sports",
-        "what do you think", "your opinion", "do you like", "do you know",
-        "talk like", "speak like", "act like", "pretend to be", "roleplay",
-        "my friend", "yaar", "arre", "bro", "dude"
-    ]
-    
-    # Check if query contains blocked patterns
-    for pattern in blocked_patterns:
-        if pattern in text:
-            return False
-    
-    # Information seeking patterns in multiple languages
-    allowed_patterns = {
-        'en': [
-            "what is", "how does", "when is", "where is", "who is",
-            "explain", "describe", "show", "list", "give information about",
-            "provide details", "tell about"
-        ],
-        'hi': [
-            "क्या है", "कैसे", "कब", "कहाँ", "कौन",
-            "बताएं", "विवरण", "जानकारी", "के बारे में"
-        ],
-        'mr': [
-            "काय आहे", "कसे", "केव्हा", "कुठे", "कोण",
-            "सांगा", "माहिती", "विषयी", "बद्दल"
-        ]
-    }
-    
-    # Check if query contains any allowed pattern in any supported language
-    has_valid_pattern = any(
-        any(pattern in text for pattern in patterns)
-        for patterns in allowed_patterns.values()
-    )
-    
-    return has_valid_pattern
+    # No restrictions: accept all queries
+    return True
 
 def process_response(text: str) -> str:
     """Process and clean the response"""
@@ -502,7 +460,7 @@ async def get_answer_optimized(req: QueryRequest):
             )
 
         # Translate answer to user's language if needed
-        from utils.helpers import translate_text
+        detected_lang = detect_language(input_text)
         if detect_language(assistant_reply) != detected_lang:
             assistant_reply = translate_text(assistant_reply, detected_lang)
 
@@ -533,50 +491,103 @@ async def get_chat_history(session_id: str = Depends(get_session_id)):
         "redis_available": redis_manager.is_available()
     }
 
-@app.post("/tts/")
-async def get_audio(text: str = Form(...), lang_preference: str = Form("auto")):
-    if not TTS_AVAILABLE:
-        return JSONResponse(status_code=501, content={"error": "TTS not available."})
-    try:
-        # If lang_preference is 'auto', detect language from text
-        lang_pref = lang_preference
-        if lang_preference == 'auto':
-            lang_pref = detect_language(text)
-        # Force correct accent for Hindi, Marathi, and English
-        if lang_pref in ["hi", "hindi", "hin"]:
-            lang_pref = "hi"
-        elif lang_pref in ["mr", "marathi", "mar"]:
-            lang_pref = "mr"
-        elif lang_pref in ["en", "english", "eng"]:
-            lang_pref = "en"
-        audio_data, lang_used, cache_hit = generate_audio_response(
-            text=text,
-            lang_preference=lang_pref
-        )
-        return JSONResponse(content={
-            "lang_used": lang_used,
-            "cache_hit": cache_hit,
-            "audio_base64": base64.b64encode(audio_data).decode('utf-8') if audio_data else None
-        })
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"error": f"TTS generation failed: {str(e)}"})
-
 @app.post("/transcribe/")
 async def transcribe_audio_endpoint(audio_file: UploadFile = File(...)):
+    """
+    Uses EXACT same transcribe_audio function as Streamlit
+    """
     try:
+        # Read audio bytes
         audio_bytes = await audio_file.read()
-        # You may need to pass a client if your transcribe_audio requires it
-        # For now, assuming it does not, or you can adjust as needed
-        from groq import Groq
+        
+        if len(audio_bytes) == 0:
+            return JSONResponse(
+                status_code=400, 
+                content={"success": False, "error": "Empty audio file received"}
+            )
+        
+        # Create Groq client - SAME as Streamlit
         groq_client = Groq(api_key=GROQ_API_KEY)
+        
+        # Call EXACT same function as Streamlit main.py uses
+        from core.transcription import transcribe_audio
         success, result = transcribe_audio(groq_client, audio_bytes)
+        
         if success:
-            return {"transcription": result}
+            return {
+                "success": True,
+                "transcription": result
+            }
         else:
-            return JSONResponse(status_code=400, content={"error": result})
+            return JSONResponse(
+                status_code=400, 
+                content={
+                    "success": False,
+                    "error": result
+                }
+            )
+            
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": f"Transcription failed: {str(e)}"})
+        print(f"Transcription error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return JSONResponse(
+            status_code=500, 
+            content={
+                "success": False,
+                "error": f"Transcription failed: {str(e)}"
+            }
+        )
 
+@app.post("/tts/")
+async def tts_endpoint(text: str = Form(...), lang_preference: str = Form("auto")):
+    """
+    Uses EXACT same generate_audio_response function as Streamlit
+    """
+    try:
+        if not text.strip():
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "error": "Empty text provided"}
+            )
+        
+        # Call EXACT same function as Streamlit main.py uses
+        from core.tts_services import generate_audio_response
+        
+        audio_data, lang_used, cache_hit = generate_audio_response(
+            text=text,
+            lang_preference=lang_preference if lang_preference != "auto" else None
+        )
+        
+        if audio_data:
+            audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+            return {
+                "success": True,
+                "audio_base64": audio_base64,
+                "lang_used": lang_used,
+                "cache_hit": cache_hit
+            }
+        else:
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "success": False,
+                    "error": f"TTS generation failed for language: {lang_used}"
+                }
+            )
+            
+    except Exception as e:
+        print(f"TTS error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return JSONResponse(
+            status_code=500, 
+            content={
+                "success": False,
+                "error": f"TTS error: {str(e)}"
+            }
+        )
+        
 @app.get("/health/")
 async def health_check():
     return {
