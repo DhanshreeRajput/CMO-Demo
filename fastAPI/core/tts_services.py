@@ -1,3 +1,4 @@
+# core/tts_services.py - EXACT copy from your working Streamlit version
 import re
 from io import BytesIO
 import time
@@ -26,6 +27,7 @@ def detect_language(text):
     """
     Auto-detect language from text with better Hindi/Marathi distinction
     Returns language code (e.g., 'en', 'hi', 'mr')
+    EXACT copy from your Streamlit version
     """
     if not TTS_AVAILABLE:
         return 'en'
@@ -107,6 +109,7 @@ def text_to_speech(text, lang=None, auto_detect=True, speed=1.0):
     """
     Convert text to speech with caching and speed control.
     Returns: (audio_bytes, language_used, cache_status)
+    EXACT copy from your Streamlit version
     """
     if not TTS_AVAILABLE:
         return None, 'en', 'TTS not available'
@@ -147,13 +150,16 @@ def text_to_speech(text, lang=None, auto_detect=True, speed=1.0):
         return audio_bytes, lang, 'generated'
         
     except Exception as e:
+        import traceback
         print(f"TTS Error: {e}")
+        traceback.print_exc()
         return None, lang or 'en', f'error: {str(e)}'
 
 def generate_audio_response(text, lang_preference=None, speed=1.0):
     """
     Generate audio response for given text.
     Returns: (audio_data, detected_lang, cache_hit) tuple
+    EXACT copy from your Streamlit version
     """
     if not TTS_AVAILABLE:
         return None, 'en', False

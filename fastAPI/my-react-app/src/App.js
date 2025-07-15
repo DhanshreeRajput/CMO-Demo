@@ -87,22 +87,26 @@ function App() {
     return 'en'; // fallback
   }
 
+  // FIXED: Updated handleQuery function with proper TTS integration
   const handleQuery = async (inputText) => {
     if (!inputText.trim()) return;
     setCurrentQuestion(inputText);
     setLangWarning('');
     setIsLoading(true);
+    
     try {
       // Step 1: Get answer from backend
       const result = await apiClient.query(inputText, modelKey);
       setCurrentAnswer(result.reply);
-      // Step 2: Generate TTS for the answer (not the question)
+      
+      // Step 2: Generate TTS for the answer using the API client
       const answerText = result.reply;
-      const lang = detectLanguage(answerText);
-      const ttsResult = await apiClient.generateTTS(answerText, lang);
+      const ttsResult = await apiClient.generateTTS(answerText, 'auto');
+      
       setShouldAutoPlay(true);
+      
       // Step 3: Prepare audio
-      if (ttsResult && ttsResult.audio_base64) {
+      if (ttsResult && ttsResult.success && ttsResult.audio_base64) {
         if (audioUrl) {
           URL.revokeObjectURL(audioUrl);
         }
@@ -114,7 +118,9 @@ function App() {
         setAudioUrl(url);
       } else {
         setAudioUrl(null);
+        console.error('TTS generation failed:', ttsResult?.error);
       }
+      
       const newEntry = {
         user: inputText,
         assistant: result.reply,
@@ -131,10 +137,16 @@ function App() {
     }
   };
 
+  // FIXED: Updated handleGenerateTTS function
   const handleGenerateTTS = async (text, langPreference = 'auto') => {
     try {
       const result = await apiClient.generateTTS(text, langPreference);
-      return result;
+      if (result && result.success) {
+        return result;
+      } else {
+        console.error('TTS generation failed:', result?.error);
+        return null;
+      }
     } catch (error) {
       console.error('TTS generation failed:', error);
       return null;
@@ -271,6 +283,7 @@ function App() {
               </div>
             )}
 
+            {/* FIXED: Updated chat tab with apiClient prop */}
             {activeTab === 'chat' && ragInitialized && (
               <div className="space-y-6">
                 {/* Query Input */}
@@ -281,6 +294,7 @@ function App() {
                       isLoading={isLoading}
                       enableEnterSubmit={true}
                       isRagBuilding={isRagBuilding}
+                      apiClient={apiClient} // ADDED: Pass apiClient prop
                     />
                     {langWarning && (
                       <span className="absolute right-0 top-0 mt-2 mr-2 text-xs text-red-600 font-medium">
@@ -304,6 +318,7 @@ function App() {
               </div>
             )}
 
+            {/* FIXED: Updated history tab with proper TTS handling */}
             {activeTab === 'history' && ragInitialized && (
               <div className="bg-white/60 backdrop-blur-sm rounded-xl shadow-lg p-6">
                 <ChatHistory
