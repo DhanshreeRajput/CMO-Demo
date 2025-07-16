@@ -111,11 +111,6 @@ const QueryInput = ({
         const transcription = result.transcription.trim();
         setInputText(transcription);
         
-        // Detect and show language info
-        // Removed: const detectedLang = detectLanguage(transcription);
-        // Removed: const langNames = { 'mr': 'मराठी', 'hi': 'हिंदी', 'en': 'English' };
-        // Removed: setTranscriptionInfo(`✅ Transcribed in ${langNames[detectedLang] || detectedLang}`);
-        
         if (textareaRef.current) {
           textareaRef.current.focus();
         }

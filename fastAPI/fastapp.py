@@ -387,7 +387,7 @@ def validate_language(text: str) -> bool:
     return any(re.search(pattern, text) for pattern in supported_patterns.values())
 
 def validate_knowledge_query(text: str) -> bool:
-    # No restrictions: accept all queries
+    # No restrictions: accept all queries; rely on prompt for filtering
     return True
 
 def process_response(text: str) -> str:
