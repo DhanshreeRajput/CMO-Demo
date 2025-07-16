@@ -387,7 +387,11 @@ def validate_language(text: str) -> bool:
     return any(re.search(pattern, text) for pattern in supported_patterns.values())
 
 def validate_knowledge_query(text: str) -> bool:
-    # No restrictions: accept all queries; rely on prompt for filtering
+    # Reject queries that ask to 'talk like' or similar conversational instructions
+    lowered = text.lower()
+    if 'talk like' in lowered or 'speak like' in lowered or 'act like' in lowered:
+        return False
+    # No other restrictions: accept all other queries; rely on prompt for filtering
     return True
 
 def process_response(text: str) -> str:
