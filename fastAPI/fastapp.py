@@ -402,18 +402,22 @@ def process_response(text: str) -> str:
     text = text.replace("Arre", "")
     text = text.replace("yaar", "")
     text = text.replace("Plus", "Additionally")
-    
+
     # Remove any casual language markers
     casual_words = ["well,", "you see,", "basically,", "actually,", "you know,"]
     for word in casual_words:
         text = text.replace(word, "")
-    
-    # Ensure proper sentence structure
-    sentences = text.split('.')
-    cleaned_sentences = [s.strip() for s in sentences if s.strip()]
-    text = '. '.join(cleaned_sentences) + ('.' if text.strip().endswith('.') else '')
-    
-    return text.strip()
+
+    # Ensure markdown headings (##, ###) are on new lines and bolded
+    import re
+    # Place headings on new lines
+    text = re.sub(r'(#+\s*[^\n]+)', r'\n\1', text)
+    # Optionally, ensure no duplicate newlines
+    text = re.sub(r'\n+', '\n', text)
+    # Optionally, trim leading/trailing whitespace
+    text = text.strip()
+
+    return text
 
 @app.post("/query/")
 async def get_answer_optimized(req: QueryRequest):
