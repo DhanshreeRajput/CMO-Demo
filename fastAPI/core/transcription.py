@@ -173,7 +173,9 @@ def transcribe_audio(client, audio_bytes, language=None):
             )
         
         print(f"✅ Transcription successful: '{final_transcription}' (Language: {detected_lang})")
-        return (True, final_transcription)
+        # Remove . , - and " characters from the transcription
+        cleaned_transcription = re.sub(r'[.,\-\"]', '', final_transcription)
+        return (True, cleaned_transcription)
         
     except Exception as e:
         print(f"❌ Transcription exception: {str(e)}")
