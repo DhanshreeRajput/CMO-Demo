@@ -249,7 +249,7 @@ function App() {
                   className="w-32 h-32 rounded-full object-cover"
                 />
                 <h1 className="text-6xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  CMRF AI Agent
+                  CMRF|SAMNEX AI
                 </h1>
               </div>
               {/* Empty div for balance */}
@@ -335,7 +335,7 @@ function App() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="text-center">
               <p className="text-gray-600">
-                Powered by <span className="font-semibold text-blue-600">CMRF AI Agent</span>
+                Powered by <span className="font-semibold text-blue-600">SAAR AI</span>
               </p>
               <p className="text-sm text-gray-500 mt-2">
                 Features: AI RAG System & 📝 TTS 🗣️ STT
