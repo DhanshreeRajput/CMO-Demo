@@ -18,22 +18,81 @@ function detectLang(text) {
 
 const ChatHistory = ({ chatHistory, onGenerateTTS }) => {
   const [playingIndex, setPlayingIndex] = useState(null);
-  const [generatingTTSIndex, setGeneratingTTSIndex] = useState(null);
-  const [copiedIndex, setCopiedIndex] = useState(null);
-  const [currentAudio, setCurrentAudio] = useState(null);
-  const [audioUrl, setAudioUrl] = useState(null);
-  const [pausedAt, setPausedAt] = useState(0);
+  const [audioUrls, setAudioUrls] = useState({});
   const [audioProgress, setAudioProgress] = useState({});
   const [audioDuration, setAudioDuration] = useState({});
-  const audioRefs = useRef({});
-  const [audioUrls, setAudioUrls] = useState({});
-  const playedOnce = useRef({}); // Add this near your other refs
-  // Add autoPlayBlocked ref for each message
-  const autoPlayBlocked = useRef({});
+  const [copiedIndex, setCopiedIndex] = useState(null);
+  const audioRef = useRef(null); // Single shared audio element
 
-  // Global audio playing flag
-  const isAnyAudioPlaying = () => window.isAnyAudioPlaying;
-  const setAnyAudioPlaying = (val) => { window.isAnyAudioPlaying = val; };
+  // Play/Pause handler for shared audio
+  const handlePlayPause = (idx) => {
+    const url = audioUrls[idx];
+    if (!url) return;
+    if (playingIndex === idx) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setPlayingIndex(null);
+    } else {
+      audioRef.current.src = url;
+      audioRef.current.load();
+      audioRef.current.play();
+      setPlayingIndex(idx);
+    }
+  };
+
+  // Generate TTS and set audioUrl for an index
+  const handleGenerateTTS = async (text, idx) => {
+    try {
+      const ttsResult = await onGenerateTTS(text);
+      if (ttsResult && ttsResult.audio_base64) {
+        const audioBlob = new Blob(
+          [Uint8Array.from(atob(ttsResult.audio_base64), c => c.charCodeAt(0))],
+          { type: 'audio/wav' }
+        );
+        const url = URL.createObjectURL(audioBlob);
+        setAudioUrls(prev => ({ ...prev, [idx]: url }));
+        setTimeout(() => {
+          audioRef.current.src = url;
+          audioRef.current.load();
+          audioRef.current.play();
+          setPlayingIndex(idx);
+        }, 100);
+      }
+    } catch (error) {
+      console.error('TTS generation failed:', error);
+    }
+  };
+
+  // Audio event listeners for progress and end
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const handleTimeUpdate = () => {
+      if (playingIndex !== null) {
+        setAudioProgress(prev => ({ ...prev, [playingIndex]: audio.currentTime }));
+        setAudioDuration(prev => ({ ...prev, [playingIndex]: audio.duration || 0 }));
+      }
+    };
+    const handleEnded = () => {
+      setPlayingIndex(null);
+    };
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [playingIndex]);
+
+  // Clean up audio on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, []);
 
   // Clean [Cached] text from answer
   const cleanAnswer = (text) => {
@@ -69,118 +128,6 @@ const ChatHistory = ({ chatHistory, onGenerateTTS }) => {
     XLSX.writeFile(wb, 'chat_history.xlsx');
   };
 
-  // When audioUrl changes for an index, create a new Audio object
-  useEffect(() => {
-    Object.entries(audioUrls).forEach(([idx, url]) => {
-      if (!url) return;
-      if (audioRefs.current[idx]) {
-        audioRefs.current[idx].pause();
-        audioRefs.current[idx] = null;
-      }
-      const audio = new Audio(url);
-      audioRefs.current[idx] = audio;
-      audio.addEventListener('timeupdate', () => {
-        setAudioProgress(prev => ({ ...prev, [idx]: audio.currentTime }));
-        setAudioDuration(prev => ({ ...prev, [idx]: audio.duration || 0 }));
-      });
-      audio.addEventListener('ended', () => setPlayingIndex(null));
-      audio.addEventListener('pause', () => setPlayingIndex(null));
-      audio.addEventListener('play', () => setPlayingIndex(idx));
-      // Autoplay logic removed: audio will only play on user action
-    });
-    return () => {
-      Object.values(audioRefs.current).forEach(audio => {
-        if (audio) audio.pause();
-      });
-    };
-  }, [audioUrls]);
-
-  // Listen for global stop event to pause all audios
-  useEffect(() => {
-    const handleStopAll = () => {
-      Object.values(audioRefs.current).forEach(audio => {
-        if (audio && !audio.paused) {
-          audio.pause();
-          audio.currentTime = 0;
-        }
-      });
-    };
-    window.addEventListener('stopAllAudioPlayback', handleStopAll);
-    return () => {
-      window.removeEventListener('stopAllAudioPlayback', handleStopAll);
-    };
-  }, []);
-
-  // Play/Pause handler
-  const handlePlayPause = (idx) => {
-    const audio = audioRefs.current[idx];
-    if (!audio) return;
-    // Stop all other audios before playing
-    window.dispatchEvent(new Event('stopAllAudioPlayback'));
-    if (audio.paused) {
-      audio.play();
-    } else {
-      audio.pause();
-    }
-  };
-
-  // Seek handler
-  const handleSeek = (e, idx) => {
-    const audio = audioRefs.current[idx];
-    if (!audio || !audioDuration[idx]) return;
-    // Stop all other audios before seeking (optional, for strictness)
-    window.dispatchEvent(new Event('stopAllAudioPlayback'));
-    const rect = e.target.getBoundingClientRect();
-    const percent = (e.clientX - rect.left) / rect.width;
-    const seekTime = percent * audioDuration[idx];
-    audio.currentTime = seekTime;
-    setAudioProgress(prev => ({ ...prev, [idx]: seekTime }));
-    if (playingIndex === idx) audio.play();
-  };
-
-  // Generate TTS and set audioUrl for an index
-  const handleGenerateTTS = async (text, idx) => {
-    try {
-      const cleanedText = cleanAnswer(text);
-      const ttsResult = await onGenerateTTS(cleanedText);
-      if (ttsResult && ttsResult.audio_base64) {
-        const audioBlob = new Blob(
-          [Uint8Array.from(atob(ttsResult.audio_base64), c => c.charCodeAt(0))],
-          { type: 'audio/wav' }
-        );
-        const url = URL.createObjectURL(audioBlob);
-        setAudioUrls(prev => ({ ...prev, [idx]: url }));
-        setTimeout(() => {
-          // Stop all other audios before autoplaying this one
-          window.dispatchEvent(new Event('stopAllAudioPlayback'));
-          if (audioRefs.current[idx]) audioRefs.current[idx].play();
-        }, 100);
-      }
-    } catch (error) {
-      console.error('TTS generation failed:', error);
-    }
-  };
-
-  // Stop all audio playback if event received
-  useEffect(() => {
-    const stopAll = () => {
-      if (currentAudio) {
-        currentAudio.pause();
-        setPlayingIndex(null);
-        setPausedAt(currentAudio.currentTime);
-        window.isAnyAudioPlaying = false;
-      }
-    };
-    window.addEventListener('stopAllAudioPlayback', stopAll);
-    return () => {
-      window.removeEventListener('stopAllAudioPlayback', stopAll);
-      if (currentAudio) {
-        currentAudio.pause();
-        window.isAnyAudioPlaying = false;
-      }
-    };
-  }, [currentAudio]);
-
   if (!chatHistory || chatHistory.length === 0) {
     return (
       <div className="text-center py-12">
@@ -193,6 +140,8 @@ const ChatHistory = ({ chatHistory, onGenerateTTS }) => {
 
   return (
     <div className="space-y-6">
+      {/* Shared audio element (hidden) */}
+      <audio ref={audioRef} style={{ display: 'none' }} />
       <div className="mb-6 flex items-center justify-between">
         <div className="text-center flex-1">
           <h3 className="text-xl font-semibold text-gray-800 mb-2">Chat History</h3>
@@ -270,7 +219,7 @@ const ChatHistory = ({ chatHistory, onGenerateTTS }) => {
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => audioUrls[`assistant-${index}`] ? handlePlayPause(`assistant-${index}`) : handleGenerateTTS(cleanAnswer(chat.assistant), `assistant-${index}`)}
-                    className="p-1 rounded hover:bg-green-200 transition-colors disabled:opacity-50"
+                    className="p-2 rounded-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors disabled:opacity-50"
                     title={playingIndex === `assistant-${index}` ? 'Pause Audio' : 'Play Audio'}
                   >
                     {playingIndex === `assistant-${index}` ? (
@@ -281,21 +230,24 @@ const ChatHistory = ({ chatHistory, onGenerateTTS }) => {
                   </button>
                   <button
                     onClick={() => {
-                      const audio = audioRefs.current[`assistant-${index}`];
-                      if (audio) {
-                        audio.currentTime = 0;
-                        audio.play();
+                      const url = audioUrls[`assistant-${index}`];
+                      if (url) {
+                        audioRef.current.src = url;
+                        audioRef.current.currentTime = 0;
+                        audioRef.current.load();
+                        audioRef.current.play();
+                        setPlayingIndex(`assistant-${index}`);
                       }
                     }}
                     disabled={!audioUrls[`assistant-${index}`]}
-                    className="p-1 rounded hover:bg-purple-200 transition-colors disabled:opacity-50"
+                    className="p-2 rounded-lg bg-purple-100 text-purple-600 hover:bg-purple-200 transition-colors disabled:opacity-50"
                     title="Replay Audio"
                   >
                     <RotateCcw className="w-3 h-3 text-purple-600" />
                   </button>
                   <button
                     onClick={() => handleCopyMessage(chat.assistant, `assistant-${index}`)}
-                    className="p-1 rounded hover:bg-green-200 transition-colors"
+                    className="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
                     title="Copy Message"
                   >
                     {copiedIndex === `assistant-${index}` ? (
@@ -314,7 +266,16 @@ const ChatHistory = ({ chatHistory, onGenerateTTS }) => {
                       </span>
                       <div
                         className="flex-1 h-2 bg-gray-200 rounded cursor-pointer relative"
-                        onClick={e => handleSeek(e, `assistant-${index}`)}
+                        onClick={e => {
+                          const audio = audioRef.current;
+                          if (audio && audioDuration[`assistant-${index}`] > 0) {
+                            const rect = e.target.getBoundingClientRect();
+                            const percent = (e.clientX - rect.left) / rect.width;
+                            const seekTime = percent * audioDuration[`assistant-${index}`];
+                            audio.currentTime = seekTime;
+                            setAudioProgress(prev => ({ ...prev, [`assistant-${index}`]: seekTime }));
+                          }
+                        }}
                       >
                         <div
                           className="h-2 bg-green-400 rounded"
