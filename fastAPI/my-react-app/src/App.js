@@ -93,6 +93,10 @@ function App() {
     setCurrentQuestion(inputText);
     setLangWarning('');
     setIsLoading(true);
+
+    // Immediately clear audioUrl and disable autoplay to prevent old audio from playing
+    setAudioUrl(null);
+    setShouldAutoPlay(false);
     
     try {
       // Step 1: Get answer from backend
@@ -102,8 +106,6 @@ function App() {
       // Step 2: Generate TTS for the answer using the API client
       const answerText = result.reply;
       const ttsResult = await apiClient.generateTTS(answerText, 'auto');
-      
-      setShouldAutoPlay(true);
       
       // Step 3: Prepare audio
       if (ttsResult && ttsResult.success && ttsResult.audio_base64) {
@@ -116,8 +118,10 @@ function App() {
         );
         const url = URL.createObjectURL(audioBlob);
         setAudioUrl(url);
+        setShouldAutoPlay(true); // Only enable autoplay for the new audio
       } else {
         setAudioUrl(null);
+        setShouldAutoPlay(false);
         console.error('TTS generation failed:', ttsResult?.error);
       }
       
@@ -131,6 +135,7 @@ function App() {
     } catch (error) {
       setCurrentAnswer(`Error: ${error.message}`);
       setAudioUrl(null);
+      setShouldAutoPlay(false);
       setCurrentQuestion(inputText);
     } finally {
       setIsLoading(false);
