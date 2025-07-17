@@ -248,7 +248,7 @@ function App() {
                   alt="CMRF Logo"
                   className="w-32 h-32 rounded-full object-cover"
                 />
-                <h1 className="text-6xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="text-5xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   CMRF|SAMNEX AI
                 </h1>
               </div>
