@@ -95,10 +95,28 @@ const ChatHistory = ({ chatHistory, onGenerateTTS }) => {
     };
   }, [audioUrls]);
 
+  // Listen for global stop event to pause all audios
+  useEffect(() => {
+    const handleStopAll = () => {
+      Object.values(audioRefs.current).forEach(audio => {
+        if (audio && !audio.paused) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      });
+    };
+    window.addEventListener('stopAllAudioPlayback', handleStopAll);
+    return () => {
+      window.removeEventListener('stopAllAudioPlayback', handleStopAll);
+    };
+  }, []);
+
   // Play/Pause handler
   const handlePlayPause = (idx) => {
     const audio = audioRefs.current[idx];
     if (!audio) return;
+    // Stop all other audios before playing
+    window.dispatchEvent(new Event('stopAllAudioPlayback'));
     if (audio.paused) {
       audio.play();
     } else {
@@ -110,6 +128,8 @@ const ChatHistory = ({ chatHistory, onGenerateTTS }) => {
   const handleSeek = (e, idx) => {
     const audio = audioRefs.current[idx];
     if (!audio || !audioDuration[idx]) return;
+    // Stop all other audios before seeking (optional, for strictness)
+    window.dispatchEvent(new Event('stopAllAudioPlayback'));
     const rect = e.target.getBoundingClientRect();
     const percent = (e.clientX - rect.left) / rect.width;
     const seekTime = percent * audioDuration[idx];
@@ -131,6 +151,8 @@ const ChatHistory = ({ chatHistory, onGenerateTTS }) => {
         const url = URL.createObjectURL(audioBlob);
         setAudioUrls(prev => ({ ...prev, [idx]: url }));
         setTimeout(() => {
+          // Stop all other audios before autoplaying this one
+          window.dispatchEvent(new Event('stopAllAudioPlayback'));
           if (audioRefs.current[idx]) audioRefs.current[idx].play();
         }, 100);
       }

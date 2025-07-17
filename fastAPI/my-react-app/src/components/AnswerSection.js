@@ -56,6 +56,15 @@ const AnswerSection = ({ answer, question, onGenerateTTS, audioUrl, autoPlay, on
       setAudioDuration(audio.duration || 0);
     };
 
+    // Listen for global stop event
+    const handleStopAll = () => {
+      if (!audio.paused) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
+    window.addEventListener('stopAllAudioPlayback', handleStopAll);
+
     audio.addEventListener('play', handlePlay);
     audio.addEventListener('pause', handlePause);
     audio.addEventListener('ended', handleEnded);
@@ -67,6 +76,7 @@ const AnswerSection = ({ answer, question, onGenerateTTS, audioUrl, autoPlay, on
       audio.removeEventListener('pause', handlePause);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('timeupdate', handleTimeUpdate);
+      window.removeEventListener('stopAllAudioPlayback', handleStopAll);
     };
   }, []);
 
@@ -76,6 +86,8 @@ const AnswerSection = ({ answer, question, onGenerateTTS, audioUrl, autoPlay, on
 
     const tryAutoplay = async () => {
       if ((autoPlay || shouldAutoplayRef.current) && !hasAutoplayed) {
+        // Stop all other audios before autoplaying
+        window.dispatchEvent(new Event('stopAllAudioPlayback'));
         try {
           await audio.play();
           setHasAutoplayed(true);
@@ -112,12 +124,13 @@ const AnswerSection = ({ answer, question, onGenerateTTS, audioUrl, autoPlay, on
   }, [audioUrl, autoPlay, playbackRate, hasAutoplayed]);
 
   useEffect(() => {
+    // Stop all other audios immediately when answer or audioUrl changes
+    window.dispatchEvent(new Event('stopAllAudioPlayback'));
     const audio = audioRef.current;
     if (audio) {
       audio.pause();
       audio.currentTime = 0;
     }
-
     setAudioProgress(0);
     setAudioDuration(0);
     setIsPlayingTTS(false);
@@ -130,6 +143,8 @@ const AnswerSection = ({ answer, question, onGenerateTTS, audioUrl, autoPlay, on
     if (!audio) return;
 
     if (audio.paused) {
+      // Stop all other audios before playing
+      window.dispatchEvent(new Event('stopAllAudioPlayback'));
       if (audio.readyState < 2) {
         await new Promise(resolve =>
           audio.addEventListener('canplaythrough', resolve, { once: true })
@@ -148,6 +163,8 @@ const AnswerSection = ({ answer, question, onGenerateTTS, audioUrl, autoPlay, on
   const handleReplay = async () => {
     const audio = audioRef.current;
     if (!audio) return;
+    // Stop all other audios before replaying
+    window.dispatchEvent(new Event('stopAllAudioPlayback'));
     audio.currentTime = 0;
     try {
       await audio.play();
