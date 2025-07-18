@@ -10,7 +10,18 @@ This project includes a FastAPI backend with speech-to-text capabilities and a R
 - **TTS Support**: Text-to-speech capabilities
 - **Modern UI**: React frontend with Tailwind CSS
 
+
 ## Setup Instructions
+
+### Redis Setup
+
+1. **Start Redis with persistence:**
+   ```bash
+   docker run --rm -it -p 6379:6379/tcp -v redis-data:/data redis:7-alpine
+   ```
+   This will run Redis and persist all data in a Docker volume named `redis-data`.
+
+---
 
 ### Backend Setup
 
@@ -55,11 +66,6 @@ This project includes a FastAPI backend with speech-to-text capabilities and a R
 
 ### Speech-to-Text Feature
 
-1. **Click the microphone button** in the QueryInput panel
-2. **Allow microphone access** when prompted by your browser
-3. **Speak your question** - you'll see wave animation during recording
-4. **Click the microphone again** to stop recording
-5. **Wait for transcription** - the text will appear in the input field
 6. **Send the question** using the "Send Question" button
 
 ### Wave Animation
@@ -82,7 +88,6 @@ The wave animation provides visual feedback during recording:
 
 ### Backend Architecture
 
-- **FastAPI**: Modern Python web framework
 - **OpenAI Whisper**: Speech-to-text transcription
 - **Groq**: LLM for question answering
 - **Redis**: Caching and session management (optional)
