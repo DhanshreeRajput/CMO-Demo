@@ -2,16 +2,20 @@ import streamlit as st
 from dotenv import load_dotenv
 import os
 from groq import Groq
-from rag_chain import (
+from rag_chain2 import (
     build_rag_chain_with_model_choice, 
     process_scheme_query_with_retry, 
     get_optimized_query_suggestions,
-    get_model_options
+    get_model_options,
+    generate_audio_response,
+    get_audio_cache_stats
 )
 import tempfile
 import pandas as pd
 import io
 import time
+import base64
+
 load_dotenv()
 
 def init_session_state():
@@ -23,6 +27,8 @@ def init_session_state():
         st.session_state.last_query_time = 0
     if "rag_chain" not in st.session_state:
         st.session_state.rag_chain = None
+    if "auto_play_tts" not in st.session_state:
+        st.session_state.auto_play_tts = False
 
 def transcribe_audio(client, audio_bytes):
     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio:
@@ -53,9 +59,40 @@ def check_rate_limit_delay():
         return wait_time
     return 0
 
+def create_audio_player_html(audio_data, auto_play=False):
+    """Create custom HTML audio player with auto-play option"""
+    audio_base64 = base64.b64encode(audio_data).decode()
+    autoplay_attr = "autoplay" if auto_play else ""
+    
+    html = f"""
+    <audio controls {autoplay_attr} style="width: 100%; margin: 10px 0;">
+        <source src="data:audio/mp3;base64,{audio_base64}" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+    """
+    return html
+
+def safe_get_cache_stats():
+    """Safely get cache stats with fallback values"""
+    try:
+        cache_stats = get_audio_cache_stats()
+        # Ensure the expected keys exist
+        if not isinstance(cache_stats, dict):
+            return {"total": 0, "hit_rate": 0.0}
+        
+        # Set default values for missing keys
+        return {
+            "total": cache_stats.get("total", 0),
+            "hit_rate": cache_stats.get("hit_rate", 0.0)
+        }
+    except Exception as e:
+        # If the function fails entirely, return default values
+        st.warning(f"Cache stats unavailable: {e}")
+        return {"total": 0, "hit_rate": 0.0}
+
 def main():
     st.set_page_config(page_title="CMRF RAG Assistant", layout="wide")
-    st.markdown("<h1 style='text-align: center;'>🤖 CMRF RAG Assistant</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center;'>🤖 CMRF RAG Assistant with TTS</h1>", unsafe_allow_html=True)
     
     GROQ_API_KEY = os.getenv("GROQ_API_KEY")
     if not GROQ_API_KEY:
@@ -73,17 +110,17 @@ def main():
         st.warning("Please upload at least one file (PDF or TXT) to continue.")
         st.stop()
 
-    # Model selection for rate limit optimization
+    # Sidebar Settings
     st.sidebar.markdown("### ⚙️ Settings")
-    model_options = get_model_options()
     
+    # Model selection
+    model_options = get_model_options()
     selected_model = st.sidebar.selectbox(
         "Choose Model (for rate limit management):",
         options=list(model_options.keys()),
         format_func=lambda x: model_options[x]["name"],
         index=0  # Default to fastest model
     )
-    
     st.sidebar.markdown(f"**Selected:** {model_options[selected_model]['description']}")
     
     # Enhanced mode toggle
@@ -92,6 +129,58 @@ def main():
         value=True, 
         help="Better scheme coverage but uses more tokens"
     )
+    
+    # TTS Settings
+    st.sidebar.markdown("### 🔊 Text-to-Speech Settings")
+    
+    # Auto-play toggle
+    st.session_state.auto_play_tts = st.sidebar.checkbox(
+        "🎛️ Auto-play TTS", 
+        value=st.session_state.auto_play_tts,
+        help="Automatically play voice responses"
+    )
+    
+    # TTS Speed control
+    tts_speed = st.sidebar.slider(
+        "🎵 Speech Speed", 
+        min_value=0.5, 
+        max_value=2.0, 
+        value=1.0, 
+        step=0.1,
+        help="Adjust speech speed (1.0 = normal)"
+    )
+    
+    # Voice language preference
+    voice_lang_pref = st.sidebar.selectbox(
+        "🌐 Voice Language Preference",
+        options=["auto", "en", "hi", "mr"],
+        format_func=lambda x: {
+            "auto": "🧠 Auto-detect",
+            "en": "🇺🇸 English", 
+            "hi": "🇮🇳 Hindi",
+            "mr": "🇮🇳 Marathi"
+        }[x],
+        help="Language for voice synthesis"
+    )
+    
+    # Audio cache stats with error handling
+    try:
+        cache_stats = safe_get_cache_stats()
+        if cache_stats["total"] > 0:
+            st.sidebar.markdown("### 🧠 Audio Cache")
+            st.sidebar.metric("Cached Responses", cache_stats["total"])
+            st.sidebar.metric("Cache Hit Rate", f"{cache_stats['hit_rate']:.1%}")
+            
+            if st.sidebar.button("🗑️ Clear Audio Cache"):
+                try:
+                    from rag_chain2 import clear_audio_cache
+                    clear_audio_cache()
+                    st.sidebar.success("Audio cache cleared!")
+                    st.rerun()
+                except Exception as e:
+                    st.sidebar.error(f"Failed to clear cache: {e}")
+    except Exception as e:
+        st.sidebar.warning(f"Cache stats unavailable: {e}")
     
     # Rate limit info
     st.sidebar.markdown("### 📊 Rate Limit Info")
@@ -180,10 +269,20 @@ def main():
                     st.session_state.last_query_time = time.time()
                     
                     # Use the optimized query processor
-                    assistant_reply = process_scheme_query_with_retry(
+                    result = process_scheme_query_with_retry(
                         st.session_state.rag_chain, 
                         input_text
                     )
+                    
+                    # Handle both string and tuple responses
+                    if isinstance(result, tuple):
+                        assistant_reply = result[0] if result else "No response received"
+                    else:
+                        assistant_reply = result if result else "No response received"
+                    
+                    # Ensure we have a string
+                    if not isinstance(assistant_reply, str):
+                        assistant_reply = str(assistant_reply)
                 
                 # Add to chat history
                 st.session_state.chat_history.insert(0, {
@@ -197,16 +296,80 @@ def main():
                 st.markdown("### 📋 Answer:")
                 
                 # Show if result was cached
-                is_cached = assistant_reply.startswith("[Cached]")
+                is_cached = assistant_reply.startswith("[Cached]") if isinstance(assistant_reply, str) else False
                 if is_cached:
                     st.info("🚀 This result was retrieved from cache (faster response)")
-                    assistant_reply = assistant_reply.replace("[Cached] ", "")
+                    clean_reply = assistant_reply.replace("[Cached] ", "")
+                else:
+                    clean_reply = assistant_reply
                 
+                # Display text response
                 st.markdown(
                     f"<div style='background-color:#E8F5E9; padding:15px; border-radius:8px; margin-bottom:15px; border-left: 4px solid #4CAF50;'>"
-                    f"<b>🤖 Assistant:<br><br>{assistant_reply}</div>", 
+                    f"<b>🤖 Assistant:<br><br>{clean_reply}</div>", 
                     unsafe_allow_html=True
                 )
+                
+                # Generate and display TTS audio
+                with st.spinner("🔊 Generating voice response..."):
+                    try:
+                        # Check if generate_audio_response supports speed parameter
+                        import inspect
+                        audio_func_params = inspect.signature(generate_audio_response).parameters
+                        
+                        if 'speed' in audio_func_params:
+                            result = generate_audio_response(
+                                clean_reply, 
+                                speed=tts_speed,
+                                lang_preference=voice_lang_pref
+                            )
+                        else:
+                            # Fallback without speed parameter
+                            result = generate_audio_response(
+                                clean_reply, 
+                                lang_preference=voice_lang_pref
+                            )
+                        
+                        # Handle different return formats
+                        if isinstance(result, dict):
+                            # If function returns a dictionary
+                            audio_data = result.get('audio_data')
+                            detected_lang = result.get('detected_lang', 'auto')
+                            cache_hit = result.get('cache_hit', False)
+                        elif isinstance(result, tuple) and len(result) >= 3:
+                            # If function returns a tuple
+                            audio_data, detected_lang, cache_hit = result
+                        elif isinstance(result, tuple) and len(result) == 2:
+                            # If function returns (audio_data, detected_lang)
+                            audio_data, detected_lang = result
+                            cache_hit = False
+                        else:
+                            # If function returns just audio_data
+                            audio_data = result
+                            detected_lang = 'auto'
+                            cache_hit = False
+                        
+                        if audio_data:
+                            # Show language detection info
+                            lang_names = {"en": "English", "hi": "Hindi", "mr": "Marathi", "auto": "Mixed"}
+                            lang_display = lang_names.get(detected_lang, detected_lang)
+                            
+                            cache_indicator = "🧠 (Cached)" if cache_hit else "🆕 (Generated)"
+                            speed_info = f" | Speed: {tts_speed}x" if 'speed' in audio_func_params else ""
+                            st.info(f"🔊 Voice: {lang_display}{speed_info} | {cache_indicator}")
+                            
+                            # Create and display audio player
+                            audio_html = create_audio_player_html(
+                                audio_data, 
+                                auto_play=st.session_state.auto_play_tts
+                            )
+                            st.markdown(audio_html, unsafe_allow_html=True)
+                        else:
+                            st.warning("⚠️ Could not generate audio for this response")
+                            
+                    except Exception as audio_error:
+                        st.warning(f"🔊 TTS Error: {audio_error}")
+                        st.info("💡 Text response is still available above")
                 
             except Exception as e:
                 st.error(f"Error: {e}")
@@ -241,6 +404,55 @@ def main():
                     </div>""", 
                     unsafe_allow_html=True
                 )
+                
+                # Add TTS playback for historical responses
+                col1, col2 = st.columns([1, 3])
+                with col1:
+                    if st.button(f"🔊 Play", key=f"tts_{i}", help="Generate voice for this response"):
+                        # Safely handle the assistant response text
+                        assistant_text = entry['assistant']
+                        if isinstance(assistant_text, tuple):
+                            assistant_text = assistant_text[0] if assistant_text else ""
+                        elif not isinstance(assistant_text, str):
+                            assistant_text = str(assistant_text)
+                            
+                        clean_text = assistant_text.replace("[Cached] ", "") if isinstance(assistant_text, str) else assistant_text
+                        
+                        try:
+                            with st.spinner("Generating audio..."):
+                                # Check if generate_audio_response supports speed parameter
+                                import inspect
+                                audio_func_params = inspect.signature(generate_audio_response).parameters
+                                
+                                if 'speed' in audio_func_params:
+                                    result = generate_audio_response(
+                                        clean_text,
+                                        speed=tts_speed,
+                                        lang_preference=voice_lang_pref
+                                    )
+                                else:
+                                    # Fallback without speed parameter
+                                    result = generate_audio_response(
+                                        clean_text,
+                                        lang_preference=voice_lang_pref
+                                    )
+                                
+                                # Handle different return formats
+                                if isinstance(result, dict):
+                                    # If function returns a dictionary
+                                    audio_data = result.get('audio_data')
+                                elif isinstance(result, tuple) and len(result) >= 1:
+                                    # If function returns a tuple
+                                    audio_data = result[0]
+                                else:
+                                    # If function returns just audio_data
+                                    audio_data = result
+                                    
+                            if audio_data:
+                                audio_html = create_audio_player_html(audio_data, auto_play=True)
+                                st.markdown(audio_html, unsafe_allow_html=True)
+                        except Exception as e:
+                            st.error(f"TTS Error: {e}")
             
             # Download and management options
             col1, col2, col3 = st.columns(3)
@@ -277,11 +489,10 @@ def main():
         else:
             st.info("No chat history yet. Ask your first question!")
             st.markdown("""
-            **💡 Rate-limit friendly tips:**
-            - Start with specific questions rather than "list all schemes"
+            **💡 Tips:**
             - Wait 2-3 seconds between queries
             - Use the 8B model for simple questions
-            - Cached results (marked with 🚀) don't count against rate limits
+            - 🔊 TTS responses are cached to save time and resources
             """)
 
     # Footer with tips
@@ -291,7 +502,7 @@ def main():
         if st.session_state.chat_history:
             st.markdown(f"📊 **Session:** {len(st.session_state.chat_history)} queries | Model: {selected_model}")
     with col2:
-        st.markdown("💡 **Tip:** Use specific questions to avoid rate limits")
+        st.markdown("💡 **Tip:** Use specific questions to avoid rate limits | 🔊 TTS available")
 
 if __name__ == "__main__":
     main()
