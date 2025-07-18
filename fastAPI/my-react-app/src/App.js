@@ -24,6 +24,8 @@ function App() {
   const [modelKey, setModelKey] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [shouldAutoPlay, setShouldAutoPlay] = useState(false);
+  const [historyPassword, setHistoryPassword] = useState("");
+  const [historyAuthenticated, setHistoryAuthenticated] = useState(false);
 
   const loadChatHistory = useCallback(async () => {
     try {
@@ -54,6 +56,13 @@ function App() {
     if (activeTab !== 'chat') {
       window.dispatchEvent(new Event('stopAllAudioPlayback'));
       window.isAnyAudioPlaying = false;
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab !== 'history' && historyAuthenticated) {
+      setHistoryAuthenticated(false);
+      setHistoryPassword("");
     }
   }, [activeTab]);
 
@@ -326,10 +335,32 @@ function App() {
             {/* FIXED: Updated history tab with proper TTS handling */}
             {activeTab === 'history' && ragInitialized && (
               <div className="bg-white/60 backdrop-blur-sm rounded-xl shadow-lg p-6">
-                <ChatHistory
-                  chatHistory={chatHistory}
-                  onGenerateTTS={handleGenerateTTS}
-                />
+                {!historyAuthenticated ? (
+                  <div className="flex flex-col items-center justify-center space-y-4">
+                    <input
+                      type="password"
+                      className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-center"
+                      placeholder="Enter password"
+                      value={historyPassword}
+                      onChange={e => setHistoryPassword(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') { if (historyPassword === 'samnex') setHistoryAuthenticated(true); } }}
+                    />
+                    <button
+                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                      onClick={() => { if (historyPassword === 'samnex') setHistoryAuthenticated(true); }}
+                    >
+                      Unlock History
+                    </button>
+                    {historyPassword && historyPassword !== 'samnex' && (
+                      <span className="text-red-500 text-sm text-center w-full block">Incorrect password</span>
+                    )}
+                  </div>
+                ) : (
+                  <ChatHistory
+                    chatHistory={chatHistory}
+                    onGenerateTTS={handleGenerateTTS}
+                  />
+                )}
               </div>
             )}
           </div>
