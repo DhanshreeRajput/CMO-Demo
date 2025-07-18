@@ -1,0 +1,277 @@
+[
+  {
+    "title": "National Health Mission (NHM)",
+    "description": "",
+    "eligibility": {
+      "target_group": "● Rural and urban populations, particularly marginalized groups such as women, children, \nand the elderly. \n● Vulnerable and underserved communities. \nInclusion Criteria: \n● Residents of rural and urban areas with limited access to healthcare services. \n● Pregnant women, children under 5 years, and families in economically disadvantaged \nsituations. \nExclusion Criteria: \n● People who already have access to adequate healthcare services. \n● Populations living in areas with established and well-equipped healthcare infrastructure.",
+      "inclusion_criteria": "● Residents of rural and urban areas with limited access to healthcare services. \n● Pregnant women, children under 5 years, and families in economically disadvantaged \nsituations. \nExclusion Criteria: \n● People who already have access to adequate healthcare services. \n● Populations living in areas with established and well-equipped healthcare infrastructure.",
+      "exclusion_criteria": "● People who already have access to adequate healthcare services. \n● Populations living in areas with established and well-equipped healthcare infrastructure.",
+      "special_exclusion_criteria": ""
+    },
+    "benefits": "● Improvement in access to quality health services, especially in rural areas. \n● Free or subsidized maternal and child healthcare services, including antenatal care and \ninstitutional deliveries. \n● Support for immunization programs and treatment of common diseases like tuberculosis \nand malaria. \n● Financial support for the construction and upgrading of health infrastructure, such as \nsub-centers, primary health centers, and district hospitals. \nCapacity building and training for healthcare workers to improve service delivery."
+  },
+  {
+    "title": "Ayushman Bharat – Pradhan Mantri Jan Arogya Yojana (PMJAY) - \nMaharashtra",
+    "description": "",
+    "eligibility": {
+      "target_group": "Vulnerable populations including low-income families, rural \nhouseholds, and families below the poverty line (BPL). \nInclusion Criteria: \n● Families from eligible socioeconomic categories as identified by the Socio-Economic \nCaste Census (SECC). \n● All members of eligible families can benefit, with the head of the family acting as the \nprimary beneficiary. \nExclusion Criteria: \n● Wealthy families above the poverty line or those with significant financial resources. \nSpecial Exclusion Criteria: \n● Individuals already covered under other private or employer-based health insurance \nplans. \n● Individuals who do not meet the BPL criteria.",
+      "inclusion_criteria": "● Families from eligible socioeconomic categories as identified by the Socio-Economic \nCaste Census (SECC). \n● All members of eligible families can benefit, with the head of the family acting as the \nprimary beneficiary. \nExclusion Criteria: \n● Wealthy families above the poverty line or those with significant financial resources. \nSpecial Exclusion Criteria: \n● Individuals already covered under other private or employer-based health insurance \nplans. \n● Individuals who do not meet the BPL criteria.",
+      "exclusion_criteria": "● Wealthy families above the poverty line or those with significant financial resources. \nSpecial Exclusion Criteria: \n● Individuals already covered under other private or employer-based health insurance \nplans. \n● Individuals who do not meet the BPL criteria.",
+      "special_exclusion_criteria": "● Individuals already covered under other private or employer-based health insurance \nplans. \n● Individuals who do not meet the BPL criteria."
+    },
+    "benefits": "● Cashless treatment for hospitalization, including medical, surgical, and diagnostic \nservices. \n● Health coverage up to ₹5 lakhs per family annually for both secondary and tertiary \ncare. \n● Access to private and public hospitals empaneled under the scheme."
+  },
+  {
+    "title": "Mahatma Jyotiba Phule Jan Arogya Yojana (MJPJAY)",
+    "description": "",
+    "eligibility": {
+      "target_group": "Low-income families, poor urban and rural populations, and \nmarginalized communities. \nInclusion Criteria: \n● Households identified as low-income or BPL by the Maharashtra government. \n● Families with members suffering from chronic diseases or requiring expensive \nmedical treatment. \nExclusion Criteria: \n● Families above the poverty line (APL) or those who have private health insurance \ncoverage. \nSpecial Exclusion Criteria: \n● High-income families with an income exceeding the set poverty line threshold.",
+      "inclusion_criteria": "● Households identified as low-income or BPL by the Maharashtra government. \n● Families with members suffering from chronic diseases or requiring expensive \nmedical treatment. \nExclusion Criteria: \n● Families above the poverty line (APL) or those who have private health insurance \ncoverage. \nSpecial Exclusion Criteria: \n● High-income families with an income exceeding the set poverty line threshold.",
+      "exclusion_criteria": "● Families above the poverty line (APL) or those who have private health insurance \ncoverage. \nSpecial Exclusion Criteria: \n● High-income families with an income exceeding the set poverty line threshold.",
+      "special_exclusion_criteria": "● High-income families with an income exceeding the set poverty line threshold."
+    },
+    "benefits": "● Free medical treatment at empaneled hospitals for various ailments. \n● Pre- and post-hospitalization cover, including diagnostic tests and medicines. \n● Financial assistance for major surgeries and treatments such as cardiological care, \noncology, and nephrology. \n● Cashless health insurance for hospitalization-related expenses."
+  },
+  {
+    "title": "National AIDS Control Programme (NACP)",
+    "description": "",
+    "eligibility": {
+      "target_group": "High-risk populations, including sex workers, intravenous drug users \n(IVDU), men who have sex with men (MSM), transgender persons, and other \nvulnerable groups who are at risk of HIV infection. \nInclusion Criteria: \n● HIV-positive individuals, regardless of their status or stage of the infection. \n● People who are at high risk of contracting HIV, such as sex workers, drug users, and \nthose with multiple sexual partners. \n● Individuals diagnosed through screening who require ART, counseling, and preventive \nservices. \nExclusion Criteria: \n● Individuals who are not at risk of HIV or who do not engage in high-risk behavior. \n● Individuals who are not infected with HIV or have not been diagnosed. \nSpecial Exclusion Criteria: \n● Individuals with late-stage HIV/AIDS who may require specialized treatment beyond \nwhat is provided under the NACP. \n● People who have refused testing or do not wish to access treatment.",
+      "inclusion_criteria": "● HIV-positive individuals, regardless of their status or stage of the infection. \n● People who are at high risk of contracting HIV, such as sex workers, drug users, and \nthose with multiple sexual partners. \n● Individuals diagnosed through screening who require ART, counseling, and preventive \nservices. \nExclusion Criteria: \n● Individuals who are not at risk of HIV or who do not engage in high-risk behavior. \n● Individuals who are not infected with HIV or have not been diagnosed. \nSpecial Exclusion Criteria: \n● Individuals with late-stage HIV/AIDS who may require specialized treatment beyond \nwhat is provided under the NACP. \n● People who have refused testing or do not wish to access treatment.",
+      "exclusion_criteria": "● Individuals who are not at risk of HIV or who do not engage in high-risk behavior. \n● Individuals who are not infected with HIV or have not been diagnosed. \nSpecial Exclusion Criteria: \n● Individuals with late-stage HIV/AIDS who may require specialized treatment beyond \nwhat is provided under the NACP. \n● People who have refused testing or do not wish to access treatment.",
+      "special_exclusion_criteria": "● Individuals with late-stage HIV/AIDS who may require specialized treatment beyond \nwhat is provided under the NACP. \n● People who have refused testing or do not wish to access treatment."
+    },
+    "benefits": "● Free ART (antiretroviral therapy) for HIV-positive individuals to control the virus and \nmaintain a good quality of life. \n● Counseling services for individuals living with HIV and their families. \n● Prevention services like condom distribution, needle exchange programs, and \nawareness campaigns targeting high-risk populations. \n● HIV testing and screening services for early detection and intervention. \n● Access to prevention of parent-to-child transmission (PPTCT) services to reduce \nvertical transmission. \n● Community outreach programs to educate at-risk populations about safe practices \nand reduce stigma."
+  },
+  {
+    "title": "National Vector Borne Disease Control Programme (NVBDCP)",
+    "description": "",
+    "eligibility": {
+      "target_group": "Populations living in areas where vector-borne diseases like malaria, \ndengue, chikungunya, and Japanese encephalitis are endemic or have been \nreported. \nInclusion Criteria: \n● People residing in malaria, dengue, chikungunya, and Japanese encephalitis \nhotspots and endemic areas. \n● Pregnant women, children, and high-risk populations living in areas with frequent \noutbreaks. \n● Communities in areas where mosquito-borne diseases are prevalent, especially \nduring the monsoon season. \nExclusion Criteria: \n● Individuals who reside in non-endemic areas where vector-borne diseases are rare or \nnot prevalent. \n● People living in urban areas with proper vector control infrastructure. \nSpecial Exclusion Criteria: \n● People from areas that have achieved near-complete vector control (e.g., areas with \nzero malaria incidence). \n● Non-resident individuals or transient populations who are not exposed to vector \nhabitats.",
+      "inclusion_criteria": "● People residing in malaria, dengue, chikungunya, and Japanese encephalitis \nhotspots and endemic areas. \n● Pregnant women, children, and high-risk populations living in areas with frequent \noutbreaks. \n● Communities in areas where mosquito-borne diseases are prevalent, especially \nduring the monsoon season. \nExclusion Criteria: \n● Individuals who reside in non-endemic areas where vector-borne diseases are rare or \nnot prevalent. \n● People living in urban areas with proper vector control infrastructure. \nSpecial Exclusion Criteria: \n● People from areas that have achieved near-complete vector control (e.g., areas with \nzero malaria incidence). \n● Non-resident individuals or transient populations who are not exposed to vector \nhabitats.",
+      "exclusion_criteria": "● Individuals who reside in non-endemic areas where vector-borne diseases are rare or \nnot prevalent. \n● People living in urban areas with proper vector control infrastructure. \nSpecial Exclusion Criteria: \n● People from areas that have achieved near-complete vector control (e.g., areas with \nzero malaria incidence). \n● Non-resident individuals or transient populations who are not exposed to vector \nhabitats.",
+      "special_exclusion_criteria": "● People from areas that have achieved near-complete vector control (e.g., areas with \nzero malaria incidence). \n● Non-resident individuals or transient populations who are not exposed to vector \nhabitats."
+    },
+    "benefits": "● Free diagnosis and treatment for malaria, dengue, chikungunya, and Japanese \nencephalitis. \n● Vector control measures like insecticide-treated nets (ITNs), indoor spraying, and \nlarvicidal treatments to control mosquito populations. \n● Public awareness campaigns about disease prevention and safe practices to reduce \nmosquito breeding (e.g., cleaning water containers, avoiding stagnant water). \n● Surveillance programs to track and control the spread of vector-borne diseases in \nendemic regions. \n● Community education on symptoms and timely healthcare seeking behaviors to reduce \nfatalities. \n● Immunization campaigns for diseases like Japanese encephalitis in high-risk areas."
+  },
+  {
+    "title": "CGIS (Central Government Insurance Scheme)",
+    "description": "",
+    "eligibility": {
+      "target_group": "All permanent central government employees, including those in \nvarious ministries, departments, and public sector organizations under the central \ngovernment. \nInclusion Criteria: \n● Employees who are permanent and have completed their probation period. \n● Government employees working in ministries and central departments. \n● The spouse and children of the insured employee may also be covered under certain \ncircumstances. \nExclusion Criteria: \n● Contractual employees or those employed on a temporary basis with the central \ngovernment are not eligible unless they meet specific criteria. \n● Employees who do not wish to participate or have opted out of the scheme. \nSpecial Exclusion Criteria: \n● Employees already covered under another life insurance policy provided by their \norganization or private sector may not be eligible for CGIS if they are already covered \nby a more comprehensive plan.",
+      "inclusion_criteria": "● Employees who are permanent and have completed their probation period. \n● Government employees working in ministries and central departments. \n● The spouse and children of the insured employee may also be covered under certain \ncircumstances. \nExclusion Criteria: \n● Contractual employees or those employed on a temporary basis with the central \ngovernment are not eligible unless they meet specific criteria. \n● Employees who do not wish to participate or have opted out of the scheme. \nSpecial Exclusion Criteria: \n● Employees already covered under another life insurance policy provided by their \norganization or private sector may not be eligible for CGIS if they are already covered \nby a more comprehensive plan.",
+      "exclusion_criteria": "● Contractual employees or those employed on a temporary basis with the central \ngovernment are not eligible unless they meet specific criteria. \n● Employees who do not wish to participate or have opted out of the scheme. \nSpecial Exclusion Criteria: \n● Employees already covered under another life insurance policy provided by their \norganization or private sector may not be eligible for CGIS if they are already covered \nby a more comprehensive plan.",
+      "special_exclusion_criteria": "● Employees already covered under another life insurance policy provided by their \norganization or private sector may not be eligible for CGIS if they are already covered \nby a more comprehensive plan."
+    },
+    "benefits": "● Life insurance cover for central government employees, offering a sum assured to \nthe beneficiaries in case of the insured's death. \n● Premiums are affordable and may be deducted from the employee’s monthly salary. \n● Lump sum amount paid to the family members of the deceased employee. \n● Financial security for the family, ensuring compensation in case of untimely death. \n● Death benefits are provided in the form of a sum assured that varies based on the \nemployee’s salary grade or specific policy terms. \n● Some schemes may also offer accidental death or disability benefits. \n●"
+  },
+  {
+    "title": "Central Government Health Scheme (CGHS)",
+    "description": "",
+    "eligibility": {
+      "target_group": "● Central government employees and pensioners. \n● Dependent family members of the beneficiaries. \nInclusion Criteria: \n● All serving employees and pensioners of the central government. \n● Spouses, children, and dependent parents of employees/pensioners. \nExclusion Criteria: \n● Employees or pensioners from state or private sectors. \n● People who do not meet the dependency criteria (e.g., grown children with independent \nmeans).",
+      "inclusion_criteria": "● All serving employees and pensioners of the central government. \n● Spouses, children, and dependent parents of employees/pensioners. \nExclusion Criteria: \n● Employees or pensioners from state or private sectors. \n● People who do not meet the dependency criteria (e.g., grown children with independent \nmeans).",
+      "exclusion_criteria": "● Employees or pensioners from state or private sectors. \n● People who do not meet the dependency criteria (e.g., grown children with independent \nmeans).",
+      "special_exclusion_criteria": ""
+    },
+    "benefits": "● Free or subsidized outpatient consultations, diagnostics, and medicines. \n● Hospitalization and surgery costs covered at government and empaneled private \nhospitals. \n● Medical treatment for both common and critical illnesses. \n● Free medical check-ups, preventive care, and health education. \n● Coverage for maternity care, eye care, dental care, and other specialized services. \n—--------------------------------------------------------------------------------------------------------"
+  },
+  {
+    "title": "Employees' State Insurance Corporation (ESIC)",
+    "description": "",
+    "eligibility": {
+      "target_group": "● Employees working in the organized sector, earning below a specified wage ceiling. \n● Employers contributing to the scheme on behalf of their employees. \nInclusion Criteria: \n● Employees earning a monthly wage up to Rs. 21,000 (Rs. 25,000 for persons with \ndisabilities). \n● Employers in industries with a certain number of employees (usually 10 or more). \nExclusion Criteria: \n● Self-employed individuals and those working in the unorganized sector. \n● Employees whose wages exceed the threshold limit for coverage.",
+      "inclusion_criteria": "● Employees earning a monthly wage up to Rs. 21,000 (Rs. 25,000 for persons with \ndisabilities). \n● Employers in industries with a certain number of employees (usually 10 or more). \nExclusion Criteria: \n● Self-employed individuals and those working in the unorganized sector. \n● Employees whose wages exceed the threshold limit for coverage.",
+      "exclusion_criteria": "● Self-employed individuals and those working in the unorganized sector. \n● Employees whose wages exceed the threshold limit for coverage.",
+      "special_exclusion_criteria": ""
+    },
+    "benefits": "● Medical benefits, including outpatient and inpatient care. \n● Cash benefits for sickness, maternity, and employment injuries. \n● Coverage for treatment of chronic diseases, surgeries, and rehabilitation. \n● Maternity benefits (including paid leave). \n● Death and disability benefits, with compensation for family members in case of the \nemployee's death due to work-related causes."
+  },
+  {
+    "title": "Janani Shishu Suraksha Karyakram (JSSK)",
+    "description": "",
+    "eligibility": {
+      "target_group": "Pregnant women and newborns (up to 30 days of age) in government \nhealth facilities. \nInclusion Criteria: \n● All pregnant women opting for institutional deliveries (normal or cesarean) at public \nhealth facilities. \n● Newborns up to 30 days of age who are admitted to government hospitals. \nExclusion Criteria: \n● Women who choose home deliveries or private hospitals. \n● Women from Above Poverty Line (APL) families (in some states, though this may \nvary). \nSpecial Exclusion Criteria: \n● Women who have already availed health services under other similar schemes such \nas JSY or PMSMA.",
+      "inclusion_criteria": "● All pregnant women opting for institutional deliveries (normal or cesarean) at public \nhealth facilities. \n● Newborns up to 30 days of age who are admitted to government hospitals. \nExclusion Criteria: \n● Women who choose home deliveries or private hospitals. \n● Women from Above Poverty Line (APL) families (in some states, though this may \nvary). \nSpecial Exclusion Criteria: \n● Women who have already availed health services under other similar schemes such \nas JSY or PMSMA.",
+      "exclusion_criteria": "● Women who choose home deliveries or private hospitals. \n● Women from Above Poverty Line (APL) families (in some states, though this may \nvary). \nSpecial Exclusion Criteria: \n● Women who have already availed health services under other similar schemes such \nas JSY or PMSMA.",
+      "special_exclusion_criteria": "● Women who have already availed health services under other similar schemes such \nas JSY or PMSMA."
+    },
+    "benefits": "● Free delivery (normal or cesarean) in government hospitals. \n● Free transportation to and from health facilities (in certain states). \n● Free diagnostics, medicines, and vaccines. \n● Free care for newborns (up to 30 days) including treatment and vaccination. \n● Postnatal care (up to 42 days) for mothers and infants."
+  },
+  {
+    "title": "Rashtriya Kishor Swasthya Karyakram (RKSK)",
+    "description": "",
+    "eligibility": {
+      "target_group": "Adolescents aged 10-19 years. \nInclusion Criteria: \n● Adolescents who require health services related to sexual health, mental health, and \nnutrition. \n● Vulnerable groups such as those from marginalized communities, school-going \nadolescents, and adolescent girls. \nExclusion Criteria: \n● Individuals outside the 10-19 years age group. \n● Adolescents not in need of specialized health services. \nSpecial Exclusion Criteria: \n● Adolescents who already receive adequate healthcare or services under other \nspecialized programs (e.g., those in private healthcare settings).",
+      "inclusion_criteria": "● Adolescents who require health services related to sexual health, mental health, and \nnutrition. \n● Vulnerable groups such as those from marginalized communities, school-going \nadolescents, and adolescent girls. \nExclusion Criteria: \n● Individuals outside the 10-19 years age group. \n● Adolescents not in need of specialized health services. \nSpecial Exclusion Criteria: \n● Adolescents who already receive adequate healthcare or services under other \nspecialized programs (e.g., those in private healthcare settings).",
+      "exclusion_criteria": "● Individuals outside the 10-19 years age group. \n● Adolescents not in need of specialized health services. \nSpecial Exclusion Criteria: \n● Adolescents who already receive adequate healthcare or services under other \nspecialized programs (e.g., those in private healthcare settings).",
+      "special_exclusion_criteria": "● Adolescents who already receive adequate healthcare or services under other \nspecialized programs (e.g., those in private healthcare settings)."
+    },
+    "benefits": "● Health education on sexual and reproductive health, nutrition, and mental well-being. \n● Free health services for adolescents, including counseling, immunization, and \nmenstrual hygiene services. \n● Improved access to adolescent-friendly health services (AFHS)."
+  },
+  {
+    "title": "Rashtriya Bal Swasthya Karyakram (RBSK)",
+    "description": "",
+    "eligibility": {
+      "target_group": "All children aged 0-18 years. \nInclusion Criteria: \n● All children, particularly those in underserved areas, rural settings, or from \neconomically disadvantaged backgrounds. \n● Children in need of health screening, immunization, and early intervention for \ndevelopmental delays or disabilities. \nExclusion Criteria: \n● Children in private schools who already receive similar services. \n● Children who are healthy and do not require any medical intervention. \nSpecial Exclusion Criteria: \n● Children who have already received annual health check-ups or medical care under \nother schemes.",
+      "inclusion_criteria": "● All children, particularly those in underserved areas, rural settings, or from \neconomically disadvantaged backgrounds. \n● Children in need of health screening, immunization, and early intervention for \ndevelopmental delays or disabilities. \nExclusion Criteria: \n● Children in private schools who already receive similar services. \n● Children who are healthy and do not require any medical intervention. \nSpecial Exclusion Criteria: \n● Children who have already received annual health check-ups or medical care under \nother schemes.",
+      "exclusion_criteria": "● Children in private schools who already receive similar services. \n● Children who are healthy and do not require any medical intervention. \nSpecial Exclusion Criteria: \n● Children who have already received annual health check-ups or medical care under \nother schemes.",
+      "special_exclusion_criteria": "● Children who have already received annual health check-ups or medical care under \nother schemes."
+    },
+    "benefits": "● Free health screenings to detect conditions such as vision problems, hearing issues, \ngrowth disorders, nutritional deficiencies, and developmental delays. \n● Free treatment and follow-up services for diagnosed conditions. \n● Referrals for specialized care when needed."
+  },
+  {
+    "title": "Janani Suraksha Yojana (JSY)",
+    "description": "",
+    "eligibility": {
+      "target_group": "Pregnant women, particularly those from Below Poverty Line (BPL) \nfamilies and Scheduled Caste (SC)/Scheduled Tribe (ST) women. \nInclusion Criteria: \n● Pregnant women who choose institutional delivery in government health facilities. \n● Women from BPL families or those identified as high-risk pregnancies. \nExclusion Criteria: \n● Women who choose home deliveries or private healthcare providers. \n● Women from Above Poverty Line (APL) families (depending on state-level policies). \nSpecial Exclusion Criteria: \n● Women who have already availed health services under other similar schemes such \nas JSSK.",
+      "inclusion_criteria": "● Pregnant women who choose institutional delivery in government health facilities. \n● Women from BPL families or those identified as high-risk pregnancies. \nExclusion Criteria: \n● Women who choose home deliveries or private healthcare providers. \n● Women from Above Poverty Line (APL) families (depending on state-level policies). \nSpecial Exclusion Criteria: \n● Women who have already availed health services under other similar schemes such \nas JSSK.",
+      "exclusion_criteria": "● Women who choose home deliveries or private healthcare providers. \n● Women from Above Poverty Line (APL) families (depending on state-level policies). \nSpecial Exclusion Criteria: \n● Women who have already availed health services under other similar schemes such \nas JSSK.",
+      "special_exclusion_criteria": "● Women who have already availed health services under other similar schemes such \nas JSSK."
+    },
+    "benefits": "● Cash incentive for institutional delivery. \n● Free delivery and medical care during pregnancy and postnatal period. \n● Transport subsidy to and from health facilities (where applicable)."
+  },
+  {
+    "title": "Pradhan Mantri Surakshit Matritva Abhiyan (PMSMA)",
+    "description": "",
+    "eligibility": {
+      "target_group": "Pregnant women, particularly those in their 9th month of pregnancy. \nInclusion Criteria: \n● Pregnant women in the 9th month who require health monitoring and assessment. \n● Women in underserved areas with limited access to quality antenatal care. \nExclusion Criteria: \n● Pregnant women who are not in their 9th month of pregnancy. \n● Women who are already receiving comprehensive antenatal care elsewhere. \nSpecial Exclusion Criteria: \n● Pregnant women with serious complications (e.g., pre-eclampsia, multiple gestation) \nrequiring specialized careoutside the scope of PMSMA.",
+      "inclusion_criteria": "● Pregnant women in the 9th month who require health monitoring and assessment. \n● Women in underserved areas with limited access to quality antenatal care. \nExclusion Criteria: \n● Pregnant women who are not in their 9th month of pregnancy. \n● Women who are already receiving comprehensive antenatal care elsewhere. \nSpecial Exclusion Criteria: \n● Pregnant women with serious complications (e.g., pre-eclampsia, multiple gestation) \nrequiring specialized careoutside the scope of PMSMA.",
+      "exclusion_criteria": "● Pregnant women who are not in their 9th month of pregnancy. \n● Women who are already receiving comprehensive antenatal care elsewhere. \nSpecial Exclusion Criteria: \n● Pregnant women with serious complications (e.g., pre-eclampsia, multiple gestation) \nrequiring specialized careoutside the scope of PMSMA.",
+      "special_exclusion_criteria": "● Pregnant women with serious complications (e.g., pre-eclampsia, multiple gestation) \nrequiring specialized careoutside the scope of PMSMA."
+    },
+    "benefits": "● Free medical check-ups including essential tests for maternal and fetal health. \n● Referral services for high-risk pregnancies. \n● Free medicines and nutritional supplements (iron, folic acid). \n● Health education on safe delivery, postnatal care, and newborn health."
+  },
+  {
+    "title": "Navjaat Shishu Suraksha Karyakram (NSSK)",
+    "description": "",
+    "eligibility": {
+      "target_group": "Newborns up to 28 days of life. \nInclusion Criteria: \n● All newborns who require basic or advanced newborn care. \nExclusion Criteria: \n● Newborns with severe complications requiring specialized neonatal care. \nSpecial Exclusion Criteria: \n● Neonates diagnosed with complex congenital disorders that require care in \nhigher-level hospitals.",
+      "inclusion_criteria": "● All newborns who require basic or advanced newborn care. \nExclusion Criteria: \n● Newborns with severe complications requiring specialized neonatal care. \nSpecial Exclusion Criteria: \n● Neonates diagnosed with complex congenital disorders that require care in \nhigher-level hospitals.",
+      "exclusion_criteria": "● Newborns with severe complications requiring specialized neonatal care. \nSpecial Exclusion Criteria: \n● Neonates diagnosed with complex congenital disorders that require care in \nhigher-level hospitals.",
+      "special_exclusion_criteria": "● Neonates diagnosed with complex congenital disorders that require care in \nhigher-level hospitals."
+    },
+    "benefits": "● Essential newborn care such as thermal protection, early breastfeeding, and \nprevention of infections. \n● Postnatal monitoring for both mother and newborn. \n● Referral services to specialized care facilities if needed."
+  },
+  {
+    "title": "National Leprosy Eradication Programme (NLEP)",
+    "description": "",
+    "eligibility": {
+      "target_group": "Individuals suspected of having leprosy, especially those in high-risk \nareas. \nInclusion Criteria: \n● Individuals with skin lesions or nerve damage indicative of leprosy. \n● High-risk populations such as people in endemic areas and vulnerable groups (e.g., \nmarginalized communities). \nExclusion Criteria: \n● Individuals without any clinical signs of leprosy. \n● People already receiving treatment under another specialized program. \nSpecial Exclusion Criteria: \n● People who are diagnosed with other skin or nerve diseases unrelated to leprosy.",
+      "inclusion_criteria": "● Individuals with skin lesions or nerve damage indicative of leprosy. \n● High-risk populations such as people in endemic areas and vulnerable groups (e.g., \nmarginalized communities). \nExclusion Criteria: \n● Individuals without any clinical signs of leprosy. \n● People already receiving treatment under another specialized program. \nSpecial Exclusion Criteria: \n● People who are diagnosed with other skin or nerve diseases unrelated to leprosy.",
+      "exclusion_criteria": "● Individuals without any clinical signs of leprosy. \n● People already receiving treatment under another specialized program. \nSpecial Exclusion Criteria: \n● People who are diagnosed with other skin or nerve diseases unrelated to leprosy.",
+      "special_exclusion_criteria": "● People who are diagnosed with other skin or nerve diseases unrelated to leprosy."
+    },
+    "benefits": "● Free treatment using multidrug therapy (MDT) for leprosy. \n● Rehabilitation and social integration support for patients who have been cured of \nleprosy. \n● Awareness campaigns to reduce the stigma of leprosy and educate the public."
+  },
+  {
+    "title": "National Viral Hepatitis Control Program (NVHCP)",
+    "description": "",
+    "eligibility": {
+      "target_group": "General population, especially those at high risk for hepatitis infection. \nInclusion Criteria: \n● Individuals at risk of hepatitis B and C (e.g., healthcare workers, intravenous drug \nusers, prisoners). \n● Individuals with hepatitis symptoms (e.g., jaundice, fatigue, abdominal pain). \nExclusion Criteria: \n● People with no symptoms or signs of hepatitis infection. \nSpecial Exclusion Criteria: \n● Individuals with severe liver complications who need advanced medical care beyond \nthe program's scope.",
+      "inclusion_criteria": "● Individuals at risk of hepatitis B and C (e.g., healthcare workers, intravenous drug \nusers, prisoners). \n● Individuals with hepatitis symptoms (e.g., jaundice, fatigue, abdominal pain). \nExclusion Criteria: \n● People with no symptoms or signs of hepatitis infection. \nSpecial Exclusion Criteria: \n● Individuals with severe liver complications who need advanced medical care beyond \nthe program's scope.",
+      "exclusion_criteria": "● People with no symptoms or signs of hepatitis infection. \nSpecial Exclusion Criteria: \n● Individuals with severe liver complications who need advanced medical care beyond \nthe program's scope.",
+      "special_exclusion_criteria": "● Individuals with severe liver complications who need advanced medical care beyond \nthe program's scope."
+    },
+    "benefits": "● Free hepatitis B vaccinations for infants and high-risk groups. \n● Screening and diagnosis of hepatitis infections. \n● Antiviral treatment for hepatitis B and hepatitis C patients."
+  },
+  {
+    "title": "National Tobacco Control Programme (NTCP)",
+    "description": "",
+    "eligibility": {
+      "target_group": "Smokers and tobacco users, including adolescents and adults across all \ndemographic groups. \nInclusion Criteria: \n● Smokers and users of smokeless tobacco. \n● Vulnerable populations such as adolescents, pregnant women, and people living in \nhigh-risk areas. \nExclusion Criteria: \n● Individuals who do not use tobacco or have not been exposed to secondhand smoke. \nSpecial Exclusion Criteria: \n● Individuals with severe tobacco addiction who require specialized treatment or \nrehabilitation.",
+      "inclusion_criteria": "● Smokers and users of smokeless tobacco. \n● Vulnerable populations such as adolescents, pregnant women, and people living in \nhigh-risk areas. \nExclusion Criteria: \n● Individuals who do not use tobacco or have not been exposed to secondhand smoke. \nSpecial Exclusion Criteria: \n● Individuals with severe tobacco addiction who require specialized treatment or \nrehabilitation.",
+      "exclusion_criteria": "● Individuals who do not use tobacco or have not been exposed to secondhand smoke. \nSpecial Exclusion Criteria: \n● Individuals with severe tobacco addiction who require specialized treatment or \nrehabilitation.",
+      "special_exclusion_criteria": "● Individuals with severe tobacco addiction who require specialized treatment or \nrehabilitation."
+    },
+    "benefits": "● Cessation programs and counseling for individuals seeking to quit tobacco. \n● Awareness campaigns on the harmful effects of smoking and tobacco use. \n● Support services for tobacco-related health issues, including cancer and respiratory \ndiseases."
+  },
+  {
+    "title": "National Programme for Prevention and Control of Cancer, Diabetes, \nCardiovascular Diseases & Stroke (NPCDCS)",
+    "description": "",
+    "eligibility": {
+      "target_group": "General population, with a special focus on adults over 30 years and \nthose at high risk for NCDs. \nInclusion Criteria: \n● Individuals aged 30 years and above or those with a family history of cancer, diabetes, \nor cardiovascular diseases. \n● People with hypertension, obesity, or high blood sugar levels. \nExclusion Criteria: \n● Individuals who are below 30 years of age or those not exhibiting symptoms or risk \nfactors for NCDs. \nSpecial Exclusion Criteria: \n● Individuals with severe medical conditions that contraindicate screening or early \ndetection measures.",
+      "inclusion_criteria": "● Individuals aged 30 years and above or those with a family history of cancer, diabetes, \nor cardiovascular diseases. \n● People with hypertension, obesity, or high blood sugar levels. \nExclusion Criteria: \n● Individuals who are below 30 years of age or those not exhibiting symptoms or risk \nfactors for NCDs. \nSpecial Exclusion Criteria: \n● Individuals with severe medical conditions that contraindicate screening or early \ndetection measures.",
+      "exclusion_criteria": "● Individuals who are below 30 years of age or those not exhibiting symptoms or risk \nfactors for NCDs. \nSpecial Exclusion Criteria: \n● Individuals with severe medical conditions that contraindicate screening or early \ndetection measures.",
+      "special_exclusion_criteria": "● Individuals with severe medical conditions that contraindicate screening or early \ndetection measures."
+    },
+    "benefits": "● Free screening for cancer, diabetes, cardiovascular diseases, and stroke risk factors. \n● Health counseling and lifestyle management support to prevent NCDs. \n● Awareness campaigns on healthy diets, exercise, and tobacco cessation."
+  },
+  {
+    "title": "National Programme for Control and Treatment of Occupational \nDiseases",
+    "description": "",
+    "eligibility": {
+      "target_group": "Workers in high-risk occupations, such as those exposed to dust, \nchemicals, and heavy machinery. \nInclusion Criteria: \n● Workers in industries such as mining, construction, textiles, and chemicals. \n● Individuals with signs of occupational diseases like asthma, pneumoconiosis, or skin \nrashes. \nExclusion Criteria: \n● Individuals employed in low-risk occupations or industries with no significant exposure \nto hazardous substances. \nSpecial Exclusion Criteria: \n● Workers who have severe or advanced stages of occupational diseases requiring \nspecialized care beyond the program’s scope.",
+      "inclusion_criteria": "● Workers in industries such as mining, construction, textiles, and chemicals. \n● Individuals with signs of occupational diseases like asthma, pneumoconiosis, or skin \nrashes. \nExclusion Criteria: \n● Individuals employed in low-risk occupations or industries with no significant exposure \nto hazardous substances. \nSpecial Exclusion Criteria: \n● Workers who have severe or advanced stages of occupational diseases requiring \nspecialized care beyond the program’s scope.",
+      "exclusion_criteria": "● Individuals employed in low-risk occupations or industries with no significant exposure \nto hazardous substances. \nSpecial Exclusion Criteria: \n● Workers who have severe or advanced stages of occupational diseases requiring \nspecialized care beyond the program’s scope.",
+      "special_exclusion_criteria": "● Workers who have severe or advanced stages of occupational diseases requiring \nspecialized care beyond the program’s scope."
+    },
+    "benefits": "● Screening for occupational diseases and free medical treatment. \n● Prevention strategies including workplace safety standards and use of personal \nprotective equipment (PPE). \n● Rehabilitation services for workers who have developed chronic occupational \ndiseases."
+  },
+  {
+    "title": "National Programme for Prevention and Control of Deafness (NPPCD)",
+    "description": "",
+    "eligibility": {
+      "target_group": "General population, particularly children and elderly people at risk of \nhearing loss. \nInclusion Criteria: \n● Individuals with hearing loss or ear infections. \n● Children born with congenital hearing impairment or those with a family history of \nhearing problems. \nExclusion Criteria: \n● Individuals without hearing problems or ear infections. \nSpecial Exclusion Criteria: \n● Individuals who are not eligible for hearing aids or those with advanced hearing loss \nrequiring specialized care.",
+      "inclusion_criteria": "● Individuals with hearing loss or ear infections. \n● Children born with congenital hearing impairment or those with a family history of \nhearing problems. \nExclusion Criteria: \n● Individuals without hearing problems or ear infections. \nSpecial Exclusion Criteria: \n● Individuals who are not eligible for hearing aids or those with advanced hearing loss \nrequiring specialized care.",
+      "exclusion_criteria": "● Individuals without hearing problems or ear infections. \nSpecial Exclusion Criteria: \n● Individuals who are not eligible for hearing aids or those with advanced hearing loss \nrequiring specialized care.",
+      "special_exclusion_criteria": "● Individuals who are not eligible for hearing aids or those with advanced hearing loss \nrequiring specialized care."
+    },
+    "benefits": "● Free screening for hearing impairments and ear diseases. \n● Provision of hearing aids and surgical interventions where applicable. \n● Counseling services for individuals and families on preventing and managing hearing \nloss."
+  },
+  {
+    "title": "National Mental Health Programme (NMHP)",
+    "description": "",
+    "eligibility": {
+      "target_group": "",
+      "inclusion_criteria": "",
+      "exclusion_criteria": "",
+      "special_exclusion_criteria": ""
+    },
+    "benefits": ""
+  },
+  {
+    "title": "To ensure the availability and accessibility of minimum mental healthcare for all in \nthe foreseeable future; \n2. To encourage the application of mental health knowledge in general healthcare \nand in social development; \n3. To promote community participation in the mental health service development; \nand \n4. To enhance human resources in mental health subspecialties. \nEligibility: \n● Target Group: Individuals suffering from mental health disorders \nInclusion Criteria: \n● Individuals with diagnosed mental health disorders, including schizophrenia, bipolar \ndisorder, and substance abuse issues. \n● People experiencing stress, depression, or psychosocial difficulties. \nExclusion Criteria: \n● Individuals without diagnosed mental health conditions or those without a need for \npsychiatric intervention. \nSpecial Exclusion Criteria: \n● Individuals with severe mental disorders who require specialized institutional care. \nBenefits: \n● Free counseling services and psychiatric treatment in government healthcare \nsettings. \n● Community-based mental health services for early detection and intervention. \n● Awareness programs aimed at reducing the stigma of mental health issues. \n23. National Programme for Control of Blindness & Visual Impairment \n(NPCB&VI)",
+    "description": "",
+    "eligibility": {
+      "target_group": "Individuals suffering from visual impairment or at risk of blindness, \nparticularly elderlyindividuals and children. \nInclusion Criteria: \n● People diagnosed with cataracts, glaucoma, and other treatable eye diseases. \n● Individuals at risk of vision loss due to age, malnutrition, or genetic factors. \nExclusion Criteria: \n● Individuals with untreatable blindness or conditions requiring specialized surgical care \nbeyond the program's scope. \nSpecial Exclusion Criteria: \n● Severe eye conditions that require care in specialized eye hospitals or those \ninvolving advanced retinal diseases.",
+      "inclusion_criteria": "● People diagnosed with cataracts, glaucoma, and other treatable eye diseases. \n● Individuals at risk of vision loss due to age, malnutrition, or genetic factors. \nExclusion Criteria: \n● Individuals with untreatable blindness or conditions requiring specialized surgical care \nbeyond the program's scope. \nSpecial Exclusion Criteria: \n● Severe eye conditions that require care in specialized eye hospitals or those \ninvolving advanced retinal diseases.",
+      "exclusion_criteria": "● Individuals with untreatable blindness or conditions requiring specialized surgical care \nbeyond the program's scope. \nSpecial Exclusion Criteria: \n● Severe eye conditions that require care in specialized eye hospitals or those \ninvolving advanced retinal diseases.",
+      "special_exclusion_criteria": "● Severe eye conditions that require care in specialized eye hospitals or those \ninvolving advanced retinal diseases."
+    },
+    "benefits": "● Free cataract surgery, glaucoma treatment, and corneal transplants. \n● Screening services for early detection of eye diseases. \n● Rehabilitation services for individuals with visual impairment and low vision aids."
+  },
+  {
+    "title": "National Programme for the Health Care for the Elderly (NPHCE)",
+    "description": "",
+    "eligibility": {
+      "target_group": "Elderly individuals aged 60 years and above. \nInclusion Criteria: \n● Individuals above 60 years of age who require healthcare services for chronic \nconditions or preventive care. \n● Elderly with age-related diseases such as arthritis, hypertension, diabetes, etc. \nExclusion Criteria: \n● Individuals under 60 years or those with no significant healthcare needs. \nSpecial Exclusion Criteria: \n● Elderly who refuse services or individuals with severe comorbidities requiring \nspecialized care.",
+      "inclusion_criteria": "● Individuals above 60 years of age who require healthcare services for chronic \nconditions or preventive care. \n● Elderly with age-related diseases such as arthritis, hypertension, diabetes, etc. \nExclusion Criteria: \n● Individuals under 60 years or those with no significant healthcare needs. \nSpecial Exclusion Criteria: \n● Elderly who refuse services or individuals with severe comorbidities requiring \nspecialized care.",
+      "exclusion_criteria": "● Individuals under 60 years or those with no significant healthcare needs. \nSpecial Exclusion Criteria: \n● Elderly who refuse services or individuals with severe comorbidities requiring \nspecialized care.",
+      "special_exclusion_criteria": "● Elderly who refuse services or individuals with severe comorbidities requiring \nspecialized care."
+    },
+    "benefits": "● Free medical services for the elderly in government healthcare facilities. \n● Geriatric clinics for routine health check-ups and specialized care. \n● Support for home-based care for bedridden and frail elderly individuals."
+  },
+  {
+    "title": "National Programme for Prevention & Management of Burn Injuries \n(NPPMBI)",
+    "description": "",
+    "eligibility": {
+      "target_group": "Individuals suffering from burn injuries, especially in low-income and \nrural areas. \nInclusion Criteria: \n● Individuals with second and third-degree burns, particularly children and elderly who \nare most vulnerable to burns. \n● Victims of accidental burns, fire accidents, and chemical exposure. \nExclusion Criteria: \n● Individuals who have minor burns that do not require hospitalization or specialized \ntreatment. \nSpecial Exclusion Criteria: \n● Individuals with pre-existing health conditions that prevent them from receiving \nappropriate care for burns.",
+      "inclusion_criteria": "● Individuals with second and third-degree burns, particularly children and elderly who \nare most vulnerable to burns. \n● Victims of accidental burns, fire accidents, and chemical exposure. \nExclusion Criteria: \n● Individuals who have minor burns that do not require hospitalization or specialized \ntreatment. \nSpecial Exclusion Criteria: \n● Individuals with pre-existing health conditions that prevent them from receiving \nappropriate care for burns.",
+      "exclusion_criteria": "● Individuals who have minor burns that do not require hospitalization or specialized \ntreatment. \nSpecial Exclusion Criteria: \n● Individuals with pre-existing health conditions that prevent them from receiving \nappropriate care for burns.",
+      "special_exclusion_criteria": "● Individuals with pre-existing health conditions that prevent them from receiving \nappropriate care for burns."
+    },
+    "benefits": "● Free treatment for burn injuries, including surgical interventions and rehabilitation. \n● Establishment of burn units in government hospitals for advanced burn care. \n● Burn prevention programs and safety awareness campaigns."
+  },
+  {
+    "title": "National Oral Health Programme",
+    "description": "",
+    "eligibility": {
+      "target_group": "General population, with special focus on children and vulnerable \npopulations. \nInclusion Criteria: \n● Children and adolescents who need oral health education and preventive dental \nservices. \n● Pregnant women, elderly, and individuals at risk of oral diseases. \nExclusion Criteria: \n● Individuals who do not require oral health interventions or who have access to private \ndental care. \nSpecial Exclusion Criteria: \n● People with severe oral health conditions requiring specialized care beyond what the \nprogram provides.",
+      "inclusion_criteria": "● Children and adolescents who need oral health education and preventive dental \nservices. \n● Pregnant women, elderly, and individuals at risk of oral diseases. \nExclusion Criteria: \n● Individuals who do not require oral health interventions or who have access to private \ndental care. \nSpecial Exclusion Criteria: \n● People with severe oral health conditions requiring specialized care beyond what the \nprogram provides.",
+      "exclusion_criteria": "● Individuals who do not require oral health interventions or who have access to private \ndental care. \nSpecial Exclusion Criteria: \n● People with severe oral health conditions requiring specialized care beyond what the \nprogram provides.",
+      "special_exclusion_criteria": "● People with severe oral health conditions requiring specialized care beyond what the \nprogram provides."
+    },
+    "benefits": "● Free dental check-ups, cleanings, and fluoride treatments. \n● Public awareness campaigns on the importance of oral hygiene. \n● Training for community health workers to promote oral health in rural and underserved \nareas."
+  }
+]
