@@ -325,7 +325,7 @@ async def root():
 async def upload_files_optimized(
     pdf_file: Optional[UploadFile] = File(None), 
     txt_file: Optional[UploadFile] = File(None),
-    session_id: str = Depends(get_session_id),
+    session_id: str = "default",
     groq_client: Groq = Depends(get_groq_client)
 ):
     if not (pdf_file or txt_file):
@@ -440,7 +440,7 @@ async def get_answer_optimized(req: QueryRequest):
             content={"reply": "I'm sorry, I cannot assist with that topic. For more details, please contact the 104/102 helpline numbers."}
         )
 
-    session_id = req.session_id or "default"
+    session_id = "default"
     wait_time = check_rate_limit_delay(session_id)
     if wait_time:
         return JSONResponse(status_code=429, content={"reply": "Unable to answer right now, please try again after sometime. For more details, please contact the 104/102 helpline numbers."})
@@ -492,10 +492,10 @@ async def get_answer_optimized(req: QueryRequest):
 
 @app.get("/chat-history/")
 async def get_chat_history(session_id: str = Depends(get_session_id)):
-    history = state_manager.get_chat_history(session_id)
+    history = state_manager.get_chat_history("default")
     return {
         "chat_history": history,
-        "session_id": session_id,
+        "session_id": "default",
         "redis_available": redis_manager.is_available()
     }
 
@@ -608,6 +608,7 @@ async def list_sessions():
 
 @app.delete("/sessions/{session_id}")
 async def clear_session(session_id: str):
+    session_id = "default"
     if redis_manager.is_available():
         try:
             redis_manager.redis_client.delete(f"chat:{session_id}")
@@ -616,8 +617,7 @@ async def clear_session(session_id: str):
             return JSONResponse(status_code=500, content={"error": str(e)})
     else:
         # If using in-memory fallback, clear chat history if present
-        if session_id == "default":
-            state_manager._memory_fallback[f"chat:{session_id}"] = []
+        state_manager._memory_fallback[f"chat:{session_id}"] = []
         return {"message": f"Session {session_id} cleared (memory only)"}
 
 if __name__ == "__main__":
