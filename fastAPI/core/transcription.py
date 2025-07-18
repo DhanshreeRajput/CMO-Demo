@@ -175,6 +175,12 @@ def transcribe_audio(client, audio_bytes, language=None):
         print(f"✅ Transcription successful: '{final_transcription}' (Language: {detected_lang})")
         # Remove . , - and " characters from the transcription
         cleaned_transcription = re.sub(r'[.,\-\"]', '', final_transcription)
+        # Remove leading/trailing spaces and collapse multiple spaces
+        cleaned_transcription = re.sub(r'\s+', ' ', cleaned_transcription).strip()
+        # Join sequences of single uppercase letters (acronyms)
+        def join_acronyms(text):
+            return re.sub(r'(?<!\w)((?:[A-Z]\s+){1,}[A-Z])(?!\w)', lambda m: m.group(0).replace(' ', ''), text)
+        cleaned_transcription = join_acronyms(cleaned_transcription)
         return (True, cleaned_transcription)
         
     except Exception as e:

@@ -72,9 +72,12 @@ class ApiClient {
       
       if (!response.ok) {
         if (response.status === 429) {
-          throw new Error(data.message || 'Rate limited. Please wait a moment.');
+          throw new Error(
+            data.reply ||
+            'Unable to answer right now, please try again after sometime. For more details, please contact the 104/102 helpline numbers.'
+          );
         }
-        throw new Error(data.error || 'Query failed');
+        throw new Error(data.reply || data.error || 'Query failed');
       }
 
       return data;

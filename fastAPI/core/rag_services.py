@@ -269,7 +269,7 @@ def process_scheme_query_with_retry(rag_chain, user_query, max_retries=3, enable
                         time.sleep(wait_time)
                         continue
                     else:
-                        result_text = "Rate limit reached. Please wait a moment and try again. You can also try a more specific question to reduce processing time."
+                        result_text = "Unable to answer right now, please try again after sometime. For more details, please contact the 104/102 helpline numbers."
                         break
                 
                 elif "Request too large" in error_str:

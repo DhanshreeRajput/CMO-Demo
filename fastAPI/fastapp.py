@@ -423,35 +423,35 @@ def process_response(text: str) -> str:
 async def get_answer_optimized(req: QueryRequest):
     input_text = req.input_text.strip()
     if not input_text:
-        return JSONResponse(status_code=400, content={"Empty query input."})
+        return JSONResponse(status_code=400, content={"reply": "I'm sorry, I cannot assist with that topic. For more details, please contact the 104/102 helpline numbers."})
 
     # Detect language and validate
     detected_lang = detect_language(input_text)
     if not validate_language(input_text):
         return JSONResponse(
             status_code=400,
-            content={"Please provide a valid query in English, Hindi, or Marathi."}
+            content={"reply": "Please provide a valid query in English, Hindi, or Marathi."}
         )
 
     # Validate query is knowledge-based
     if not validate_knowledge_query(input_text):
         return JSONResponse(
             status_code=400, 
-            content={"I'm sorry, I cannot assist with that topic. For more details, please contact the 104/102 helpline numbers."}
+            content={"reply": "I'm sorry, I cannot assist with that topic. For more details, please contact the 104/102 helpline numbers."}
         )
 
     session_id = req.session_id or "default"
     wait_time = check_rate_limit_delay(session_id)
     if wait_time:
-        return JSONResponse(status_code=429, content={"message": f"Rate limited. Wait {wait_time:.1f} seconds."})
+        return JSONResponse(status_code=429, content={"reply": "Unable to answer right now, please try again after sometime. For more details, please contact the 104/102 helpline numbers."})
 
     model_key = req.model_key
     if not model_key:
-        return JSONResponse(status_code=400, content={"error": "model_key is required. Please upload files first."})
+        return JSONResponse(status_code=400, content={"reply": "No RAG system found. Please upload files first."})
     
     rag_chain = state_manager.get_rag_chain(model_key, GROQ_API_KEY)
     if not rag_chain:
-        return JSONResponse(status_code=400, content={"error": "No RAG system found. Please upload files first."})
+        return JSONResponse(status_code=400, content={"reply": "No RAG system found. Please upload files first."})
 
     try:
         result = process_scheme_query_with_retry(rag_chain, input_text)
@@ -464,7 +464,7 @@ async def get_answer_optimized(req: QueryRequest):
         if len(assistant_reply.strip()) < 10:
             return JSONResponse(
                 status_code=400,
-                content={"No relevant information found in the documents. Please try a different question."}
+                content={"reply": "No relevant information found in the documents. Please try a different question."}
             )
 
         # Translate answer to user's language if needed
@@ -488,7 +488,7 @@ async def get_answer_optimized(req: QueryRequest):
         }
     except Exception as e:
         logging.error(f"Query processing error: {e}")
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return JSONResponse(status_code=500, content={"reply": "I'm sorry, I cannot assist with that topic. For more details, please contact the 104/102 helpline numbers."})
 
 @app.get("/chat-history/")
 async def get_chat_history(session_id: str = Depends(get_session_id)):
