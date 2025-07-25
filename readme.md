@@ -1,4 +1,4 @@
-# CMRF AI WhatsApp Assistant
+# SAMNEX WhatsApp Assistant
 
 A multilingual WhatsApp AI assistant built with FastAPI and Groq AI that provides information about government schemes and services. Supports English, Hindi, and Marathi languages.
 
