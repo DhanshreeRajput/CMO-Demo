@@ -1,16 +1,28 @@
-streamlit
-python-dotenv
-langchain
-langchain-community
-langchain-groq
-sentence-transformers
-faiss-cpu
-groq
-pypdf
-XlsxWriter
-rank_bm25
-# for tts function
-gtts
-pygame 
-langdetect
-langid
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.5.3
+redis==5.0.1
+python-dotenv==1.0.0
+requests==2.31.0
+PyPDF2==3.0.1
+scikit-learn==1.4.0
+numpy==1.26.3
+
+# Google Gemini dependencies
+google-generativeai==0.3.2
+
+# LangChain with community integrations
+langchain==0.1.0
+langchain-community==0.0.10
+
+# Language detection
+langdetect==1.0.9
+langid==1.1.6
+
+# Optional: Audio processing (for future transcription)
+# openai-whisper==20231117
+# librosa==0.10.1
+# soundfile==0.12.1
+
+# Optional: System monitoring
+# psutil==5.9.6

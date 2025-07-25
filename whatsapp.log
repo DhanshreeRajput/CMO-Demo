@@ -1,0 +1,672 @@
+2025-07-23 11:22:55,034 - root - INFO - Verification request - Mode: subscribe, Token: cmrf_ai_webhook_verify_123
+2025-07-23 11:22:55,035 - root - INFO - WhatsApp webhook verified successfully
+2025-07-23 11:37:02,460 - root - INFO - Verification request - Mode: subscribe, Token: cmrf_ai_webhook_verify_123
+2025-07-23 11:37:02,461 - root - INFO - WhatsApp webhook verified successfully
+2025-07-23 11:37:22,576 - root - INFO - Verification request - Mode: None, Token: None
+2025-07-23 11:37:22,577 - root - WARNING - WhatsApp webhook verification failed
+2025-07-23 11:39:26,613 - root - INFO - Verification request - Mode: None, Token: None
+2025-07-23 11:39:26,613 - root - WARNING - WhatsApp webhook verification failed
+2025-07-23 11:39:28,690 - root - INFO - Verification request - Mode: None, Token: None
+2025-07-23 11:39:28,692 - root - WARNING - WhatsApp webhook verification failed
+2025-07-23 11:39:32,778 - root - INFO - Verification request - Mode: None, Token: None
+2025-07-23 11:39:32,778 - root - WARNING - WhatsApp webhook verification failed
+2025-07-23 11:39:43,906 - root - INFO - Verification request - Mode: None, Token: None
+2025-07-23 11:39:43,906 - root - WARNING - WhatsApp webhook verification failed
+2025-07-23 11:42:54,850 - root - INFO - Verification request - Mode: None, Token: None, Expected: cmrf_ai_webhook_verify_123
+2025-07-23 11:42:54,850 - root - WARNING - WhatsApp webhook verification failed - Mode: None, Token match: False
+2025-07-23 11:42:57,072 - root - INFO - Verification request - Mode: None, Token: None, Expected: cmrf_ai_webhook_verify_123
+2025-07-23 11:42:57,074 - root - WARNING - WhatsApp webhook verification failed - Mode: None, Token match: False
+2025-07-23 11:44:38,436 - root - INFO - Incoming WhatsApp data: {
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "0",
+      "changes": [
+        {
+          "field": "messages",
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "16505551111",
+              "phone_number_id": "123456123"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "test user name"
+                },
+                "wa_id": "16315551181"
+              }
+            ],
+            "messages": [
+              {
+                "from": "16315551181",
+                "id": "ABGGFlA5Fpa",
+                "timestamp": "1504902988",
+                "type": "text",
+                "text": {
+                  "body": "this is a text message"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+2025-07-23 11:44:38,437 - root - INFO - Processing WhatsApp message from 16315551181: this is a text message
+2025-07-23 11:44:38,438 - root - ERROR - WhatsApp credentials not configured
+2025-07-23 11:44:38,438 - root - INFO - WhatsApp response sent to 16315551181
+2025-07-23 11:44:43,821 - root - INFO - Verification request - Mode: None, Token: None, Expected: cmrf_ai_webhook_verify_123
+2025-07-23 11:44:43,821 - root - WARNING - WhatsApp webhook verification failed - Mode: None, Token match: False
+2025-07-23 11:44:47,480 - root - INFO - Verification request - Mode: None, Token: None, Expected: cmrf_ai_webhook_verify_123
+2025-07-23 11:44:47,481 - root - WARNING - WhatsApp webhook verification failed - Mode: None, Token match: False
+2025-07-23 11:44:49,727 - root - INFO - Verification request - Mode: None, Token: None, Expected: cmrf_ai_webhook_verify_123
+2025-07-23 11:44:49,728 - root - WARNING - WhatsApp webhook verification failed - Mode: None, Token match: False
+2025-07-23 11:45:59,401 - root - INFO - Verification request - Mode: None, Token: None, Expected: cmrf_ai_webhook_verify_123
+2025-07-23 11:45:59,403 - root - WARNING - WhatsApp webhook verification failed - Mode: None, Token match: False
+2025-07-23 13:14:32,778 - root - INFO - Incoming WhatsApp data: {
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1532157004815335",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556656768",
+              "phone_number_id": "729136556949772"
+            },
+            "statuses": [
+              {
+                "id": "wamid.HBgMOTE4NTkxMjYyNDMwFQIAERgSNEVBOTM4NTZDQjAwOURDMUY1AA==",
+                "status": "sent",
+                "timestamp": "1753256671",
+                "recipient_id": "918591262430",
+                "conversation": {
+                  "id": "4e71ad6048dcd686080e8f2c9dbaa9b8",
+                  "expiration_timestamp": "1753256671",
+                  "origin": {
+                    "type": "utility"
+                  }
+                },
+                "pricing": {
+                  "billable": true,
+                  "pricing_model": "PMP",
+                  "category": "utility",
+                  "type": "regular"
+                }
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+2025-07-23 13:14:32,779 - root - INFO - Received message status update
+2025-07-23 13:14:34,849 - root - INFO - Incoming WhatsApp data: {
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1532157004815335",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556656768",
+              "phone_number_id": "729136556949772"
+            },
+            "statuses": [
+              {
+                "id": "wamid.HBgMOTE4NTkxMjYyNDMwFQIAERgSNEVBOTM4NTZDQjAwOURDMUY1AA==",
+                "status": "delivered",
+                "timestamp": "1753256672",
+                "recipient_id": "918591262430",
+                "conversation": {
+                  "id": "4e71ad6048dcd686080e8f2c9dbaa9b8",
+                  "origin": {
+                    "type": "utility"
+                  }
+                },
+                "pricing": {
+                  "billable": true,
+                  "pricing_model": "PMP",
+                  "category": "utility",
+                  "type": "regular"
+                }
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+2025-07-23 13:14:34,850 - root - INFO - Received message status update
+2025-07-23 13:14:37,811 - root - INFO - Incoming WhatsApp data: {
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1532157004815335",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556656768",
+              "phone_number_id": "729136556949772"
+            },
+            "statuses": [
+              {
+                "id": "wamid.HBgMOTE4NTkxMjYyNDMwFQIAERgSNEVBOTM4NTZDQjAwOURDMUY1AA==",
+                "status": "read",
+                "timestamp": "1753256676",
+                "recipient_id": "918591262430"
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+2025-07-23 13:14:37,813 - root - INFO - Received message status update
+2025-07-23 13:14:40,697 - root - INFO - Incoming WhatsApp data: {
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1532157004815335",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556656768",
+              "phone_number_id": "729136556949772"
+            },
+            "statuses": [
+              {
+                "id": "wamid.HBgMOTE4NTkxMjYyNDMwFQIAERgSMUUxRDREQjE3RUYzNUMzQTlBAA==",
+                "status": "sent",
+                "timestamp": "1753256680",
+                "recipient_id": "918591262430",
+                "conversation": {
+                  "id": "07b7491d2ffdff2621752f2c949c80ea",
+                  "expiration_timestamp": "1753256680",
+                  "origin": {
+                    "type": "utility"
+                  }
+                },
+                "pricing": {
+                  "billable": true,
+                  "pricing_model": "PMP",
+                  "category": "utility",
+                  "type": "regular"
+                }
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+2025-07-23 13:14:40,699 - root - INFO - Received message status update
+2025-07-23 13:14:42,030 - root - INFO - Incoming WhatsApp data: {
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1532157004815335",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556656768",
+              "phone_number_id": "729136556949772"
+            },
+            "statuses": [
+              {
+                "id": "wamid.HBgMOTE4NTkxMjYyNDMwFQIAERgSMUUxRDREQjE3RUYzNUMzQTlBAA==",
+                "status": "read",
+                "timestamp": "1753256680",
+                "recipient_id": "918591262430",
+                "conversation": {
+                  "id": "07b7491d2ffdff2621752f2c949c80ea",
+                  "origin": {
+                    "type": "utility"
+                  }
+                },
+                "pricing": {
+                  "billable": true,
+                  "pricing_model": "PMP",
+                  "category": "utility",
+                  "type": "regular"
+                }
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+2025-07-23 13:14:42,030 - root - INFO - Received message status update
+2025-07-23 13:14:49,131 - root - INFO - Incoming WhatsApp data: {
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1532157004815335",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556656768",
+              "phone_number_id": "729136556949772"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Dhanshree"
+                },
+                "wa_id": "918591262430"
+              }
+            ],
+            "messages": [
+              {
+                "from": "918591262430",
+                "id": "wamid.HBgMOTE4NTkxMjYyNDMwFQIAEhggNDA4OUUwRjZGOEFFOEQzNTU3MjAwQzVDODRFMTlFRTMA",
+                "timestamp": "1753256688",
+                "text": {
+                  "body": "Hii"
+                },
+                "type": "text"
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+2025-07-23 13:14:49,139 - root - INFO - Processing WhatsApp message from 918591262430: Hii
+2025-07-23 13:14:49,142 - root - ERROR - WhatsApp credentials not configured
+2025-07-23 13:14:49,143 - root - INFO - WhatsApp response sent to 918591262430
+2025-07-23 13:15:08,497 - root - INFO - Incoming WhatsApp data: {
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "1532157004815335",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15556656768",
+              "phone_number_id": "729136556949772"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Dhanshree"
+                },
+                "wa_id": "918591262430"
+              }
+            ],
+            "messages": [
+              {
+                "from": "918591262430",
+                "id": "wamid.HBgMOTE4NTkxMjYyNDMwFQIAEhggRDVFMzJBOTg4QTQwRjZEMzA5MTc4NjAzQTA5NzMwNTkA",
+                "timestamp": "1753256707",
+                "text": {
+                  "body": "What is jssk?"
+                },
+                "type": "text"
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+2025-07-23 13:15:08,503 - root - ERROR - WhatsApp credentials not configured
+2025-07-23 15:44:53,941 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-23 15:45:46,727 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Wednesday, 23-Jul-25 00:00:00 PDT. The current time is Wednesday, 23-Jul-25 03:15:46 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"APP-TBi6l9QssxKpuuJmps1"}}
+2025-07-23 17:11:41,875 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Wednesday, 23-Jul-25 00:00:00 PDT. The current time is Wednesday, 23-Jul-25 04:41:41 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"Actjsu55twTy5B-9hFMA7BZ"}}
+2025-07-23 17:14:01,558 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Wednesday, 23-Jul-25 00:00:00 PDT. The current time is Wednesday, 23-Jul-25 04:44:01 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"A_X-VsTG_8ICd05sOvdbWdp"}}
+2025-07-23 17:23:30,255 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-23 17:24:52,513 - root - ERROR - Failed to send WhatsApp message: Status 400, Response: {"error":{"message":"(#131030) Recipient phone number not in allowed list","type":"OAuthException","code":131030,"error_data":{"messaging_product":"whatsapp","details":"Recipient phone number not in allowed list: Add recipient phone number to recipient list and try again."},"fbtrace_id":"AybaAFKb5T5gMYO-vZhSeX_"}}
+2025-07-23 17:26:14,775 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:26:33,733 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:26:40,058 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:26:41,085 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:26:58,975 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:27:05,376 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:27:06,221 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:27:09,864 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:28:47,424 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:29:08,081 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:29:15,924 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:29:16,722 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:29:27,396 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:29:33,519 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:41:16,706 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:43:23,283 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-23 17:43:39,570 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-23 17:45:45,259 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-23 17:46:01,045 - root - INFO - WhatsApp message sent successfully to 919096357397
+2025-07-24 11:02:31,918 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 413 Payload Too Large"
+2025-07-24 11:10:16,793 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:31:03,588 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:32:45,797 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 413 Payload Too Large"
+2025-07-24 11:33:14,126 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:33:30,790 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:33:39,004 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:33:53,138 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:35:16,447 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:35:37,341 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:36:18,096 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:37:16,933 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:37:35,248 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:53:01,216 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:53:13,997 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:57:30,750 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:58:29,580 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 11:59:28,329 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 12:01:35,340 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 13:42:25,101 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 00:00:00 PDT. The current time is Thursday, 24-Jul-25 01:12:24 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AjPw04LHPorTHcXrDUMtv7D"}}
+2025-07-24 13:43:05,111 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 00:00:00 PDT. The current time is Thursday, 24-Jul-25 01:13:05 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AKL3IfVWDcW5jDUfWH5cm9h"}}
+2025-07-24 13:49:28,844 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 00:00:00 PDT. The current time is Thursday, 24-Jul-25 01:19:28 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AYlkWyvCe6mmdtybwtLxuo0"}}
+2025-07-24 13:50:12,338 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 00:00:00 PDT. The current time is Thursday, 24-Jul-25 01:20:12 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AfnIqtz5E6_kIK9unhc00dk"}}
+2025-07-24 14:28:08,497 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:34:16,465 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:34:17,596 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:34:26,750 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:34:27,431 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:34:52,140 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:34:52,781 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:35:19,828 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:35:20,559 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:35:23,284 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:35:24,247 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 14:35:47,701 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:35:48,363 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:35:57,351 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:35:58,115 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 14:36:30,893 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:36:31,611 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:38:27,105 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:38:27,999 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:44:04,250 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:46:58,996 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:46:59,909 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 14:47:02,412 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:47:03,033 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:47:20,976 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:47:27,461 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:47:28,256 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:47:29,935 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 14:47:36,696 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:47:37,426 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:47:57,529 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:47:58,388 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 14:48:05,122 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:48:05,858 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:49:01,758 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:49:02,399 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:50:29,027 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 14:50:29,735 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:54:17,962 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:57:23,270 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 14:57:39,102 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:00:25,495 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:00:33,600 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:00:47,727 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:00:48,440 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:01:10,842 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:01:11,482 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:01:35,415 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:01:36,195 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:02:20,201 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:02:20,937 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:02:59,293 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:03:00,040 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:11:44,884 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:12:01,932 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:12:02,617 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:12:29,532 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:12:30,247 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:14:05,837 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:14:06,569 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:14:14,710 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:14:15,390 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:20:37,215 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:20:56,400 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:20:57,107 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:21:40,534 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:21:41,252 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:21:50,275 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 15:21:58,402 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:21:59,084 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:22:09,657 - root - ERROR - Failed to send WhatsApp message: Status 400, Response: {"error":{"message":"(#131030) Recipient phone number not in allowed list","type":"OAuthException","code":131030,"error_data":{"messaging_product":"whatsapp","details":"Recipient phone number not in allowed list: Add recipient phone number to recipient list and try again."},"fbtrace_id":"AJK_aXlWnlH1qNnrjuJxaDw"}}
+2025-07-24 15:22:14,285 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:22:15,073 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:22:42,089 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:22:42,773 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:23:41,000 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:23:41,654 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:24:41,795 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:24:42,569 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 15:25:16,833 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:25:17,611 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 15:25:32,070 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:25:34,110 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:25:38,165 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:25:38,950 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:25:55,263 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:25:57,329 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:01,380 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:03,361 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 15:26:23,078 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:25,119 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:29,150 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:31,035 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 15:26:31,064 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:33,095 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:37,123 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:37,831 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:26:38,626 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:40,655 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:44,953 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:45,677 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 15:26:45,714 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:47,747 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:51,782 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:52,428 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:26:52,457 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:54,494 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:26:58,524 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:27:00,315 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 15:33:09,368 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 03:00:00 PDT. The current time is Thursday, 24-Jul-25 03:03:09 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AKraxcDmmBdT6iEKNd311Pq"}}
+2025-07-24 15:34:23,891 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 03:00:00 PDT. The current time is Thursday, 24-Jul-25 03:04:23 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AV4E6G3xM2pIo5O7YpUD_VR"}}
+2025-07-24 15:34:24,112 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 03:00:00 PDT. The current time is Thursday, 24-Jul-25 03:04:24 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"ANQxtZeG2lHEVVcmEt_48cJ"}}
+2025-07-24 15:37:11,311 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 03:00:00 PDT. The current time is Thursday, 24-Jul-25 03:07:11 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"ASkr6Z3TTpGGeJ3Qd6LzBye"}}
+2025-07-24 15:39:28,876 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 15:39:32,607 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 15:39:57,580 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:39:59,644 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:40:03,687 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:40:04,437 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 15:40:24,358 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:40:26,398 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:40:30,453 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:40:31,306 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 15:40:31,363 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:40:33,415 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:40:37,460 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-07-24 15:40:38,314 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 15:46:30,083 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 15:46:40,219 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:46:40,999 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 15:48:15,914 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:48:16,507 - root - ERROR - Failed to send WhatsApp message: Status 400, Response: {"error":{"message":"(#131030) Recipient phone number not in allowed list","type":"OAuthException","code":131030,"error_data":{"messaging_product":"whatsapp","details":"Recipient phone number not in allowed list: Add recipient phone number to recipient list and try again."},"fbtrace_id":"AqU7UXVUfWTDLf-AaY-9D7-"}}
+2025-07-24 15:48:18,225 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 15:48:28,591 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:48:29,341 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 15:49:21,162 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:49:22,078 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 15:50:25,298 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:50:26,183 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 15:58:33,266 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 15:59:15,383 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 15:59:31,139 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 15:59:32,013 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 15:59:59,768 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 16:00:01,710 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 16:00:20,503 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 16:00:21,341 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 16:00:33,415 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 16:00:34,270 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 16:01:34,234 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 16:01:35,079 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 16:12:07,496 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 16:12:08,071 - root - ERROR - Failed to send WhatsApp message: Status 400, Response: {"error":{"message":"(#131030) Recipient phone number not in allowed list","type":"OAuthException","code":131030,"error_data":{"messaging_product":"whatsapp","details":"Recipient phone number not in allowed list: Add recipient phone number to recipient list and try again."},"fbtrace_id":"AsrlQ0hN6eB_XG_TZ7LkyNn"}}
+2025-07-24 16:20:07,922 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 16:38:20,181 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 16:38:21,984 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 16:38:49,142 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 16:38:49,875 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 17:13:16,300 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 17:13:17,424 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 17:31:03,474 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 05:00:00 PDT. The current time is Thursday, 24-Jul-25 05:01:03 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AIaqbbntHQBOc1YbTbtVSAo"}}
+2025-07-24 17:31:38,068 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 05:00:00 PDT. The current time is Thursday, 24-Jul-25 05:01:37 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AZjHIEQBVypF5JXGItsfDCf"}}
+2025-07-24 17:32:01,999 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 05:00:00 PDT. The current time is Thursday, 24-Jul-25 05:02:01 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"A8VteCOXvTAaCrT0P3mzVbE"}}
+2025-07-24 17:32:21,288 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 05:00:00 PDT. The current time is Thursday, 24-Jul-25 05:02:21 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AYPjfIb38_WFjE9Dr4XVTM_"}}
+2025-07-24 17:33:22,635 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 17:34:10,649 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 17:34:36,205 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 17:34:37,941 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 17:35:02,529 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 17:35:39,619 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 17:36:56,112 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 17:36:56,956 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 17:38:14,507 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 17:38:15,407 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 17:38:46,200 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 17:38:46,834 - root - ERROR - Failed to send WhatsApp message: Status 400, Response: {"error":{"message":"(#131030) Recipient phone number not in allowed list","type":"OAuthException","code":131030,"error_data":{"messaging_product":"whatsapp","details":"Recipient phone number not in allowed list: Add recipient phone number to recipient list and try again."},"fbtrace_id":"AWnykNQBdVGuA5jHN3uorpb"}}
+2025-07-24 17:39:55,062 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 17:39:55,895 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 17:40:49,585 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 17:40:50,395 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 17:56:15,452 - root - INFO - WhatsApp message sent successfully to 919967961932
+2025-07-24 17:56:22,324 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 17:56:23,051 - root - INFO - WhatsApp message sent successfully to 919967961932
+2025-07-24 17:58:09,786 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-24 17:58:10,766 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-24 19:09:37,470 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2025-07-24 19:09:38,682 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-24 19:15:16,093 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 19:15:43,812 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2025-07-24 19:15:44,588 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-24 20:02:43,685 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 07:00:00 PDT. The current time is Thursday, 24-Jul-25 07:32:43 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AzoNumQupIMvQcHlaKszZUU"}}
+2025-07-24 21:16:44,865 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 07:00:00 PDT. The current time is Thursday, 24-Jul-25 08:46:44 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AgQwWe-OSpEvyhHQvXtFxAr"}}
+2025-07-24 21:43:45,729 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2025-07-24 21:43:45,987 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 07:00:00 PDT. The current time is Thursday, 24-Jul-25 09:13:45 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"A9XELezS9HELPSUeyiDtuxD"}}
+2025-07-24 21:51:41,375 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2025-07-24 21:51:41,702 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 07:00:00 PDT. The current time is Thursday, 24-Jul-25 09:21:41 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AXKQp13yaxZhRgMB2afA9J-"}}
+2025-07-24 21:54:22,612 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 07:00:00 PDT. The current time is Thursday, 24-Jul-25 09:24:22 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AFbqh4Z1mFCAlIG_2Wk6rHc"}}
+2025-07-24 22:01:06,472 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 07:00:00 PDT. The current time is Thursday, 24-Jul-25 09:31:06 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"A9rf2C8m4BoBruLAcgaPOdZ"}}
+2025-07-24 22:27:41,049 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Thursday, 24-Jul-25 07:00:00 PDT. The current time is Thursday, 24-Jul-25 09:57:40 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AXue9SQN3eOV3hp3fN51IUI"}}
+2025-07-25 10:07:42,501 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 10:07:54,898 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2025-07-25 10:07:55,681 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 10:32:01,219 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 10:32:19,692 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 10:37:47,535 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 10:37:54,251 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2025-07-25 10:37:55,106 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 10:38:01,905 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2025-07-25 10:38:02,778 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 10:38:34,221 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 10:38:41,540 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2025-07-25 10:38:42,449 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 15:34:52,035 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 15:35:00,655 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 15:35:27,104 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 15:36:18,834 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 15:37:04,957 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 15:37:22,828 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 15:37:48,349 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 15:37:54,935 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 15:38:14,123 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 16:10:30,985 - root - INFO - Validation results - Ending: False, Formatting: False, Length: False (17 words)
+2025-07-25 16:10:30,986 - root - INFO - Fixed response format for language: english
+2025-07-25 16:10:32,205 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 16:12:55,474 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 16:13:56,243 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 16:14:17,174 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 16:15:40,490 - root - INFO - Validation results - Ending: False, Formatting: False, Length: True (382 words)
+2025-07-25 16:15:40,491 - root - INFO - Fixed response format for language: english
+2025-07-25 16:15:42,695 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 16:16:14,306 - root - INFO - Validation results - Ending: False, Formatting: False, Length: False (17 words)
+2025-07-25 16:16:14,309 - root - INFO - Fixed response format for language: english
+2025-07-25 16:16:15,036 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 16:17:16,871 - root - INFO - Validation results - Ending: False, Formatting: False, Length: True (227 words)
+2025-07-25 16:17:16,871 - root - INFO - Fixed response format for language: english
+2025-07-25 16:17:17,694 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 16:18:06,345 - root - INFO - Validation results - Ending: False, Formatting: False, Length: True (473 words)
+2025-07-25 16:18:06,346 - root - INFO - Fixed response format for language: english
+2025-07-25 16:18:07,123 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 16:19:43,163 - root - INFO - Validation results - Ending: False, Formatting: False, Length: False (17 words)
+2025-07-25 16:19:43,164 - root - INFO - Fixed response format for language: english
+2025-07-25 16:19:43,957 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 16:20:27,432 - root - INFO - Validation results - Ending: False, Formatting: False, Length: False (17 words)
+2025-07-25 16:20:27,433 - root - INFO - Fixed response format for language: english
+2025-07-25 16:20:29,441 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 16:27:18,609 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-25 16:29:57,472 - root - INFO - Validation results - Ending: False, Formatting: False, Length: True (227 words)
+2025-07-25 16:29:57,473 - root - INFO - Fixed response format for language: english
+2025-07-25 16:29:58,469 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-25 16:30:58,758 - root - INFO - Validation results - Ending: False, Formatting: False, Length: False (30 words)
+2025-07-25 16:30:58,758 - root - INFO - Fixed response format for language: english
+2025-07-25 16:30:59,572 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-25 16:31:14,384 - root - INFO - Validation results - Ending: False, Formatting: False, Length: False (17 words)
+2025-07-25 16:31:14,384 - root - INFO - Fixed response format for language: english
+2025-07-25 16:31:15,226 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-25 16:33:03,403 - root - INFO - Validation results - Ending: False, Formatting: False, Length: False (17 words)
+2025-07-25 16:33:03,405 - root - INFO - Fixed response format for language: english
+2025-07-25 16:33:04,510 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-25 16:33:12,358 - root - INFO - Validation results - Ending: False, Formatting: False, Length: True (248 words)
+2025-07-25 16:33:12,358 - root - INFO - Fixed response format for language: english
+2025-07-25 16:33:13,319 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-25 16:33:20,614 - root - INFO - Validation results - Ending: False, Formatting: False, Length: True (398 words)
+2025-07-25 16:33:20,615 - root - INFO - Fixed response format for language: english
+2025-07-25 16:33:21,388 - root - INFO - WhatsApp message sent successfully to 917039129551
+2025-07-25 16:35:11,375 - root - INFO - Validation results - Ending: False, Formatting: False, Length: True (803 words)
+2025-07-25 16:35:11,375 - root - INFO - Fixed response format for language: english
+2025-07-25 16:35:12,790 - root - ERROR - Failed to send WhatsApp message: Status 400, Response: {"error":{"message":"(#100) Param text['body'] must be at most 4096 characters long.","type":"OAuthException","code":100,"fbtrace_id":"Ac2v9wreHmxP7wnyOaFaCmD"}}
+2025-07-25 16:35:14,064 - root - ERROR - Failed to send WhatsApp message: Status 400, Response: {"error":{"message":"(#100) Param text['body'] must be at most 4096 characters long.","type":"OAuthException","code":100,"fbtrace_id":"AL708F1lDYemx3JgNX6QMvU"}}
+2025-07-25 16:35:15,323 - root - ERROR - Failed to send WhatsApp message: Status 400, Response: {"error":{"message":"(#100) Param text['body'] must be at most 4096 characters long.","type":"OAuthException","code":100,"fbtrace_id":"AFtNo9p09Zqg7CtI504LLWj"}}
+2025-07-25 16:36:27,796 - root - INFO - Validation results - Ending: False, Formatting: False, Length: False (17 words)
+2025-07-25 16:36:27,797 - root - INFO - Fixed response format for language: english
+2025-07-25 16:36:28,613 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 16:36:42,413 - root - INFO - Validation results - Ending: False, Formatting: False, Length: True (226 words)
+2025-07-25 16:36:42,413 - root - INFO - Fixed response format for language: english
+2025-07-25 16:36:43,457 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 16:39:38,951 - root - INFO - WhatsApp message sent successfully to 919967961932
+2025-07-25 16:39:46,888 - root - INFO - Validation results - Ending: False, Formatting: False, Length: False (9 words)
+2025-07-25 16:39:46,888 - root - INFO - Fixed response format for language: english
+2025-07-25 16:39:47,783 - root - INFO - WhatsApp message sent successfully to 919967961932
