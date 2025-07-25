@@ -1,4 +1,5 @@
 import os
+import re
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -56,3 +57,28 @@ def validate_all_config():
     wa_valid = validate_whatsapp_config()
     
     return google_valid and wa_valid
+
+def detect_language(text):
+    """Unified language detection logic."""
+    try:
+        hindi_chars = bool(re.search(r'[\u0900-\u097F]', text))
+        english_chars = bool(re.search(r'[a-zA-Z]', text))
+
+        if hindi_chars and not english_chars:
+            marathi_keywords = ['आहे', 'करा', 'होणार', 'येथे', 'तुमच्या']
+            if any(keyword in text for keyword in marathi_keywords):
+                return 'marathi'
+            return 'hindi'
+        elif english_chars:
+            return 'english'
+        else:
+            # Fallback logic
+            if 'देवनागरी' in text:
+                return 'hindi'
+            elif 'मराठी' in text:
+                return 'marathi'
+            else:
+                return 'english'
+    except Exception as e:
+        print(f"Error detecting language: {e}")
+        return 'unknown'

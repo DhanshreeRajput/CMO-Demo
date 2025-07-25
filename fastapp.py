@@ -33,45 +33,55 @@ logging.basicConfig(
 
 # Add these validation functions here
 def detect_language(text):
-    """Detect language based on character scripts"""
-    hindi_chars = bool(re.search(r'[\u0900-\u097F]', text))
-    english_chars = bool(re.search(r'[a-zA-Z]', text))
-    
-    if hindi_chars and not english_chars:
-        marathi_keywords = ['आहे', 'करा', 'होणार', 'येथे', 'तुमच्या']
-        if any(keyword in text for keyword in marathi_keywords):
-            return 'marathi'
-        return 'hindi'
-    return 'english'
+    """Detect language based on character scripts or fallback logic."""
+    try:
+        hindi_chars = bool(re.search(r'[\u0900-\u097F]', text))
+        english_chars = bool(re.search(r'[a-zA-Z]', text))
 
-def validate_response_format(response_text, user_language):
-    """Validate if response follows the required format"""
-    required_elements = {
-        'english': ['**For more details, please contact the 104/102 helpline numbers.**'],
-        'hindi': ['**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**'],
-        'marathi': ['**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**']
-    }
-    
-    has_ending = any(ending in response_text for ending in required_elements.get(user_language.lower(), []))
-    has_formatting = '**' in response_text and ('##' in response_text or '#' in response_text)
-    word_count = len(response_text.split())
-    min_length = word_count >= 50
-    
-    logging.info(f"Validation results - Ending: {has_ending}, Formatting: {has_formatting}, Length: {min_length} ({word_count} words)")
-    return has_ending and has_formatting and min_length
+        if hindi_chars and not english_chars:
+            marathi_keywords = ['आहे', 'करा', 'होणार', 'येथे', 'तुमच्या']
+            if any(keyword in text for keyword in marathi_keywords):
+                return 'marathi'
+            return 'hindi'
+        elif english_chars:
+            return 'english'
+        else:
+            # Fallback logic
+            if 'देवनागरी' in text:
+                return 'hindi'
+            elif 'मराठी' in text:
+                return 'marathi'
+            else:
+                return 'english'
+    except Exception as e:
+        logging.error(f"Error detecting language: {e}")
+        return 'unknown'
 
-def fix_response_format(response_text, user_language):
-    """Fix response format by adding missing elements"""
+def handle_response_format(response_text, user_language):
+    """Validate and fix response format if necessary."""
     helpline_endings = {
         'english': "\n\n**For more details, please contact the 104/102 helpline numbers.**",
         'hindi': "\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
         'marathi': "\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**"
     }
-    
-    ending = helpline_endings.get(user_language.lower(), helpline_endings['english'])
-    if ending.strip() not in response_text:
-        response_text += ending
-    
+
+    required_elements = {
+        'english': ['**For more details, please contact the 104/102 helpline numbers.**'],
+        'hindi': ['**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**'],
+        'marathi': ['**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**']
+    }
+
+    has_ending = any(ending in response_text for ending in required_elements.get(user_language.lower(), []))
+    has_formatting = '**' in response_text and ('##' in response_text or '#' in response_text)
+    word_count = len(response_text.split())
+    min_length = word_count >= 50
+
+    if not (has_ending and has_formatting and min_length):
+        ending = helpline_endings.get(user_language.lower(), helpline_endings['english'])
+        if ending.strip() not in response_text:
+            response_text += ending
+
+    logging.info(f"Response format handled for language: {user_language}")
     return response_text
 
 # Load environment variables
