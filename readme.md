@@ -2,7 +2,7 @@
 
 A multilingual WhatsApp AI assistant built with FastAPI and Google Gemini AI that provides information about government schemes and services. Supports English, Hindi, and Marathi languages with advanced RAG (Retrieval-Augmented Generation) capabilities.
 
-## 🌟 Features
+## Features
 
 - 🌐 **Multilingual Support**: Handles queries in English, Hindi, and Marathi with automatic language detection
 - 📚 **Document Processing**: Supports PDF and TXT file uploads for knowledge base creation
