@@ -670,3 +670,196 @@
 2025-07-25 16:39:46,888 - root - INFO - Validation results - Ending: False, Formatting: False, Length: False (9 words)
 2025-07-25 16:39:46,888 - root - INFO - Fixed response format for language: english
 2025-07-25 16:39:47,783 - root - INFO - WhatsApp message sent successfully to 919967961932
+2025-07-25 17:48:51,868 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 17:57:02,969 - root - INFO - WhatsApp message sent successfully to 918879992052
+2025-07-25 17:57:59,975 - root - INFO - Response format handled for language: english
+2025-07-25 17:58:01,005 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-25 17:59:40,760 - root - INFO - Response format handled for language: english
+2025-07-25 17:59:42,845 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-25 18:01:04,574 - root - INFO - Response format handled for language: english
+2025-07-25 18:01:05,623 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-25 18:02:51,709 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-25 18:03:04,245 - root - INFO - Response format handled for language: english
+2025-07-25 18:03:05,148 - root - INFO - WhatsApp message sent successfully to 918591262430
+2025-07-26 08:27:13,010 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Friday, 25-Jul-25 07:00:00 PDT. The current time is Friday, 25-Jul-25 19:57:12 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AcCzNMnoHSlBoR4x8zPiSqZ"}}
+2025-07-26 08:27:14,191 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Friday, 25-Jul-25 07:00:00 PDT. The current time is Friday, 25-Jul-25 19:57:14 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AbUM9h7ByfJNRwUMQ0I1rAB"}}
+2025-07-26 08:27:15,346 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Friday, 25-Jul-25 07:00:00 PDT. The current time is Friday, 25-Jul-25 19:57:15 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"ADCGBIYTfCdv3m2O61BZYKI"}}
+2025-07-26 09:16:57,523 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Friday, 25-Jul-25 07:00:00 PDT. The current time is Friday, 25-Jul-25 20:46:57 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AcSG-7YcKgC9jRBUGy52uia"}}
+2025-07-26 09:16:58,691 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Friday, 25-Jul-25 07:00:00 PDT. The current time is Friday, 25-Jul-25 20:46:58 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"AwTbdr2iZtKfxbgLR-C1_Q5"}}
+2025-07-26 09:16:59,931 - root - ERROR - Failed to send WhatsApp message: Status 401, Response: {"error":{"message":"Error validating access token: Session has expired on Friday, 25-Jul-25 07:00:00 PDT. The current time is Friday, 25-Jul-25 20:46:59 PDT.","type":"OAuthException","code":190,"error_subcode":463,"fbtrace_id":"A3JmkSUq0afqZJm4CmG7DNX"}}
+2025-07-26 10:07:42 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-26 10:07:43 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-26 10:49:52 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-26 10:49:52 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-26 10:49:55 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-26 10:49:55 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-26 10:50:00 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-26 10:50:01 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-26 11:01:00 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-26 11:01:01 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-26 12:52:02 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-26 12:52:03 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-26 12:52:22 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-26 12:52:22 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AoRFH9CYbGEoHpNhjWUjknB'}}
+2025-07-26 12:52:23 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-26 12:52:23 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AsTrOgb-ohJiHek7h9ID-A_'}}
+2025-07-26 12:52:24 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-26 12:52:24 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AvKfBRh7dAEJYiTs-0sx3v5'}}
+2025-07-27 16:43:38 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-27 16:43:38 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AFjQBaphBWTD9MZr5X926jS'}}
+2025-07-27 16:43:39 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-27 16:43:39 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AeKPfxrPD0u6Q5QUCq6o4AI'}}
+2025-07-27 16:43:41 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-27 16:43:41 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AVPeFkVHj0vuYXSYVnh9cqo'}}
+2025-07-27 16:43:54 - root - INFO - Response format handled for language: english
+2025-07-27 16:43:54 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-27 16:43:54 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'A2-Koi21aLeH0Zy0xCaJfB0'}}
+2025-07-27 16:43:56 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-27 16:43:56 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AU-VrjL09my0QHOGCf5aEI4'}}
+2025-07-27 16:43:57 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-27 16:43:57 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AnZQMfNMenihuDiYXomyu9H'}}
+2025-07-28 13:52:29 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-28 13:52:30 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-28 13:53:18 - root - INFO - [OK] WhatsApp message sent successfully to 917039129551
+2025-07-28 13:53:38 - root - INFO - Response format handled for language: english
+2025-07-28 13:53:39 - root - INFO - [OK] WhatsApp message sent successfully to 917039129551
+2025-07-28 13:58:16 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-28 13:58:17 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-28 14:00:37 - root - INFO - [OK] WhatsApp message sent successfully to 917039129551
+2025-07-28 14:02:24 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-28 14:02:25 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-28 14:02:31 - root - INFO - Response format handled for language: english
+2025-07-28 14:02:32 - root - INFO - [OK] WhatsApp message sent successfully to 917039129551
+2025-07-28 14:03:11 - root - INFO - Response format handled for language: english
+2025-07-28 14:03:11 - root - INFO - Fixed response format for language: english
+2025-07-28 14:03:12 - root - INFO - [OK] WhatsApp message sent successfully to 917039129551
+2025-07-28 14:03:13 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-28 14:03:13 - root - INFO - Response format handled for language: english
+2025-07-28 14:03:14 - root - INFO - [OK] WhatsApp message sent successfully to 917039129551
+2025-07-28 14:03:33 - root - INFO - Response format handled for language: english
+2025-07-28 14:03:33 - root - INFO - Fixed response format for language: english
+2025-07-28 14:03:33 - root - INFO - [OK] WhatsApp message sent successfully to 917039129551
+2025-07-28 14:04:34 - root - INFO - Response format handled for language: english
+2025-07-28 14:04:35 - root - INFO - [OK] WhatsApp message sent successfully to 917039129551
+2025-07-28 17:23:22 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-28 17:23:25 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-28 17:30:14 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-28 17:30:17 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-28 17:33:16 - root - INFO - Response format handled for language: english
+2025-07-28 17:33:16 - root - INFO - Fixed response format for language: english
+2025-07-28 17:33:18 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-28 17:33:19 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-28 17:33:27 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-28 17:33:35 - root - INFO - [OK] WhatsApp message sent successfully to 917039129551
+2025-07-28 17:34:07 - root - INFO - Response format handled for language: english
+2025-07-28 17:34:08 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-28 17:37:05 - root - INFO - Response format handled for language: english
+2025-07-28 17:37:05 - root - INFO - Fixed response format for language: english
+2025-07-28 17:37:06 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-28 17:47:29 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-28 17:47:32 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-28 17:47:53 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-28 17:48:06 - root - INFO - Response format handled for language: english
+2025-07-28 17:48:08 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-28 17:48:33 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-28 17:49:15 - root - INFO - Response format handled for language: english
+2025-07-28 17:49:17 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-28 17:49:37 - root - INFO - Response format handled for language: english
+2025-07-28 17:49:37 - root - INFO - Fixed response format for language: english
+2025-07-28 17:49:38 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-28 17:50:08 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-28 17:50:11 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-28 17:51:07 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-28 17:51:09 - root - WARNING - [WARNING] WhatsApp token validation returned: 400
+2025-07-28 17:53:57 - root - INFO - Response format handled for language: english
+2025-07-28 17:53:58 - root - INFO - Fixed response format for language: english
+2025-07-28 17:53:58 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-28 17:53:58 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'Ad82uzziVGycuE1tO0yKWAd'}}
+2025-07-28 17:54:00 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-28 17:54:00 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AGTndSO9k-3f1qrB6KQCrbp'}}
+2025-07-28 17:54:01 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-28 17:54:01 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AP_BU1ZMDLWAhthSLOKd7qh'}}
+2025-07-28 18:18:53 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-28 18:18:53 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AspDrA6vU5tB7zx7ec7mLlf'}}
+2025-07-28 18:18:54 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-28 18:18:54 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AsrOf0C6GiySTaes4Q6FKMw'}}
+2025-07-28 18:18:56 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-28 18:18:56 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AkCqjpdWF5XjYVipZRYMeaU'}}
+2025-07-28 21:24:11 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-28 21:24:11 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'A54fkQkstXqfH94pODxcpJw'}}
+2025-07-28 21:24:13 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-28 21:24:13 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'Ad5qG3knMIFLq7jgB8ga1dg'}}
+2025-07-28 21:24:14 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-28 21:24:14 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AdaSuchLOcZkJue2tUJ3oct'}}
+2025-07-29 08:22:08 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-29 08:22:08 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'Au0cm8Ch7dV6ZBQAJ0gC9Su'}}
+2025-07-29 08:22:09 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-29 08:22:09 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AI5RD2sF0W6-jkK9AEodq4k'}}
+2025-07-29 08:22:11 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-29 08:22:11 - root - ERROR -    Response: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'ADUCdREyxAB2glgZs2rXEPX'}}
+2025-07-29 09:10:20 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 09:10:22 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 09:10:51 - root - INFO - Response format handled for language: english
+2025-07-29 09:10:52 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-29 09:11:59 - root - INFO - Response format handled for language: english
+2025-07-29 09:12:00 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-29 10:03:32 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:03:36 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:03:41 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:03:44 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:03:49 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:03:52 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:22:06 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:22:09 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:22:44 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-29 10:23:52 - root - INFO - Response format handled for language: english
+2025-07-29 10:23:53 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-29 10:23:53 - root - ERROR -    Response: {'error': {'message': '(#10) Application does not have permission for this action', 'type': 'OAuthException', 'code': 10, 'error_data': {'messaging_product': 'whatsapp', 'details': 'There was a problem with the access token or permissions you are using for the API call.'}, 'fbtrace_id': 'A0nx70Rv6v9GdbTNaNa8FSQ'}}
+2025-07-29 10:23:55 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-29 10:23:55 - root - ERROR -    Response: {'error': {'message': '(#10) Application does not have permission for this action', 'type': 'OAuthException', 'code': 10, 'error_data': {'messaging_product': 'whatsapp', 'details': 'There was a problem with the access token or permissions you are using for the API call.'}, 'fbtrace_id': 'Ad5ggFthamLavIbVZg5y64J'}}
+2025-07-29 10:23:56 - root - ERROR - [ERROR] WhatsApp API Error: Status 400
+2025-07-29 10:23:56 - root - ERROR -    Response: {'error': {'message': '(#10) Application does not have permission for this action', 'type': 'OAuthException', 'code': 10, 'error_data': {'messaging_product': 'whatsapp', 'details': 'There was a problem with the access token or permissions you are using for the API call.'}, 'fbtrace_id': 'AdRbpZg0Zz4GKvpaaE_MgNU'}}
+2025-07-29 10:26:08 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:26:11 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:26:49 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-29 10:27:42 - root - INFO - Response format handled for language: english
+2025-07-29 10:27:44 - root - INFO - [OK] WhatsApp message sent successfully to 918879992052
+2025-07-29 10:34:40 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:34:43 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:34:48 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:34:51 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:34:56 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:34:59 - root - INFO - [OK] WhatsApp token validation successful
+2025-07-29 10:39:07 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 10:39:15 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 10:39:24 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 10:43:05 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 10:48:29 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 10:48:37 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 10:48:45 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 10:48:57 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 10:53:04 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 10:54:58 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 10:55:46 - root - INFO - [OK] WhatsApp sent to 918879992052
+2025-07-29 10:56:07 - root - INFO - [OK] WhatsApp sent to 918879992052
+2025-07-29 10:56:55 - root - ERROR - [CRASH] WhatsApp send failed: HTTPSConnectionPool(host='graph.facebook.com', port=443): Max retries exceeded with url: /v12.0/729136556949772/messages (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x000001D62AB0CB90>, 'Connection to graph.facebook.com timed out. (connect timeout=8)'))
+2025-07-29 10:58:02 - root - ERROR - [CRASH] WhatsApp send failed: HTTPSConnectionPool(host='graph.facebook.com', port=443): Max retries exceeded with url: /v12.0/729136556949772/messages (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x000001D62AB0F390>: Failed to resolve 'graph.facebook.com' ([Errno 11001] getaddrinfo failed)"))
+2025-07-29 11:00:06 - root - INFO - [OK] WhatsApp sent to 918879992052
+2025-07-29 11:00:24 - root - INFO - [OK] WhatsApp sent to 918879992052
+2025-07-29 11:01:12 - root - INFO - [OK] WhatsApp sent to 918879992052
+2025-07-29 11:02:11 - root - INFO - [OK] WhatsApp sent to 918879992052
+2025-07-29 11:05:39 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 11:07:40 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 11:07:48 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 11:09:54 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 11:10:02 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 11:10:10 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 11:11:00 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 11:11:08 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 11:11:43 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 11:12:34 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 11:13:09 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 11:13:58 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 11:14:37 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 11:14:56 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 11:16:33 - root - INFO - [OK] WhatsApp message sent to 918879992052

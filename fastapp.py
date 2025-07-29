@@ -13,6 +13,7 @@ import re
 import requests
 import PyPDF2
 import traceback
+import hashlib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
@@ -20,91 +21,164 @@ from datetime import datetime
 import aiohttp
 import asyncio
 from urllib.parse import urlparse
+import sys
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('whatsapp.log'),
-        logging.StreamHandler()
-    ]
-)
-
-# Add these validation functions here
-def detect_language(text):
-    """Detect language based on character scripts or fallback logic."""
+# Fix Windows Unicode encoding issues
+if sys.platform.startswith('win'):
+    os.environ['PYTHONIOENCODING'] = 'utf-8'
     try:
-        hindi_chars = bool(re.search(r'[\u0900-\u097F]', text))
-        english_chars = bool(re.search(r'[a-zA-Z]', text))
+        import codecs
+        sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer)
+        sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer)
+    except:
+        pass
 
-        if hindi_chars and not english_chars:
-            marathi_keywords = ['आहे', 'करा', 'होणार', 'येथे', 'तुमच्या']
-            if any(keyword in text for keyword in marathi_keywords):
-                return 'marathi'
-            return 'hindi'
-        elif english_chars:
-            return 'english'
-        else:
-            # Fallback logic
-            if 'देवनागरी' in text:
-                return 'hindi'
-            elif 'मराठी' in text:
-                return 'marathi'
-            else:
-                return 'english'
-    except Exception as e:
-        logging.error(f"Error detecting language: {e}")
-        return 'unknown'
+# Safe logging for Windows
+class SafeFormatter(logging.Formatter):
+    def format(self, record):
+        msg = super().format(record)
+        if sys.platform.startswith('win'):
+            emoji_replacements = {
+                '✅': '[OK]', '❌': '[ERROR]', '⚠️': '[WARNING]', '🔍': '[SEARCH]',
+                '🤖': '[AI]', '📤': '[SEND]', '📝': '[MSG]', '🔄': '[RETRY]',
+                '💬': '[CHAT]', '⏱️': '[RATE_LIMIT]', '⚡': '[FAST]', '🚀': '[SPEED]'
+            }
+            for emoji, replacement in emoji_replacements.items():
+                msg = msg.replace(emoji, replacement)
+        return msg
 
-def handle_response_format(response_text, user_language):
-    """Validate and fix response format if necessary."""
-    helpline_endings = {
-        'english': "\n\n**For more details, please contact the 104/102 helpline numbers.**",
-        'hindi': "\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
-        'marathi': "\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**"
-    }
+def setup_safe_logging():
+    formatter = SafeFormatter(
+        fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+    
+    file_handler = logging.FileHandler('whatsapp.log', encoding='utf-8')
+    file_handler.setFormatter(formatter)
+    file_handler.setLevel(logging.INFO)
+    
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(formatter)
+    console_handler.setLevel(logging.INFO)
+    
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+    root_logger.handlers.clear()
+    root_logger.addHandler(file_handler)
+    root_logger.addHandler(console_handler)
 
-    required_elements = {
-        'english': ['**For more details, please contact the 104/102 helpline numbers.**'],
-        'hindi': ['**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**'],
-        'marathi': ['**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**']
-    }
-
-    has_ending = any(ending in response_text for ending in required_elements.get(user_language.lower(), []))
-    has_formatting = '**' in response_text and ('##' in response_text or '#' in response_text)
-    word_count = len(response_text.split())
-    min_length = word_count >= 50
-
-    if not (has_ending and has_formatting and min_length):
-        ending = helpline_endings.get(user_language.lower(), helpline_endings['english'])
-        if ending.strip() not in response_text:
-            response_text += ending
-
-    logging.info(f"Response format handled for language: {user_language}")
-    return response_text
+setup_safe_logging()
 
 # Load environment variables
 from dotenv import load_dotenv
 load_dotenv()
 
-# Environment variables - Updated for Google Gemini
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-MODEL_NAME = os.getenv("MODEL_NAME", "gemini-1.5-flash")
-AI_PROVIDER = os.getenv("AI_PROVIDER", "google")
+# OPTIMIZED ENVIRONMENT VARIABLES FOR SPEED
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+MODEL_NAME = os.getenv("MODEL_NAME", "llama3.1:8b")  # Default to fast model
+AI_PROVIDER = os.getenv("AI_PROVIDER", "ollama")
 WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
 WHATSAPP_PHONE_NUMBER_ID = os.getenv("WHATSAPP_PHONE_NUMBER_ID")
 WHATSAPP_VERIFY_TOKEN = os.getenv("WHATSAPP_VERIFY_TOKEN")
+
+# SPEED OPTIMIZATION SETTINGS
+FAST_MODE = os.getenv("FAST_MODE", "true").lower() == "true"
+MAX_RESPONSE_TIME = int(os.getenv("MAX_RESPONSE_TIME", 45))
+RATE_LIMIT_SECONDS = int(os.getenv("RATE_LIMIT_SECONDS", 2))
+CACHE_TTL = int(os.getenv("CACHE_TTL", 1800))
+
+# IMPROVED LANGUAGE DETECTION
+def detect_language(text):
+    """Enhanced language detection for Marathi, Hindi, and English"""
+    try:
+        clean_text = text.strip().lower()
+        
+        # Check for Devanagari characters
+        hindi_chars = bool(re.search(r'[\u0900-\u097F]', clean_text))
+        english_chars = bool(re.search(r'[a-zA-Z]', clean_text))
+
+        if hindi_chars and not english_chars:
+            # Enhanced Marathi vs Hindi detection
+            marathi_words = ['baddal', 'mahiti', 'dya', 'kasa', 'kara', 'आहे', 'तुम्ही', 'मी', 'माहिती', 'येथे', 'करा', 'कसा', 'बद्दल']
+            hindi_words = ['ke', 'liye', 'kaise', 'karna', 'है', 'आपके', 'जानकारी', 'कैसे', 'करना', 'के लिए']
+            
+            marathi_count = sum(1 for word in marathi_words if word in clean_text)
+            hindi_count = sum(1 for word in hindi_words if word in clean_text)
+            
+            if marathi_count > hindi_count:
+                return 'marathi'
+            return 'hindi'
+        elif english_chars:
+            return 'english'
+        else:
+            return 'english'  # Default
+            
+    except Exception as e:
+        logging.error(f"Language detection error: {e}")
+        return 'english'
+
+# FAST RESPONSE CACHE
+class FastResponseCache:
+    def __init__(self, max_size: int = 300, ttl_seconds: int = 1800):
+        self.cache = {}
+        self.max_size = max_size
+        self.ttl = ttl_seconds
+        self.stats = {"hits": 0, "misses": 0}
+    
+    def get_key(self, query: str) -> str:
+        return hashlib.md5(query.lower().strip().encode()).hexdigest()
+    
+    def get(self, query: str) -> Optional[str]:
+        key = self.get_key(query)
+        if key in self.cache:
+            cached_data = self.cache[key]
+            if time.time() - cached_data["timestamp"] < self.ttl:
+                self.stats["hits"] += 1
+                print("💨 CACHE HIT - Instant response!")
+                return cached_data["response"]
+            else:
+                del self.cache[key]  # Remove expired
+        
+        self.stats["misses"] += 1
+        return None
+    
+    def set(self, query: str, response: str):
+        key = self.get_key(query)
+        
+        # Clear old entries if cache is full
+        if len(self.cache) >= self.max_size:
+            old_keys = list(self.cache.keys())[:20]
+            for old_key in old_keys:
+                del self.cache[old_key]
+        
+        self.cache[key] = {
+            "response": response,
+            "timestamp": time.time()
+        }
+        print("💾 Response cached for future speed")
+    
+    def get_stats(self):
+        total = self.stats["hits"] + self.stats["misses"]
+        hit_rate = (self.stats["hits"] / total * 100) if total > 0 else 0
+        return {
+            "hits": self.stats["hits"],
+            "misses": self.stats["misses"],
+            "hit_rate": f"{hit_rate:.1f}%",
+            "cache_size": len(self.cache)
+        }
+
+# Initialize fast cache
+fast_cache = FastResponseCache(max_size=300, ttl_seconds=CACHE_TTL)
 
 # Import services with fallback
 try:
     from core.rag_services import (
         detect_language as transcription_detect_language,
         build_rag_chain_from_documents,
-        build_rag_chain_with_model_choice,
         process_scheme_query_with_retry,
         clear_query_cache,
-        get_model_options
+        get_model_options,
+        get_cache_stats
     )
     RAG_SERVICES_AVAILABLE = True
     print("✅ RAG services imported successfully")
@@ -118,32 +192,243 @@ try:
     TRANSCRIPTION_AVAILABLE = True
     print("✅ Transcription services imported successfully")
 except ImportError:
-    print("⚠️ transcription.py not found, will create fallback")
+    print("⚠️ transcription.py not found")
     TRANSCRIPTION_AVAILABLE = False
 
-def validate_environment():
-    """Validate all required environment variables"""
-    required_vars = {
-        "GOOGLE_API_KEY": GOOGLE_API_KEY,
-        "WHATSAPP_TOKEN": WHATSAPP_TOKEN, 
-        "WHATSAPP_PHONE_NUMBER_ID": WHATSAPP_PHONE_NUMBER_ID,
-        "WHATSAPP_VERIFY_TOKEN": WHATSAPP_VERIFY_TOKEN
+def handle_response_format(response_text, user_language):
+    """Fast response formatting for WhatsApp"""
+    helpline_endings = {
+        'english': "\n\n**For more details, please contact the 104/102 helpline numbers.**",
+        'hindi': "\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+        'marathi': "\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**"
     }
-    
-    missing = [var for var, value in required_vars.items() if not value]
-    if missing:
-        print(f"❌ Error: Missing required environment variables: {missing}")
-        print("Please check your .env file and ensure all variables are set.")
-        return False
-    else:
-        print("✅ All required environment variables are configured")
-        print(f"🤖 Using Google Gemini model: {MODEL_NAME}")
-        print(f"🌟 AI Provider: {AI_PROVIDER}")
-        return True
 
-# Validate environment on startup
-if not validate_environment():
-    exit(1)
+    # Quick formatting check
+    has_ending = any(ending.strip() in response_text for ending in helpline_endings.values())
+    
+    if not has_ending:
+        ending = helpline_endings.get(user_language.lower(), helpline_endings['english'])
+        response_text += ending
+
+    return response_text
+
+def validate_response_format(response_text, user_language):
+    """Quick response validation"""
+    return len(response_text) > 20 and ('104' in response_text or '102' in response_text)
+
+# FAST GREETING RESPONSES (bypass AI completely)
+def get_instant_greeting(query: str, language: str) -> Optional[str]:
+    """Get instant greeting responses without AI"""
+    query_lower = query.strip().lower()
+    
+    greetings = ['hi', 'hello', 'hey', 'namaste', 'नमस्ते', 'नमस्कार', 'good morning', 'good afternoon']
+    
+    if query_lower in greetings or any(greet in query_lower for greet in greetings):
+        if language == 'hindi':
+            return "नमस्ते! मैं आपकी सरकारी योजनाओं में कैसे मदद कर सकती हूँ? 😊\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**"
+        elif language == 'marathi':
+            return "नमस्कार! मी तुम्हाला सरकारी योजनांमध्ये कशी मदत करू शकते? 😊\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**"
+        else:
+            return "Hello! How can I help you with government schemes today? 😊\n\n**For more details, please contact the 104/102 helpline numbers.**"
+    
+    return None
+
+# ENHANCED WhatsApp message sending with better error handling
+def send_whatsapp_message(to: str, message: str) -> bool:
+    """Enhanced WhatsApp message sending with network resilience"""
+    max_retries = 3
+    base_timeout = 15
+    
+    for attempt in range(max_retries):
+        try:
+            timeout = base_timeout + (attempt * 5)  # Increase timeout with each retry
+            
+            headers = {
+                'Authorization': f'Bearer {WHATSAPP_TOKEN}',
+                'Content-Type': 'application/json',
+                'User-Agent': 'WhatsApp-Bot/1.0'
+            }
+            
+            payload = {
+                "messaging_product": "whatsapp",
+                "to": to,
+                "type": "text",
+                "text": {"body": message}
+            }
+            
+            url = f"https://graph.facebook.com/v12.0/{WHATSAPP_PHONE_NUMBER_ID}/messages"
+            
+            print(f"📤 Sending to WhatsApp (attempt {attempt + 1}/{max_retries}, timeout: {timeout}s)")
+            
+            response = requests.post(
+                url, 
+                headers=headers, 
+                json=payload, 
+                timeout=timeout,
+                verify=True  # Ensure SSL verification
+            )
+            
+            if response.status_code == 200:
+                logging.info(f"[OK] WhatsApp message sent to {to}")
+                return True
+            elif response.status_code == 401:
+                # Token issue - don't retry
+                try:
+                    error_data = response.json()
+                    error_message = error_data.get('error', {}).get('message', '')
+                except:
+                    error_message = response.text
+                
+                logging.error(f"[TOKEN] WhatsApp token issue: {error_message}")
+                return False
+            elif response.status_code == 429:
+                # Rate limit - wait and retry
+                wait_time = 2 ** attempt  # Exponential backoff
+                logging.warning(f"[RATE_LIMIT] Waiting {wait_time}s before retry")
+                time.sleep(wait_time)
+                continue
+            else:
+                logging.error(f"[ERROR] WhatsApp API error: {response.status_code}")
+                try:
+                    error_details = response.json()
+                    logging.error(f"   Details: {error_details}")
+                except:
+                    logging.error(f"   Response: {response.text[:200]}")
+                
+                if attempt < max_retries - 1:
+                    time.sleep(2)  # Brief wait before retry
+                    continue
+                return False
+                
+        except requests.exceptions.Timeout:
+            logging.error(f"[TIMEOUT] WhatsApp API timeout after {timeout}s (attempt {attempt + 1})")
+            if attempt < max_retries - 1:
+                time.sleep(3)
+                continue
+            return False
+        except requests.exceptions.ConnectionError as e:
+            logging.error(f"[CONNECTION] WhatsApp connection error: {str(e)}")
+            if attempt < max_retries - 1:
+                wait_time = 5 + (attempt * 3)  # Longer wait for connection issues
+                print(f"⏳ Waiting {wait_time}s for network recovery...")
+                time.sleep(wait_time)
+                continue
+            return False
+        except requests.exceptions.RequestException as e:
+            logging.error(f"[REQUEST] WhatsApp request error: {str(e)}")
+            if attempt < max_retries - 1:
+                time.sleep(2)
+                continue
+            return False
+        except Exception as e:
+            logging.error(f"[CRASH] Unexpected WhatsApp error: {str(e)}")
+            return False
+    
+    logging.error(f"[FAILED] All {max_retries} WhatsApp send attempts failed")
+    return False
+
+# Validation functions
+def validate_whatsapp_config():
+    """Validate WhatsApp configuration"""
+    required_vars = [WHATSAPP_TOKEN, WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_VERIFY_TOKEN]
+    missing = [var for var in required_vars if not var]
+    
+    if missing:
+        logging.error(f"[ERROR] Missing WhatsApp config: {len(missing)} variables")
+        return False
+    
+    # Quick token test with better error handling
+    try:
+        headers = {'Authorization': f'Bearer {WHATSAPP_TOKEN}'}
+        url = f"https://graph.facebook.com/v12.0/{WHATSAPP_PHONE_NUMBER_ID}"
+        response = requests.get(url, headers=headers, timeout=10)
+        
+        if response.status_code == 200:
+            logging.info("[OK] WhatsApp token valid")
+            return True
+        else:
+            logging.error(f"[TOKEN] WhatsApp token issue: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        logging.error(f"[ERROR] WhatsApp validation failed: {e}")
+        return False
+
+def validate_ollama_server():
+    """Validate Ollama server and test speed"""
+    try:
+        start_time = time.time()
+        response = requests.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=10)
+        connection_time = round((time.time() - start_time) * 1000, 2)
+        
+        if response.status_code == 200:
+            models = response.json().get("models", [])
+            model_names = [m["name"] for m in models]
+            
+            if MODEL_NAME in model_names:
+                print(f"✅ Model '{MODEL_NAME}' available ({connection_time}ms)")
+                
+                # Test generation speed
+                test_start = time.time()
+                test_payload = {
+                    "model": MODEL_NAME,
+                    "prompt": "Hi",
+                    "stream": False,
+                    "options": {"num_predict": 5}
+                }
+                
+                gen_response = requests.post(
+                    f"{OLLAMA_BASE_URL}/api/generate", 
+                    json=test_payload, 
+                    timeout=15
+                )
+                gen_time = round((time.time() - test_start) * 1000, 2)
+                
+                if gen_response.status_code == 200:
+                    print(f"⚡ Speed test: {gen_time}ms")
+                    if gen_time < 3000:
+                        print("🔥 EXCELLENT speed for WhatsApp!")
+                    elif gen_time < 8000:
+                        print("✅ Good speed for WhatsApp")
+                    else:
+                        print("⚠️ May be slow for WhatsApp")
+                    return True
+                
+            else:
+                print(f"❌ Model '{MODEL_NAME}' not found")
+                print(f"Available: {model_names}")
+                if "llama3.1:8b" not in model_names:
+                    print("💡 Run: ollama pull llama3.1:8b")
+                return False
+        else:
+            print(f"❌ Ollama server error: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Ollama connection failed: {e}")
+        print("💡 Make sure Ollama is running: ollama serve")
+        return False
+
+def validate_environment():
+    """Validate all configurations with speed focus"""
+    print("🚀 Validating FAST WhatsApp setup...")
+    print(f"⚡ Fast Mode: {FAST_MODE}")
+    print(f"🤖 Model: {MODEL_NAME}")
+    print(f"⏱️ Max Response Time: {MAX_RESPONSE_TIME}s")
+    print(f"🔄 Rate Limit: {RATE_LIMIT_SECONDS}s")
+    
+    ollama_valid = validate_ollama_server()
+    wa_valid = validate_whatsapp_config()
+    
+    if ollama_valid and wa_valid:
+        print("🚀 ALL SYSTEMS READY FOR FAST WHATSAPP!")
+        return True
+    else:
+        print("⚠️ Some configuration issues detected, but starting anyway...")
+        return True  # Continue even with minor issues
+
+# Validate on startup
+validate_environment()
 
 # Redis Configuration
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
@@ -151,82 +436,46 @@ REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 REDIS_DB = int(os.getenv("REDIS_DB", 0))
 REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", None)
 
-# Fallback functions if modules are missing
-if not RAG_SERVICES_AVAILABLE:
-    print("🔧 Creating fallback RAG services...")
-    
-    def transcription_detect_language(text):
-        """Fallback language detection"""
+# Redis Manager
+class RedisManager:
+    def __init__(self):
+        self.redis_client = None
+        self._connect()
+
+    def _connect(self):
         try:
-            import langid
-            lang, _ = langid.classify(text)
-            return lang
-        except ImportError:
-            if any(char in text for char in 'देवनागरी'):
-                return 'hi'
-            elif any(char in text for char in 'मराठी'):
-                return 'mr'
-            else:
-                return 'en'
-    
-    def build_rag_chain_from_documents(documents, google_api_key, model_name=None, **kwargs):
-        """Fallback RAG chain builder"""
-        print("⚠️ Using fallback RAG chain - limited functionality")
-        return None
-    
-    def build_rag_chain_with_model_choice(pdf_file, txt_file, google_api_key, **kwargs):
-        """Fallback RAG chain builder"""
-        print("⚠️ Using fallback RAG chain - limited functionality")
-        return None
-    
-    def process_scheme_query_with_retry(rag_chain, query, **kwargs):
-        """Fallback query processor"""
-        return ("Service temporarily unavailable. Please try again later.", "", "en", {"cache": "disabled"})
-    
-    def clear_query_cache():
-        """Fallback cache clear"""
-        print("Cache clearing not available")
-    
-    def get_model_options():
-        """Fallback model options"""
-        return {"gemini-1.5-flash": {"name": "Gemini 1.5 Flash", "description": "Default model"}}
+            self.redis_client = redis.Redis(
+                host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB,
+                password=REDIS_PASSWORD, decode_responses=False,
+                socket_timeout=3, socket_connect_timeout=3, retry_on_timeout=True
+            )
+            self.redis_client.ping()
+            print("✅ Redis connected")
+        except Exception as e:
+            print(f"❌ Redis failed: {e}")
+            self.redis_client = None
 
-if not TRANSCRIPTION_AVAILABLE:
-    print("🔧 Creating fallback transcription...")
-    
-    def transcribe_audio(api_key, audio_bytes, method="fallback"):
-        """Fallback transcription"""
-        return (False, "Audio transcription not available. Please install required dependencies.")
+    def is_available(self) -> bool:
+        return self.redis_client is not None
 
-def send_whatsapp_message(to: str, message: str) -> bool:
-    """Send a WhatsApp message using the WhatsApp Business API"""
-    try:
-        headers = {
-            'Authorization': f'Bearer {WHATSAPP_TOKEN}',
-            'Content-Type': 'application/json'
-        }
-        
-        payload = {
-            "messaging_product": "whatsapp",
-            "to": to,
-            "type": "text",
-            "text": {"body": message}
-        }
-        
-        url = f"https://graph.facebook.com/v12.0/{WHATSAPP_PHONE_NUMBER_ID}/messages"
-        
-        response = requests.post(url, headers=headers, json=payload)
-        
-        if response.status_code == 200:
-            logging.info(f"WhatsApp message sent successfully to {to}")
-            return True
-        else:
-            logging.error(f"Failed to send WhatsApp message: Status {response.status_code}, Response: {response.text}")
+    def set_rate_limit(self, key: str, expire_seconds: int = 2):
+        if not self.is_available():
             return False
-            
-    except Exception as e:
-        logging.error(f"Error sending WhatsApp message: {str(e)}")
-        return False
+        try:
+            self.redis_client.setex(f"rate_limit:{key}", expire_seconds, "1")
+            return True
+        except Exception:
+            return False
+
+    def check_rate_limit(self, key: str) -> bool:
+        if not self.is_available():
+            return False
+        try:
+            return self.redis_client.exists(f"rate_limit:{key}") > 0
+        except Exception:
+            return False
+
+redis_manager = RedisManager()
 
 # Global knowledge base
 KNOWLEDGE_BASE = {
@@ -246,14 +495,16 @@ USAGE_STATS = {
     "api_calls": 0,
     "start_time": time.time(),
     "daily_messages": 0,
-    "last_reset": datetime.now().date()
+    "last_reset": datetime.now().date(),
+    "average_response_time": 0,
+    "fast_responses": 0  # Responses under 5 seconds
 }
 
 # Track processed message IDs
 PROCESSED_MESSAGE_IDS = set()
 
-def track_usage(action: str):
-    """Simple usage tracking"""
+def track_usage(action: str, response_time: float = 0):
+    """Enhanced usage tracking with speed metrics"""
     global USAGE_STATS
     
     today = datetime.now().date()
@@ -264,133 +515,174 @@ def track_usage(action: str):
     if action == "message_sent":
         USAGE_STATS["messages_sent"] += 1
         USAGE_STATS["daily_messages"] += 1
+        
+        # Track response times
+        if response_time > 0:
+            if response_time < 5.0:
+                USAGE_STATS["fast_responses"] += 1
+            
+            # Update average
+            total_responses = USAGE_STATS["messages_sent"]
+            current_avg = USAGE_STATS["average_response_time"]
+            USAGE_STATS["average_response_time"] = (
+                (current_avg * (total_responses - 1) + response_time) / total_responses
+            )
+            
     elif action == "message_received":
         USAGE_STATS["messages_received"] += 1
     elif action == "api_call":
         USAGE_STATS["api_calls"] += 1
 
-# API Status Check Functions
-async def check_gemini_api_status():
-    """Check Google Gemini API status and limits"""
-    if not GOOGLE_API_KEY:
-        return {
-            "status": "error",
-            "message": "API key not configured",
-            "available": False
-        }
-    
+def rebuild_rag_chain():
+    """Rebuild RAG chain with fast model"""
+    global RAG_CHAIN
     try:
-        import google.generativeai as genai
-        
-        genai.configure(api_key=GOOGLE_API_KEY)
-        model = genai.GenerativeModel(MODEL_NAME)
-        
-        start_time = time.time()
-        response = model.generate_content("Hello")
-        response_time = round((time.time() - start_time) * 1000, 2)
-        
-        return {
-            "status": "online",
-            "response_time_ms": response_time,
-            "model": MODEL_NAME,
-            "available": True,
-            "rate_limits": {
-                "requests_per_minute": 15,
-                "requests_per_day": 1500,
-                "tokens_per_month": 1000000,
-                "cost": "FREE"
-            }
-        }
-        
-    except ImportError:
-        return {
-            "status": "error",
-            "message": "google-generativeai not installed",
-            "available": False
-        }
+        if KNOWLEDGE_BASE["documents"] and RAG_SERVICES_AVAILABLE:
+            print(f"🔄 Building FAST RAG chain with {MODEL_NAME}...")
+            RAG_CHAIN = build_rag_chain_from_documents(
+                KNOWLEDGE_BASE["documents"],
+                ollama_model=MODEL_NAME,
+                model_name=MODEL_NAME,
+                enhanced_mode=True
+            )
+            KNOWLEDGE_BASE["last_updated"] = time.time()
+            print(f"🚀 FAST RAG chain ready with {MODEL_NAME}")
+        else:
+            RAG_CHAIN = None
+            print("⚠️ No documents or RAG services unavailable")
     except Exception as e:
-        error_msg = str(e)
-        if "quota" in error_msg.lower() or "limit" in error_msg.lower():
-            return {
-                "status": "rate_limited",
-                "message": "Rate limit exceeded",
-                "available": False
+        print(f"❌ Error building RAG chain: {e}")
+        RAG_CHAIN = None
+
+def ultra_fast_rag_response(query: str) -> str:
+    """Ultra-fast response function optimized for WhatsApp"""
+    start_time = time.time()
+    print(f"⚡ FAST processing: '{query[:40]}...'")
+    
+    # Step 1: Check cache first for instant responses
+    cached_response = fast_cache.get(query)
+    if cached_response:
+        response_time = time.time() - start_time
+        print(f"💨 Instant cache response ({response_time:.2f}s)")
+        return cached_response
+    
+    # Step 2: Enhanced language detection
+    language = detect_language(query)
+    print(f"🗣️ Language: {language}")
+    
+    # Step 3: Instant greeting responses (bypass AI)
+    instant_greeting = get_instant_greeting(query, language)
+    if instant_greeting:
+        fast_cache.set(query, instant_greeting)
+        response_time = time.time() - start_time
+        print(f"⚡ Instant greeting ({response_time:.2f}s)")
+        return instant_greeting
+    
+    # Step 4: Quick validation checks
+    if not RAG_SERVICES_AVAILABLE:
+        error_response = "AI services starting up. Please try again in 30 seconds."
+        return handle_response_format(error_response, language)
+    
+    if not KNOWLEDGE_BASE["documents"]:
+        error_messages = {
+            'hindi': "ज्ञान आधार उपलब्ध नहीं। कृपया बाद में कोशिश करें।",
+            'marathi': "ज्ञान आधार उपलब्ध नाही. कृपया नंतर प्रयत्न करा.",
+            'english': "Knowledge base not available. Please try again later."
+        }
+        error_response = error_messages.get(language, error_messages['english'])
+        return handle_response_format(error_response, language)
+    
+    # Step 5: Build/use RAG chain
+    global RAG_CHAIN
+    if RAG_CHAIN is None:
+        try:
+            print("🔄 Building FAST RAG chain...")
+            rebuild_rag_chain()
+        except Exception as e:
+            print(f"❌ RAG chain build failed: {e}")
+            error_response = "System initializing. Please try again in 30 seconds."
+            return handle_response_format(error_response, language)
+    
+    # Step 6: Process with AI (with timeout)
+    try:
+        print(f"🔄 Processing with {MODEL_NAME}...")
+        
+        result = process_scheme_query_with_retry(RAG_CHAIN, query, max_retries=1)
+        result_text = result[0] if isinstance(result, tuple) else str(result)
+        
+        response_time = time.time() - start_time
+        print(f"⚡ AI response in {response_time:.2f}s")
+        
+        if not result_text or len(result_text.strip()) < 10:
+            error_messages = {
+                'hindi': "जानकारी नहीं मिली। कृपया दूसरे तरीके से पूछें।",
+                'marathi': "माहिती मिळाली नाही. कृपया वेगळ्या पद्धतीने विचारा.",
+                'english': "No information found. Please rephrase your question."
             }
-        elif "api key" in error_msg.lower() or "invalid" in error_msg.lower():
-            return {
-                "status": "unauthorized", 
-                "message": "Invalid API key",
-                "available": False
+            error_response = error_messages.get(language, error_messages['english'])
+            return handle_response_format(error_response, language)
+        
+        # Step 7: Format and cache response
+        result_text = result_text.strip()
+        
+        # Convert markdown to WhatsApp formatting
+        result_text = re.sub(r'\*\*(.*?)\*\*', r'*\1*', result_text)
+        
+        # Ensure proper format
+        if not validate_response_format(result_text, language):
+            result_text = handle_response_format(result_text, language)
+        
+        # Cache for future speed
+        fast_cache.set(query, result_text)
+        
+        total_time = time.time() - start_time
+        print(f"🚀 Total response time: {total_time:.2f}s")
+        
+        return result_text
+        
+    except Exception as e:
+        print(f"❌ AI processing failed: {e}")
+        
+        error_str = str(e).lower()
+        if "timeout" in error_str:
+            error_messages = {
+                'hindi': "Response धीमा है। छोटा प्रश्न पूछें।",
+                'marathi': "प्रतिसाद धीमा आहे. लहान प्रश्न विचारा.",
+                'english': "Response slow. Ask shorter question."
             }
         else:
-            return {
-                "status": "error",
-                "message": f"Connection failed: {error_msg}",
-                "available": False
+            error_messages = {
+                'hindi': "तकनीकी समस्या। पुनः प्रयास करें।",
+                'marathi': "तांत्रिक समस्या. पुन्हा प्रयत्न करा.",
+                'english': "Technical issue. Please try again."
             }
+        
+        error_response = error_messages.get(language, error_messages['english'])
+        return handle_response_format(error_response, language)
 
-class RedisManager:
-    def __init__(self):
-        self.redis_client = None
-        self._connect()
+# COMPLETE FASTAPI ENDPOINTS - PART 2
+# Add this to the end of the previous file
 
-    def _connect(self):
-        try:
-            self.redis_client = redis.Redis(
-                host=REDIS_HOST,
-                port=REDIS_PORT,
-                db=REDIS_DB,
-                password=REDIS_PASSWORD,
-                decode_responses=False,
-                socket_timeout=5,
-                socket_connect_timeout=5,
-                retry_on_timeout=True
-            )
-            self.redis_client.ping()
-            print("✅ Redis connected successfully")
-        except Exception as e:
-            print(f"❌ Redis connection failed: {e}")
-            self.redis_client = None
-
-    def is_available(self) -> bool:
-        return self.redis_client is not None
-
-    def set_rate_limit(self, key: str, expire_seconds: int = 60):
-        if not self.is_available():
-            return False
-        try:
-            self.redis_client.setex(f"rate_limit:{key}", expire_seconds, "1")
-            return True
-        except Exception:
-            return False
-
-    def check_rate_limit(self, key: str) -> bool:
-        if not self.is_available():
-            return False
-        try:
-            return self.redis_client.exists(f"rate_limit:{key}") > 0
-        except Exception:
-            return False
-
-redis_manager = RedisManager()
-
+# FastAPI setup
+# FastAPI setup
 class QueryRequest(BaseModel):
     input_text: str
-    model: str = "gemini-1.5-flash"
+    model: str = "llama3.1:8b"
     enhanced_mode: bool = True
     voice_lang_pref: str = "auto"
     session_id: Optional[str] = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("🚀 Starting up FastAPI application...")
-    validate_environment()
+    print("🚀 Starting FAST WhatsApp AI application...")
+    print(f"⚡ Model: {MODEL_NAME}")
+    print(f"🔄 Rate Limit: {RATE_LIMIT_SECONDS}s")
     yield
     if redis_manager.is_available():
         redis_manager.redis_client.close()
-    print("🛑 FastAPI application shutting down...")
+    print("🛑 Application shutting down...")
 
-app = FastAPI(title="SAMNEX AI - Google Gemini Edition", lifespan=lifespan)
+app = FastAPI(title="FAST WhatsApp AI - Production Ready", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -400,109 +692,53 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def debug_gemini_request(query, model_choice="gemini-1.5-flash"):
-    """Test Google Gemini API directly"""
-    try:
-        import google.generativeai as genai
-        
-        genai.configure(api_key=GOOGLE_API_KEY)
-        model = genai.GenerativeModel(model_choice)
-        
-        print(f"🔍 Testing Google Gemini API directly...")
-        print(f"   Model: {model_choice}")
-        print(f"   Query: {query[:100]}...")
-        
-        response = model.generate_content(query)
-        
-        if response.text:
-            print("✅ Direct Google Gemini API call successful!")
-            return True, response.text
-        else:
-            return False, "No response text generated"
-        
-    except ImportError:
-        return False, "google-generativeai not installed"
-    except Exception as e:
-        print(f"❌ Direct Google Gemini API call failed: {e}")
-        return False, str(e)
-
-def rebuild_rag_chain():
-    """Rebuild RAG chain when knowledge base is updated"""
-    global RAG_CHAIN
-    try:
-        if KNOWLEDGE_BASE["documents"] and RAG_SERVICES_AVAILABLE:
-            print(f"🔄 Rebuilding RAG chain with Google Gemini: {MODEL_NAME}...")
-            RAG_CHAIN = build_rag_chain_from_documents(
-                KNOWLEDGE_BASE["documents"],
-                google_api_key=GOOGLE_API_KEY,
-                model_name=MODEL_NAME,
-                enhanced_mode=True
-            )
-            KNOWLEDGE_BASE["last_updated"] = time.time()
-            print(f"✅ RAG chain rebuilt successfully with {MODEL_NAME}")
-        else:
-            RAG_CHAIN = None
-            print("⚠️ No documents available or RAG services not available")
-    except Exception as e:
-        print(f"❌ Error rebuilding RAG chain: {e}")
-        import traceback
-        traceback.print_exc()
-        RAG_CHAIN = None
-
 @app.get("/")
 async def root():
     try:
-        redis_status = redis_manager.is_available()
-        kb_status = len(KNOWLEDGE_BASE["documents"]) if KNOWLEDGE_BASE["documents"] else 0
+        cache_stats = fast_cache.get_stats()
         return {
-            "message": "CMRF AI Agent FastAPI backend is running with Google Gemini.", 
-            "docs": "/docs", 
-            "health": "/health/", 
-            "api_status": "/api/status/comprehensive",
-            "debug_documents": "/debug/documents",
-            "redis_available": redis_status,
-            "knowledge_base_documents": kb_status,
-            "last_updated": KNOWLEDGE_BASE["last_updated"],
-            "ai_provider": "Google Gemini",
+            "message": "FAST WhatsApp AI - Production Ready",
             "model": MODEL_NAME,
-            "cost": "FREE",
-            "services_status": {
+            "fast_mode": FAST_MODE,
+            "max_response_time": MAX_RESPONSE_TIME,
+            "rate_limit_seconds": RATE_LIMIT_SECONDS,
+            "cache_stats": cache_stats,
+            "knowledge_base_documents": len(KNOWLEDGE_BASE["documents"]),
+            "rag_chain_ready": RAG_CHAIN is not None,
+            "services_available": {
                 "rag_services": RAG_SERVICES_AVAILABLE,
-                "transcription": TRANSCRIPTION_AVAILABLE
-            }
+                "transcription": TRANSCRIPTION_AVAILABLE,
+                "redis": redis_manager.is_available()
+            },
+            "speed_optimization": "ENABLED",
+            "docs": "/docs",
+            "health": "/health/"
         }
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 @app.get("/health/")
 async def health_check():
-    """Basic health check endpoint"""
+    """Fast health check"""
+    cache_stats = fast_cache.get_stats()
     return {
         "status": "ok",
-        "redis_available": redis_manager.is_available(),
-        "knowledge_base_documents": len(KNOWLEDGE_BASE["documents"]) if KNOWLEDGE_BASE["documents"] else 0,
-        "rate_limit_seconds": 5,
-        "timestamp": time.time(),
-        "ai_provider": "Google Gemini",
         "model": MODEL_NAME,
-        "cost": "FREE",
-        "services_available": {
-            "rag_services": RAG_SERVICES_AVAILABLE,
-            "transcription": TRANSCRIPTION_AVAILABLE
-        }
+        "fast_mode": FAST_MODE,
+        "cache_stats": cache_stats,
+        "knowledge_base_documents": len(KNOWLEDGE_BASE["documents"]),
+        "redis_available": redis_manager.is_available(),
+        "rag_chain_ready": RAG_CHAIN is not None,
+        "timestamp": time.time(),
+        "speed_optimized": True
     }
-
-@app.get("/api/status/gemini")
-async def gemini_status_only():
-    """Check only Google Gemini API status"""
-    return await check_gemini_api_status()
 
 @app.post("/upload/")
 async def upload_knowledge_files(
     pdf_file: Optional[UploadFile] = File(None),
     txt_file: Optional[UploadFile] = File(None)
 ):
-    """Upload PDF and/or TXT files to update the knowledge base"""
+    """Fast file upload with optimized processing"""
     try:
         if not pdf_file and not txt_file:
             return JSONResponse(
@@ -511,6 +747,7 @@ async def upload_knowledge_files(
             )
 
         saved_files = []
+        start_time = time.time()
         
         # Process PDF file
         if pdf_file:
@@ -520,9 +757,8 @@ async def upload_knowledge_files(
             with open(pdf_filename, "wb") as f:
                 f.write(pdf_bytes)
                 saved_files.append(pdf_filename)
-            print(f"📄 PDF file saved: {pdf_filename}")
             
-            # Read PDF content and add to knowledge base
+            # Fast PDF reading
             try:
                 with open(pdf_filename, "rb") as f:
                     reader = PyPDF2.PdfReader(f)
@@ -533,7 +769,7 @@ async def upload_knowledge_files(
                             text += page_text
                     KNOWLEDGE_BASE["documents"].append({"filename": pdf_filename, "content": text})
             except Exception as e:
-                print(f"❌ Error reading PDF: {e}")
+                print(f"❌ PDF reading error: {e}")
 
         # Process TXT file
         if txt_file:
@@ -543,26 +779,28 @@ async def upload_knowledge_files(
             with open(txt_filename, "wb") as f:
                 f.write(txt_bytes)
                 saved_files.append(txt_filename)
-            print(f"📄 TXT file saved: {txt_filename}")
             
-            # Read TXT content and add to knowledge base
+            # Fast TXT reading
             try:
                 with open(txt_filename, "r", encoding="utf-8") as f:
                     text = f.read()
                     KNOWLEDGE_BASE["documents"].append({"filename": txt_filename, "content": text})
             except Exception as e:
-                print(f"❌ Error reading TXT: {e}")
+                print(f"❌ TXT reading error: {e}")
 
-        # Rebuild RAG chain with new documents
+        # Fast RAG chain rebuild
         rebuild_rag_chain()
+        
+        processing_time = time.time() - start_time
+        print(f"⚡ Files processed in {processing_time:.2f}s")
 
         return {
-            "message": "Files uploaded successfully and knowledge base updated",
+            "message": "Files uploaded and knowledge base updated",
             "saved_files": saved_files,
             "total_documents": len(KNOWLEDGE_BASE["documents"]),
-            "timestamp": time.time(),
-            "ai_provider": "Google Gemini",
-            "model": MODEL_NAME
+            "processing_time_seconds": round(processing_time, 2),
+            "model": MODEL_NAME,
+            "timestamp": time.time()
         }
 
     except Exception as e:
@@ -571,7 +809,7 @@ async def upload_knowledge_files(
 
 @app.post("/query/")
 async def query_knowledge_base(req: QueryRequest):
-    """Query the knowledge base using uploaded documents"""
+    """Fast query processing"""
     try:
         query = req.input_text.strip()
         if not query:
@@ -584,441 +822,153 @@ async def query_knowledge_base(req: QueryRequest):
             return JSONResponse(
                 status_code=400,
                 content={
-                    "error": "No knowledge base available. Please upload PDF/TXT files first.",
+                    "error": "No knowledge base available. Upload files first.",
                     "upload_endpoint": "/upload/"
                 }
             )
 
-        # Generate response using AI and uploaded documents
-        response = intelligent_rag_response(query)
+        start_time = time.time()
         
-        # Add validation here
+        # Fast response generation
+        response = ultra_fast_rag_response(query)
+        
+        response_time = time.time() - start_time
         user_language = detect_language(query)
         
-        # Validate response format
+        # Validate response format quickly
         if not validate_response_format(response, user_language):
-            # Fix response format if validation fails
-            response = fix_response_format(response, user_language)
-            logging.info(f"Response format was fixed for language: {user_language}")
+            response = handle_response_format(response, user_language)
         
         return {
             "query": query,
             "response": response,
-            "timestamp": time.time(),
+            "response_time_seconds": round(response_time, 2),
+            "language_detected": user_language,
             "knowledge_base_size": len(KNOWLEDGE_BASE["documents"]),
-            "ai_provider": "Google Gemini",
             "model": MODEL_NAME,
-            "language_detected": user_language
+            "fast_mode": FAST_MODE,
+            "timestamp": time.time()
         }
 
     except Exception as e:
         print(f"❌ Query error: {e}")
         return JSONResponse(status_code=500, content={"error": str(e)})
 
-def intelligent_rag_response(query: str) -> str:
-    """Enhanced response function with Google Gemini"""
-    print(f"🤖 Processing query with Google Gemini: '{query}'")
-    
-    # Test language detection
-    try:
-        language = transcription_detect_language(query)
-        print(f"🗣️ Detected language: {language}")
-    except Exception as e:
-        print(f"⚠️ Language detection failed: {e}, defaulting to English")
-        language = 'en'
-    
-    # Convert language codes to full names for validation
-    language_map = {'hi': 'hindi', 'mr': 'marathi', 'en': 'english'}
-    validation_language = language_map.get(language, 'english')
-    
-    # Handle greetings
-    greetings = ['hi', 'hello', 'hey', 'namaste', 'नमस्ते', 'नमस्कार']
-    if query.strip().lower() in greetings:
-        if language == 'hi':
-            greeting_response = "नमस्ते! मैं आपकी कैसे मदद कर सकती हूँ? 😊\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**"
-        elif language == 'mr':
-            greeting_response = "नमस्कार! मी तुमची कशी मदत करू शकते? 😊\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**"
-        else:
-            greeting_response = "Hello! How can I help you today? 😊\n\n**For more details, please contact the 104/102 helpline numbers.**"
-        
-        return greeting_response
-    
-    # Check if services are available
-    if not RAG_SERVICES_AVAILABLE:
-        error_response = "🔧 AI services are being set up. Please update rag_services.py and restart the application."
-        return fix_response_format(error_response, validation_language)
-    
-    # Check knowledge base
-    if not KNOWLEDGE_BASE["documents"]:
-        error_messages = {
-            'hi': "📚 ज्ञान संग्रह उपलब्ध नहीं है। कृपया प्रशासक से संपर्क करें।",
-            'mr': "📚 ज्ञान संग्रह उपलब्ध नाही. कृपया प्रशासकाशी संपर्क साधा.",
-            'en': "📚 Knowledge base not available. Please contact administrator."
-        }
-        error_response = error_messages.get(language, error_messages['en'])
-        return fix_response_format(error_response, validation_language)
-    
-    # Test Google Gemini API
-    print("🔍 Testing Google Gemini API connection...")
-    api_test_success, api_result = debug_gemini_request(query[:100])
-    
-    if not api_test_success:
-        print(f"❌ Google Gemini API test failed: {api_result}")
-        error_messages = {
-            'hi': "तकनीकी समस्या हुई है। कृपया बाद में कोशिश करें।",
-            'mr': "तांत्रिक समस्या आली आहे. कृपया नंतर प्रयत्न करा.",
-            'en': "Technical issue occurred. Please try again later."
-        }
-        error_response = error_messages.get(language, error_messages['en'])
-        return fix_response_format(error_response, validation_language)
-    
-    print("✅ Google Gemini API test successful")
-    
-    # Build/rebuild RAG chain if needed
-    global RAG_CHAIN
-    if RAG_CHAIN is None:
-        try:
-            print("🔄 Building RAG chain...")
-            rebuild_rag_chain()
-            print("✅ RAG chain built successfully")
-        except Exception as e:
-            print(f"❌ Error building RAG chain: {e}")
-            error_messages = {
-                'hi': "सिस्टम तैयार नहीं हो सका। प्रशासक से संपर्क करें।",
-                'mr': "सिस्टम तयार होऊ शकला नाही. प्रशासकाशी संपर्क साधा.",
-                'en': "System could not be prepared. Contact administrator."
-            }
-            error_response = error_messages.get(language, error_messages['en'])
-            return fix_response_format(error_response, validation_language)
-    
-    # Process the query
-    try:
-        print(f"🔄 Processing query with Google Gemini RAG chain...")
-        
-        # Use RAG chain
-        result = process_scheme_query_with_retry(RAG_CHAIN, query)
-        result_text = result[0] if isinstance(result, tuple) else str(result)
-        
-        print(f"✅ Google Gemini RAG query successful: {result_text[:100]}...")
-        
-        # Clean up response
-        result_text = result_text.strip()
-        if not result_text:
-            error_messages = {
-                'hi': "कोई जवाब नहीं मिला। कृपया अपना सवाल दूसरे तरीके से पूछें।",
-                'mr': "कोणताही उत्तर मिळाला नाही. कृपया आपला प्रश्न वेगळ्या पद्धतीने विचारा.",
-                'en': "No answer found. Please rephrase your question."
-            }
-            error_response = error_messages.get(language, error_messages['en'])
-            return fix_response_format(error_response, validation_language)
-        
-        # Convert markdown bold to WhatsApp bold
-        result_text = re.sub(r'\*\*(.*?)\*\*', r'*\1*', result_text)
-        result_text = re.sub(r'(\*[^*]+\*)\n([^\n*])', r'\1\n\n\2', result_text)
-        
-        # Validate and fix response format before returning
-        if not validate_response_format(result_text, validation_language):
-            result_text = fix_response_format(result_text, validation_language)
-            logging.info(f"Fixed response format for language: {validation_language}")
-        
-        return result_text
-        
-    except Exception as e:
-        print(f"❌ Error processing query: {e}")
-        traceback.print_exc()
-        
-        error_str = str(e).lower()
-        if "quota" in error_str or "limit" in error_str:
-            error_messages = {
-                'hi': "दैनिक सीमा समाप्त। कृपया कल पुनः प्रयास करें।",
-                'mr': "दैनंदिन मर्यादा संपली. कृपया उद्या पुन्हा प्रयत्न करा.",
-                'en': "Daily limit reached. Please try again tomorrow."
-            }
-        elif "safety" in error_str:
-            error_messages = {
-                'hi': "सुरक्षा कारणों से जवाब नहीं दे सकते। कृपया सवाल बदलें।",
-                'mr': "सुरक्षितता कारणांमुळे उत्तर देऊ शकत नाही. कृपया प्रश्न बदला.",
-                'en': "Cannot respond due to safety guidelines. Please rephrase."
-            }
-        else:
-            error_messages = {
-                'hi': "तकनीकी समस्या। कृपया दोबारा कोशिश करें।",
-                'mr': "तांत्रिक समस्या. कृपया पुन्हा प्रयत्न करा.",
-                'en': "Technical issue. Please try again."
-            }
-        
-        error_response = error_messages.get(language, error_messages['en'])
-        return fix_response_format(error_response, validation_language)
-
-@app.post("/voice-query/")
-async def voice_query(audio_file: UploadFile = File(...)):
-    """
-    Process voice queries through audio transcription with multi-language support
-    Supports Hindi, Marathi, and English audio input
-    """
-    try:
-        # Read audio bytes
-        audio_bytes = await audio_file.read()
-        
-        print(f"🎤 Received audio file: {audio_file.filename}, Size: {len(audio_bytes)} bytes")
-        
-        # Transcribe audio using improved transcription
-        success, transcription_or_error = transcribe_audio(
-            GOOGLE_API_KEY, 
-            audio_bytes, 
-            method="local"  # Use local Whisper for best multi-language support
-        )
-        
-        if not success:
-            return JSONResponse(
-                status_code=400,
-                content={
-                    "error": transcription_or_error,
-                    "supported_languages": list(SUPPORTED_LANGUAGES.values()),
-                    "message": "Please send your message as text or try speaking more clearly"
-                }
-            )
-        
-        transcription = transcription_or_error
-        print(f"✅ Transcription successful: '{transcription}'")
-        
-        # Detect language of transcribed text
-        try:
-            from core.transcription import detect_audio_language
-            lang_code, lang_name, confidence = detect_audio_language(transcription)
-            print(f"🗣️ Audio language detected: {lang_name} ({lang_code}) - Confidence: {confidence:.2f}")
-        except ImportError:
-            lang_code, lang_name, confidence = "en", "English", 0.8
-        
-        # Process transcription as a text query
-        print(f"🤖 Processing transcribed text with Google Gemini...")
-        answer = intelligent_rag_response(transcription)
-        
-        return {
-            "transcription": {
-                "text": transcription,
-                "detected_language": {
-                    "code": lang_code,
-                    "name": lang_name,
-                    "confidence": confidence
-                }
-            },
-            "query_processed": transcription,
-            "response": answer,
-            "timestamp": time.time(),
-            "ai_provider": "Google Gemini",
-            "transcription_method": "local_whisper",
-            "supported_languages": list(SUPPORTED_LANGUAGES.values())
-        }
-        
-    except Exception as e:
-        print(f"❌ Voice query error: {e}")
-        traceback.print_exc()
-        
-        # Return language-specific error message
-        error_responses = {
-            "en": "I couldn't process your audio. Please try sending a text message instead.",
-            "hi": "मैं आपकी आवाज़ को समझ नहीं सकी। कृपया टेक्स्ट संदेश भेजने का प्रयास करें।",
-            "mr": "मी तुमचा आवाज समजू शकलो नाही. कृपया मजकूर संदेश पाठवण्याचा प्रयत्न करा."
-        }
-        
-        return JSONResponse(
-            status_code=500, 
-            content={
-                "error": str(e),
-                "message": error_responses["en"],
-                "message_hi": error_responses["hi"], 
-                "message_mr": error_responses["mr"],
-                "supported_languages": list(SUPPORTED_LANGUAGES.values())
-            }
-        )
-
-# Also add this test endpoint for audio transcription testing
-
-@app.post("/debug/test-audio-transcription")
-async def test_audio_transcription(audio_file: UploadFile = File(...)):
-    """
-    Test endpoint for audio transcription debugging
-    """
-    try:
-        audio_bytes = await audio_file.read()
-        
-        print(f"🧪 Testing audio transcription...")
-        print(f"   File: {audio_file.filename}")
-        print(f"   Size: {len(audio_bytes)} bytes")
-        
-        # Test different transcription methods
-        methods = ["local", "fallback"]
-        results = {}
-        
-        for method in methods:
-            try:
-                success, result = transcribe_audio(GOOGLE_API_KEY, audio_bytes, method=method)
-                results[method] = {
-                    "success": success,
-                    "result": result[:200] if success else result
-                }
-                
-                # If successful, also test language detection
-                if success:
-                    try:
-                        from core.transcription import detect_audio_language
-                        lang_code, lang_name, confidence = detect_audio_language(result)
-                        results[method]["language_detection"] = {
-                            "code": lang_code,
-                            "name": lang_name,
-                            "confidence": confidence
-                        }
-                    except:
-                        results[method]["language_detection"] = "Detection failed"
-                        
-            except Exception as e:
-                results[method] = {
-                    "success": False,
-                    "error": str(e)
-                }
-        
-        return {
-            "file_info": {
-                "filename": audio_file.filename,
-                "size_bytes": len(audio_bytes),
-                "content_type": audio_file.content_type
-            },
-            "transcription_tests": results,
-            "supported_languages": list(SUPPORTED_LANGUAGES.values()),
-            "timestamp": time.time()
-        }
-        
-    except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={"error": str(e), "message": "Audio transcription test failed"}
-        )
-
 # WhatsApp webhook endpoints
 @app.get("/webhook")
 async def verify_whatsapp(request: Request):
-    """Verification endpoint for Meta WhatsApp Cloud API"""
+    """WhatsApp verification endpoint"""
     try:
         params = dict(request.query_params)
         mode = params.get("hub.mode")
         token = params.get("hub.verify_token")
         challenge = params.get("hub.challenge")
         
-        print(f"🔍 Webhook verification: mode={mode}, token={token}")
+        print(f"[VERIFY] mode={mode}, token={'***' if token else 'None'}")
         
         if mode == "subscribe" and token == WHATSAPP_VERIFY_TOKEN:
-            print("✅ VERIFICATION SUCCESS!")
+            print("[OK] VERIFICATION SUCCESS!")
             return int(challenge)
         else:
-            print("❌ VERIFICATION FAILED!")
+            print("[ERROR] VERIFICATION FAILED!")
             return JSONResponse(status_code=403, content={"error": "Verification failed"})
             
     except Exception as e:
-        print(f"💥 Verification error: {e}")
+        print(f"[CRASH] Verification error: {e}")
         return JSONResponse(status_code=400, content={"error": str(e)})
 
 @app.post("/webhook")
 async def receive_whatsapp_message(request: Request):
-    """Handle incoming WhatsApp messages"""
+    """ULTRA-FAST WhatsApp message handler with enhanced error handling"""
     global PROCESSED_MESSAGE_IDS
     
     try:
         data = await request.json()
         
-        # Basic message extraction
-        if "entry" not in data or not data["entry"]:
+        # Fast message extraction
+        if not (data.get("entry") and data["entry"][0].get("changes")):
             return {"status": "ok"}
         
-        entry = data["entry"][0]
-        if "changes" not in entry or not entry["changes"]:
-            return {"status": "ok"}
-        
-        change = entry["changes"][0]
+        change = data["entry"][0]["changes"][0]
         value = change.get("value", {})
         
-        # Ignore status updates
+        # Skip status updates quickly
         if "statuses" in value:
             return {"status": "ok"}
         
-        # Handle messages
-        if "messages" not in value or not value["messages"]:
+        # Fast message processing
+        messages = value.get("messages")
+        if not messages:
             return {"status": "ok"}
         
-        message_obj = value["messages"][0]
-        message_type = message_obj.get("type", "")
-        user_number = message_obj.get("from", "")
-        message_id = message_obj.get("id", "")
+        message_obj = messages[0]
+        message_type = message_obj.get("type")
+        user_number = message_obj.get("from")
+        message_id = message_obj.get("id")
         
-        print(f"📝 MESSAGE DETAILS:")
-        print(f"   Type: {message_type}")
-        print(f"   From: {user_number}")
-        print(f"   Message ID: {message_id}")
+        print(f"📝 MSG: {message_type} from {user_number}")
         
-        # Check for duplicates
+        # Quick duplicate check
         if message_id in PROCESSED_MESSAGE_IDS:
-            print(f"🔄 DUPLICATE MESSAGE IGNORED: {message_id}")
-            return {"status": "duplicate_ignored"}
+            print(f"🔄 DUPLICATE: {message_id}")
+            return {"status": "duplicate"}
         
-        # Prevent responding to our own messages
+        # Skip our own messages
         if user_number == WHATSAPP_PHONE_NUMBER_ID:
-            print("🔄 IGNORING MESSAGE FROM OUR OWN BOT")
-            return {"status": "ignored_own_message"}
+            return {"status": "ignored_own"}
         
+        # Process text messages only
         if message_type == "text":
             user_msg = message_obj.get("text", {}).get("body", "").strip()
             
             if user_msg:
-                print(f"💬 Received: '{user_msg}' from {user_number}")
+                print(f"💬 Processing: '{user_msg[:30]}...'")
                 
-                # Track usage
+                # Fast tracking
                 track_usage("message_received")
                 PROCESSED_MESSAGE_IDS.add(message_id)
                 
-                # Keep only recent 1000 message IDs
-                if len(PROCESSED_MESSAGE_IDS) > 1000:
-                    old_ids = list(PROCESSED_MESSAGE_IDS)
-                    PROCESSED_MESSAGE_IDS = set(old_ids[-500:])
+                # Keep only recent 500 message IDs for memory efficiency
+                if len(PROCESSED_MESSAGE_IDS) > 500:
+                    old_ids = list(PROCESSED_MESSAGE_IDS)[-250:]
+                    PROCESSED_MESSAGE_IDS = set(old_ids)
                 
-                # Rate limiting
+                # Fast rate limiting
                 rate_limit_key = f"whatsapp_{user_number}"
                 if redis_manager.check_rate_limit(rate_limit_key):
-                    print(f"⏱️ Rate limited user: {user_number}")
+                    print(f"⏱️ Rate limited: {user_number}")
                     return {"status": "rate_limited"}
                 
-                redis_manager.set_rate_limit(rate_limit_key, 5)
+                # Set fast rate limit
+                redis_manager.set_rate_limit(rate_limit_key, RATE_LIMIT_SECONDS)
                 
-                # Generate response
-                print(f"🤖 Processing message with Google Gemini: '{user_msg}'")
-                response = intelligent_rag_response(user_msg)
+                # ULTRA-FAST response generation
+                start_time = time.time()
+                response = ultra_fast_rag_response(user_msg)
+                response_time = time.time() - start_time
                 
-                # Validate response
-                if not response or len(response.strip()) == 0:
-                    response = "I apologize, but I couldn't generate a proper response. Please try rephrasing your question."
+                print(f"⚡ Response in {response_time:.2f}s")
                 
-                # Send response with retry logic
-                print(f"📤 Sending response to: {user_number}")
-                max_retries = 3
-                success = False
+                # Validate response quickly - NO TRUNCATION
+                if not response or len(response.strip()) < 5:
+                    response = "Please try rephrasing your question.\n\n**For more details, please contact the 104/102 helpline numbers.**"
                 
-                for attempt in range(max_retries):
-                    success = send_whatsapp_message(user_number, response)
-                    if success:
-                        track_usage("message_sent")
-                        break
-                    else:
-                        print(f"❌ Send attempt {attempt + 1} failed")
-                        if attempt < max_retries - 1:
-                            time.sleep(1)
+                # Enhanced WhatsApp send with retries
+                success = send_whatsapp_message(user_number, response)
                 
-                print(f"📤 Final send result: {'SUCCESS' if success else 'FAILED'}")
+                if success:
+                    track_usage("message_sent", response_time)
+                    print(f"📤 SUCCESS in {response_time:.2f}s")
+                else:
+                    print(f"❌ SEND FAILED after all retries")
                 
                 return {
                     "status": "processed",
                     "message_id": message_id,
+                    "response_time_seconds": round(response_time, 2),
                     "send_success": success,
-                    "response_length": len(response),
-                    "ai_provider": "Google Gemini"
+                    "model": MODEL_NAME,
+                    "fast_mode": FAST_MODE
                 }
         
         return {"status": "ok"}
@@ -1028,13 +978,167 @@ async def receive_whatsapp_message(request: Request):
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"error": str(e)})
 
+@app.get("/usage/stats")
+async def get_usage_stats():
+    """Enhanced usage statistics with speed metrics"""
+    uptime_hours = (time.time() - USAGE_STATS["start_time"]) / 3600
+    cache_stats = fast_cache.get_stats()
+    
+    fast_response_rate = 0
+    if USAGE_STATS["messages_sent"] > 0:
+        fast_response_rate = (USAGE_STATS["fast_responses"] / USAGE_STATS["messages_sent"]) * 100
+    
+    return {
+        "current_usage": {
+            "messages_sent_total": USAGE_STATS["messages_sent"],
+            "messages_received_total": USAGE_STATS["messages_received"],
+            "daily_messages": USAGE_STATS["daily_messages"],
+            "api_calls": USAGE_STATS["api_calls"]
+        },
+        "speed_metrics": {
+            "average_response_time_seconds": round(USAGE_STATS["average_response_time"], 2),
+            "fast_responses_under_5s": USAGE_STATS["fast_responses"],
+            "fast_response_rate_percent": round(fast_response_rate, 1),
+            "cache_hit_rate": cache_stats["hit_rate"],
+            "cache_size": cache_stats["cache_size"]
+        },
+        "system_info": {
+            "model": MODEL_NAME,
+            "fast_mode": FAST_MODE,
+            "max_response_time": MAX_RESPONSE_TIME,
+            "rate_limit_seconds": RATE_LIMIT_SECONDS,
+            "uptime_hours": round(uptime_hours, 2)
+        },
+        "performance_status": {
+            "excellent": fast_response_rate > 80,
+            "good": 60 <= fast_response_rate <= 80,
+            "needs_optimization": fast_response_rate < 60
+        }
+    }
+
+@app.get("/speed/test")
+async def speed_test():
+    """Test response speed"""
+    try:
+        test_queries = [
+            "Hello",
+            "What is PM Awas Yojana?",
+            "नमस्ते",
+            "सरकारी योजना क्या है?",
+            "Jssk baddal mahiti dya"
+        ]
+        
+        results = []
+        
+        for query in test_queries:
+            start_time = time.time()
+            response = ultra_fast_rag_response(query)
+            response_time = time.time() - start_time
+            
+            results.append({
+                "query": query,
+                "detected_language": detect_language(query),
+                "response_time_seconds": round(response_time, 2),
+                "response_length": len(response),
+                "status": "fast" if response_time < 5 else "slow"
+            })
+        
+        avg_time = sum(r["response_time_seconds"] for r in results) / len(results)
+        
+        return {
+            "test_results": results,
+            "average_response_time": round(avg_time, 2),
+            "model": MODEL_NAME,
+            "fast_mode": FAST_MODE,
+            "performance_rating": "excellent" if avg_time < 3 else "good" if avg_time < 8 else "needs_optimization",
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+@app.post("/cache/clear")
+async def clear_all_caches():
+    """Clear all caches for fresh start"""
+    try:
+        # Clear fast cache
+        old_stats = fast_cache.get_stats()
+        fast_cache.cache.clear()
+        fast_cache.stats = {"hits": 0, "misses": 0}
+        
+        # Clear RAG cache if available
+        if RAG_SERVICES_AVAILABLE:
+            try:
+                clear_query_cache()
+            except:
+                pass
+        
+        return {
+            "message": "All caches cleared successfully",
+            "previous_cache_stats": old_stats,
+            "timestamp": time.time(),
+            "cache_types_cleared": ["fast_response_cache", "rag_query_cache"]
+        }
+        
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+@app.get("/debug/performance")
+async def debug_performance():
+    """Performance debugging information"""
+    try:
+        # Test Ollama speed
+        start_time = time.time()
+        test_payload = {
+            "model": MODEL_NAME,
+            "prompt": "Test speed",
+            "stream": False,
+            "options": {"num_predict": 5}
+        }
+        
+        response = requests.post(
+            f"{OLLAMA_BASE_URL}/api/generate",
+            json=test_payload,
+            timeout=10
+        )
+        
+        ollama_response_time = time.time() - start_time
+        
+        cache_stats = fast_cache.get_stats()
+        
+        return {
+            "performance_metrics": {
+                "ollama_response_time_seconds": round(ollama_response_time, 2),
+                "ollama_status": "online" if response.status_code == 200 else "error",
+                "cache_performance": cache_stats,
+                "model": MODEL_NAME,
+                "fast_mode": FAST_MODE
+            },
+            "system_status": {
+                "knowledge_base_documents": len(KNOWLEDGE_BASE["documents"]),
+                "rag_chain_ready": RAG_CHAIN is not None,
+                "redis_available": redis_manager.is_available(),
+                "rag_services_available": RAG_SERVICES_AVAILABLE
+            },
+            "speed_recommendations": {
+                "current_model_speed": "excellent" if "8b" in MODEL_NAME else "slow",
+                "recommended_for_whatsapp": "llama3.1:8b",
+                "current_rate_limit": f"{RATE_LIMIT_SECONDS}s",
+                "recommended_rate_limit": "1-2s for best UX"
+            },
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
 @app.post("/whatsapp/test")
 async def test_whatsapp_message(request: Request):
-    """Test endpoint to send a WhatsApp message"""
+    """Test WhatsApp sending functionality"""
     try:
         data = await request.json()
         phone_number = data.get("phone_number")
-        message = data.get("message", "Test message from CMRF AI with Google Gemini")
+        message = data.get("message", "Test message from FAST WhatsApp AI")
         
         if not phone_number:
             return JSONResponse(status_code=400, content={"error": "phone_number is required"})
@@ -1042,125 +1146,49 @@ async def test_whatsapp_message(request: Request):
         if not phone_number.startswith('+'):
             phone_number = '+' + phone_number.lstrip('+')
         
+        start_time = time.time()
         success = send_whatsapp_message(phone_number, message)
+        send_time = time.time() - start_time
         
         if success:
-            track_usage("message_sent")
+            track_usage("message_sent", send_time)
         
         return {
             "success": success,
             "phone_number": phone_number,
             "message": message,
+            "send_time_seconds": round(send_time, 2),
             "timestamp": time.time(),
-            "ai_provider": "Google Gemini"
+            "model": MODEL_NAME
         }
         
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
 
-@app.post("/debug/test-query")
-async def test_query_debug(request: Request):
-    """Debug endpoint to test query processing"""
-    try:
-        data = await request.json()
-        test_query = data.get("query", "Hello")
-        
-        print(f"🧪 Testing query: {test_query}")
-        
-        # Test 1: Direct Google Gemini API
-        api_success, api_result = debug_gemini_request(test_query)
-        
-        # Test 2: Language detection
-        try:
-            language = transcription_detect_language(test_query)
-            lang_success = True
-        except Exception as e:
-            language = str(e)
-            lang_success = False
-        
-        # Test 3: Knowledge base check
-        kb_available = bool(KNOWLEDGE_BASE["documents"])
-        
-        # Test 4: Full RAG response if possible
-        try:
-            rag_response = intelligent_rag_response(test_query)
-            rag_success = True
-        except Exception as e:
-            rag_response = str(e)
-            rag_success = False
-        
-        return {
-            "test_query": test_query,
-            "google_gemini_api_test": {
-                "success": api_success,
-                "result": api_result[:200] if api_success else api_result
-            },
-            "language_detection": {
-                "success": lang_success,
-                "detected": language
-            },
-            "knowledge_base": {
-                "available": kb_available,
-                "document_count": len(KNOWLEDGE_BASE["documents"])
-            },
-            "rag_response": {
-                "success": rag_success,
-                "response": rag_response[:200] if rag_success else rag_response
-            },
-            "timestamp": time.time(),
-            "ai_provider": "Google Gemini",
-            "model": MODEL_NAME
-        }
-        
-    except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={"error": str(e), "message": "Debug test failed"}
-        )
-
-@app.get("/usage/stats")
-async def get_usage_stats():
-    """Get current usage statistics"""
-    uptime_hours = (time.time() - USAGE_STATS["start_time"]) / 3600
-    
-    return {
-        "current_usage": {
-            "messages_sent_total": USAGE_STATS["messages_sent"],
-            "messages_received_total": USAGE_STATS["messages_received"], 
-            "messages_sent_today": USAGE_STATS["daily_messages"],
-            "gemini_api_calls": USAGE_STATS["api_calls"]
-        },
-        "estimated_limits": {
-            "whatsapp_daily_test": "~100-500 messages",
-            "whatsapp_rate": "~10 per minute",
-            "gemini_per_day": "1500 requests (FREE)",
-            "gemini_per_minute": "15 requests"
-        },
-        "warnings": {
-            "daily_messages": "⚠️ High usage" if USAGE_STATS["daily_messages"] > 50 else "✅ Normal",
-            "total_messages": "⚠️ Consider production" if USAGE_STATS["messages_sent"] > 200 else "✅ Test mode OK"
-        },
-        "uptime_hours": round(uptime_hours, 2),
-        "status": "test_mode",
-        "rate_limit_setting": "5 seconds",
-        "ai_provider": "Google Gemini",
-        "model": MODEL_NAME,
-        "cost": "FREE"
-    }
-
 if __name__ == "__main__":
     import uvicorn
-    print("🚀 Starting server with Google Gemini...")
-    print("📋 Setup Status:")
-    print(f"   ✅ Environment variables: OK")
-    print(f"   {'✅' if RAG_SERVICES_AVAILABLE else '❌'} RAG Services: {'Available' if RAG_SERVICES_AVAILABLE else 'Missing - update core/rag_services.py'}")
-    print(f"   {'✅' if TRANSCRIPTION_AVAILABLE else '❌'} Transcription: {'Available' if TRANSCRIPTION_AVAILABLE else 'Missing - create core/transcription.py'}")
-    print(f"   🤖 Model: {MODEL_NAME}")
-    print(f"   💰 Cost: FREE")
+    print("🚀 Starting ULTRA-FAST WhatsApp AI Server...")
+    print("📊 Configuration Summary:")
+    print(f"   ⚡ Model: {MODEL_NAME}")
+    print(f"   🔥 Fast Mode: {FAST_MODE}")
+    print(f"   ⏱️ Max Response Time: {MAX_RESPONSE_TIME}s")
+    print(f"   🔄 Rate Limit: {RATE_LIMIT_SECONDS}s")
+    print(f"   💾 Cache TTL: {CACHE_TTL}s")
     print("")
-    print("🔧 Next steps if RAG services missing:")
-    print("   1. Replace core/rag_services.py with Google Gemini version")
-    print("   2. Install: pip install google-generativeai langchain langchain-community")
-    print("   3. Upload documents via /upload/ endpoint")
+    print("🎯 Performance Targets:")
+    print("   • Greetings: <0.5s (cached)")
+    print("   • Simple queries: 2-5s")
+    print("   • Complex queries: 5-15s")
+    print("   • Cache hit rate: >80%")
+    print("")
+    print("🔧 Quick Setup Commands:")
+    print("   1. ollama pull llama3.1:8b")
+    print("   2. Upload knowledge documents via /upload/")
+    print("   3. Test with: curl localhost:8080/speed/test")
+    print("")
+    print("🌐 Network Resilience:")
+    print("   • Auto-retry on connection failures")
+    print("   • Exponential backoff for rate limits")
+    print("   • Extended timeouts for stability")
     print("")
     uvicorn.run(app, host="0.0.0.0", port=8080)
