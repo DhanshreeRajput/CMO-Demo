@@ -81,15 +81,15 @@ WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
 WHATSAPP_PHONE_NUMBER_ID = os.getenv("WHATSAPP_PHONE_NUMBER_ID")
 WHATSAPP_VERIFY_TOKEN = os.getenv("WHATSAPP_VERIFY_TOKEN")
 
-# SPEED OPTIMIZATION SETTINGS
+# SPEED OPTIMIZATION SETTINGS - UPDATED FOR FULL RESPONSES
 FAST_MODE = os.getenv("FAST_MODE", "true").lower() == "true"
-MAX_RESPONSE_TIME = int(os.getenv("MAX_RESPONSE_TIME", 45))
+MAX_RESPONSE_TIME = int(os.getenv("MAX_RESPONSE_TIME", 60))  # Increased for full responses
 RATE_LIMIT_SECONDS = int(os.getenv("RATE_LIMIT_SECONDS", 2))
 CACHE_TTL = int(os.getenv("CACHE_TTL", 1800))
 
-# IMPROVED LANGUAGE DETECTION
+# IMPROVED LANGUAGE DETECTION (matching rag_services.py)
 def detect_language(text):
-    """Enhanced language detection for Marathi, Hindi, and English"""
+    """Enhanced language detection with better Hindi/Marathi separation"""
     try:
         clean_text = text.strip().lower()
         
@@ -98,16 +98,35 @@ def detect_language(text):
         english_chars = bool(re.search(r'[a-zA-Z]', clean_text))
 
         if hindi_chars and not english_chars:
-            # Enhanced Marathi vs Hindi detection
-            marathi_words = ['baddal', 'mahiti', 'dya', 'kasa', 'kara', 'आहे', 'तुम्ही', 'मी', 'माहिती', 'येथे', 'करा', 'कसा', 'बद्दल']
-            hindi_words = ['ke', 'liye', 'kaise', 'karna', 'है', 'आपके', 'जानकारी', 'कैसे', 'करना', 'के लिए']
+            # STRONG HINDI INDICATORS
+            strong_hindi_words = ['है', 'हैं', 'करें', 'होगा', 'यहां', 'आपके', 'जानकारी', 'कैसे', 
+                                'करना', 'के लिए', 'यहाँ', 'हमें', 'आप', 'मैं', 'हूं', 'हूँ',
+                                'hai', 'hain', 'karen', 'hoga', 'yahan', 'aapke', 'jaankari',
+                                'kaise', 'karna', 'ke liye', 'yaham', 'hamein', 'aap', 'main', 'hun']
             
-            marathi_count = sum(1 for word in marathi_words if word in clean_text)
-            hindi_count = sum(1 for word in hindi_words if word in clean_text)
+            # STRONG MARATHI INDICATORS  
+            strong_marathi_words = ['आहे', 'आहेत', 'तुम्ही', 'मी', 'माहिती', 'येथे', 'करा', 'कसा', 
+                                  'बद्दल', 'द्या', 'तुम्हाला', 'मला', 'काय', 'कोण', 'कुठे',
+                                  'ahe', 'aahet', 'tumhi', 'mi', 'mahiti', 'yethe', 'kara', 
+                                  'kasa', 'baddal', 'dya', 'tumhala', 'mala', 'kay', 'kon', 'kuthe']
             
-            if marathi_count > hindi_count:
+            # Count strong indicators
+            hindi_score = sum(1 for word in strong_hindi_words if word in clean_text)
+            marathi_score = sum(1 for word in strong_marathi_words if word in clean_text)
+            
+            print(f"🔍 Language scores - Hindi: {hindi_score}, Marathi: {marathi_score}")
+            
+            # Clear decision based on strong indicators
+            if marathi_score > hindi_score:
+                print(f"✅ Detected: MARATHI (score: {marathi_score})")
                 return 'marathi'
-            return 'hindi'
+            elif hindi_score > marathi_score:
+                print(f"✅ Detected: HINDI (score: {hindi_score})")
+                return 'hindi'
+            else:
+                # Fallback to default Hindi for Devanagari
+                print(f"⚠️ Ambiguous Devanagari, defaulting to HINDI")
+                return 'hindi'
         elif english_chars:
             return 'english'
         else:
@@ -233,7 +252,39 @@ def get_instant_greeting(query: str, language: str) -> Optional[str]:
     
     return None
 
-# ENHANCED WhatsApp message sending with better error handling
+# ENHANCED WhatsApp message sending with typing indicator
+def send_whatsapp_typing_indicator(to: str) -> bool:
+    """Send typing indicator to WhatsApp"""
+    try:
+        headers = {
+            'Authorization': f'Bearer {WHATSAPP_TOKEN}',
+            'Content-Type': 'application/json'
+        }
+        
+        payload = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": to,
+            "type": "text",
+            "text": {"body": "..."}  # This creates typing effect
+        }
+        
+        url = f"https://graph.facebook.com/v12.0/{WHATSAPP_PHONE_NUMBER_ID}/messages"
+        
+        # Quick typing indicator (shorter timeout)
+        response = requests.post(url, headers=headers, json=payload, timeout=5)
+        
+        if response.status_code == 200:
+            print("⌨️ Typing indicator sent")
+            return True
+        else:
+            print(f"⚠️ Typing indicator failed: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"⚠️ Typing indicator error: {e}")
+        return False
+
 def send_whatsapp_message(to: str, message: str) -> bool:
     """Enhanced WhatsApp message sending with network resilience"""
     max_retries = 3
@@ -660,10 +711,7 @@ def ultra_fast_rag_response(query: str) -> str:
         error_response = error_messages.get(language, error_messages['english'])
         return handle_response_format(error_response, language)
 
-# COMPLETE FASTAPI ENDPOINTS - PART 2
-# Add this to the end of the previous file
-
-# FastAPI setup
+# Continue with FastAPI setup and endpoints...
 # FastAPI setup
 class QueryRequest(BaseModel):
     input_text: str
@@ -942,6 +990,16 @@ async def receive_whatsapp_message(request: Request):
                 # Set fast rate limit
                 redis_manager.set_rate_limit(rate_limit_key, RATE_LIMIT_SECONDS)
                 
+                # 🎯 SEND TYPING INDICATOR BEFORE PROCESSING
+                print("⌨️ Sending typing indicator...")
+                try:
+                    # Import from main module
+                    from __main__ import send_whatsapp_typing_indicator
+                    send_whatsapp_typing_indicator(user_number)
+                except:
+                    # Fallback - just log if function not available
+                    print("⚠️ Typing indicator not available")
+                
                 # ULTRA-FAST response generation
                 start_time = time.time()
                 response = ultra_fast_rag_response(user_msg)
@@ -1160,6 +1218,69 @@ async def test_whatsapp_message(request: Request):
             "send_time_seconds": round(send_time, 2),
             "timestamp": time.time(),
             "model": MODEL_NAME
+        }
+        
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+@app.post("/test/language")
+async def test_language_detection(request: Request):
+    """Test language detection with sample texts"""
+    try:
+        data = await request.json()
+        test_text = data.get("text", "")
+        
+        if not test_text:
+            return JSONResponse(status_code=400, content={"error": "Text is required"})
+        
+        # Test with both detection methods
+        from core.rag_services import detect_language as rag_detect_language
+        
+        fastapi_detection = detect_language(test_text)
+        rag_detection = rag_detect_language(test_text)
+        
+        return {
+            "input_text": test_text,
+            "fastapi_detection": fastapi_detection,
+            "rag_detection": rag_detection,
+            "match": fastapi_detection == rag_detection,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+@app.get("/test/language/samples")
+async def test_language_samples():
+    """Test language detection with predefined samples"""
+    try:
+        test_cases = [
+            {"text": "सरकारी योजना क्या है?", "expected": "hindi"},
+            {"text": "सरकारी योजनेबद्दल माहिती द्या", "expected": "marathi"},
+            {"text": "What is government scheme?", "expected": "english"},
+            {"text": "मुझे जानकारी चाहिए", "expected": "hindi"},
+            {"text": "मला माहिती हवी आहे", "expected": "marathi"},
+            {"text": "Jssk baddal mahiti dya", "expected": "marathi"}
+        ]
+        
+        results = []
+        for case in test_cases:
+            detected = detect_language(case["text"])
+            results.append({
+                "text": case["text"],
+                "expected": case["expected"],
+                "detected": detected,
+                "correct": detected == case["expected"]
+            })
+        
+        accuracy = sum(1 for r in results if r["correct"]) / len(results) * 100
+        
+        return {
+            "test_results": results,
+            "accuracy_percentage": round(accuracy, 1),
+            "total_tests": len(results),
+            "passed": sum(1 for r in results if r["correct"]),
+            "failed": sum(1 for r in results if not r["correct"])
         }
         
     except Exception as e:

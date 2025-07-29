@@ -199,36 +199,53 @@ def get_cache_stats():
     }
 
 def detect_language(text):
-    """Enhanced language detection with better Marathi support"""
+    """Enhanced language detection with better Hindi/Marathi separation"""
     try:
         clean_text = text.strip().lower()
         if len(clean_text) < 3:
             return 'en'
 
-        # Enhanced character-based detection
+        # Check for Devanagari script
         hindi_chars = bool(re.search(r'[\u0900-\u097F]', clean_text))
         english_chars = bool(re.search(r'[a-zA-Z]', clean_text))
 
         if hindi_chars and not english_chars:
-            # Enhanced Marathi vs Hindi detection with more keywords
-            marathi_words = ['baddal', 'mahiti', 'dya', 'kasa', 'kara', 'ahe', 'tumhi', 'mi', 
-                           'आहे', 'तुम्ही', 'मी', 'माहिती', 'येथे', 'करा', 'कसा', 'बद्दल', 'द्या']
-            hindi_words = ['ke', 'liye', 'kaise', 'karna', 'hai', 'aapke', 'jaankari', 
-                          'है', 'आपके', 'जानकारी', 'कैसे', 'करना', 'के लिए', 'यहाँ']
+            # STRONG HINDI INDICATORS
+            strong_hindi_words = ['है', 'हैं', 'करें', 'होगा', 'यहां', 'आपके', 'जानकारी', 'कैसे', 
+                                'करना', 'के लिए', 'यहाँ', 'हमें', 'आप', 'मैं', 'हूं', 'हूँ',
+                                'hai', 'hain', 'karen', 'hoga', 'yahan', 'aapke', 'jaankari',
+                                'kaise', 'karna', 'ke liye', 'yaham', 'hamein', 'aap', 'main', 'hun']
             
-            marathi_count = sum(1 for word in marathi_words if word in clean_text)
-            hindi_count = sum(1 for word in hindi_words if word in clean_text)
+            # STRONG MARATHI INDICATORS  
+            strong_marathi_words = ['आहे', 'आहेत', 'तुम्ही', 'मी', 'माहिती', 'येथे', 'करा', 'कसा', 
+                                  'बद्दल', 'द्या', 'तुम्हाला', 'मला', 'काय', 'कोण', 'कुठे',
+                                  'ahe', 'aahet', 'tumhi', 'mi', 'mahiti', 'yethe', 'kara', 
+                                  'kasa', 'baddal', 'dya', 'tumhala', 'mala', 'kay', 'kon', 'kuthe']
             
-            if marathi_count > hindi_count:
+            # Count strong indicators
+            hindi_score = sum(1 for word in strong_hindi_words if word in clean_text)
+            marathi_score = sum(1 for word in strong_marathi_words if word in clean_text)
+            
+            print(f"🔍 Language scores - Hindi: {hindi_score}, Marathi: {marathi_score}")
+            
+            # Clear decision based on strong indicators
+            if marathi_score > hindi_score:
+                print(f"✅ Detected: MARATHI (score: {marathi_score})")
                 return 'mr'
-            return 'hi'
+            elif hindi_score > marathi_score:
+                print(f"✅ Detected: HINDI (score: {hindi_score})")
+                return 'hi'
+            else:
+                # Fallback to default Hindi for Devanagari
+                print(f"⚠️ Ambiguous Devanagari, defaulting to HINDI")
+                return 'hi'
         elif english_chars:
             return 'en'
         else:
             return 'en'  # Default
 
     except Exception as e:
-        print(f"Language detection failed: {e}")
+        print(f"❌ Language detection failed: {e}")
         return 'en'
 
 def get_whatsapp_prompt_template():
@@ -614,4 +631,3 @@ def query_all_schemes_optimized(rag_chain):
 
 print("⚡ RAG services optimized for ULTRA-FAST WhatsApp responses!")
 print(f"📊 Cache size: {_cache_max_size}, Default model: llama3.1:8b")
-print("🎯 Enhanced Marathi detection: 'Jssk baddal mahiti dya' will be detected as Marathi")
