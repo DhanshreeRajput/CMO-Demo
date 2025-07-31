@@ -367,12 +367,21 @@ function App() {
         </main>
 
         {/* Footer */}
-        <footer className="bg-white/80 backdrop-blur-md border-t border-white/20 mt-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Footer */}
+        <footer className="bg-white/80 backdrop-blur-md border-t border-white/0 mt-16">
+          <div className="max-w-7xl mx-auto px-1 sm:px-1 lg:px-1 py-1">
             <div className="text-center">
-              <p className="text-gray-600">
-                Powered by <span className="font-semibold text-blue-600">SAAR AI</span>
-              </p>
+              <div className="flex justify-center mt-2">
+                 <p className="text-gray-500 mt-2 flex items-center text-lg">
+                  Powered by
+                  <img
+                  src="saar_logo_black.png"
+                  alt="Logo"
+                  className="h-20 w-auto"
+                  style={{ imageRendering: "auto" }}
+                  />
+                  </p>
+                  </div>
               <p className="text-sm text-gray-500 mt-2">
                 Features: AI RAG System & 📝 TTS 🗣️ STT
               </p>
