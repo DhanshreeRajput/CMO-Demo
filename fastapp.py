@@ -87,54 +87,143 @@ MAX_RESPONSE_TIME = int(os.getenv("MAX_RESPONSE_TIME", 60))  # Increased for ful
 RATE_LIMIT_SECONDS = int(os.getenv("RATE_LIMIT_SECONDS", 2))
 CACHE_TTL = int(os.getenv("CACHE_TTL", 1800))
 
-# IMPROVED LANGUAGE DETECTION (matching rag_services.py)
+# ENHANCED DEVANAGARI LANGUAGE DETECTION
 def detect_language(text):
-    """Enhanced language detection with better Hindi/Marathi separation"""
+    """Enhanced Devanagari-aware language detection for Marathi, Hindi, and English"""
     try:
         clean_text = text.strip().lower()
-        
+        if len(clean_text) < 2:
+            return 'en'
+
         # Check for Devanagari characters
-        hindi_chars = bool(re.search(r'[\u0900-\u097F]', clean_text))
+        devanagari_chars = bool(re.search(r'[\u0900-\u097F]', clean_text))
         english_chars = bool(re.search(r'[a-zA-Z]', clean_text))
 
-        if hindi_chars and not english_chars:
-            # STRONG HINDI INDICATORS
-            strong_hindi_words = ['है', 'हैं', 'करें', 'होगा', 'यहां', 'आपके', 'जानकारी', 'कैसे', 
-                                'करना', 'के लिए', 'यहाँ', 'हमें', 'आप', 'मैं', 'हूं', 'हूँ',
-                                'hai', 'hain', 'karen', 'hoga', 'yahan', 'aapke', 'jaankari',
-                                'kaise', 'karna', 'ke liye', 'yaham', 'hamein', 'aap', 'main', 'hun']
+        if devanagari_chars:
+            # ENHANCED MARATHI DETECTION - More comprehensive word lists
+            marathi_strong_indicators = [
+                # Common Marathi verbs and auxiliaries
+                'आहे', 'आहेत', 'होते', 'होती', 'होता', 'असे', 'असा', 'अशी',
+                # Marathi pronouns
+                'तुम्ही', 'तुमचा', 'तुमची', 'तुमचे', 'तुमच्या', 'मी', 'माझा', 'माझी', 'माझे', 'माझ्या',
+                # Marathi specific words
+                'माहिती', 'येथे', 'तेथे', 'इथे', 'करा', 'कसा', 'कसे', 'कशी', 'बद्दल', 'द्या', 'घ्या',
+                'सांगा', 'सांगू', 'मला', 'तुला', 'त्याला', 'तिला', 'आम्हाला', 'तुमाला',
+                # Marathi particles and postpositions
+                'ला', 'च्या', 'मध्ये', 'वर', 'खाली', 'समोर', 'मागे', 'शेजारी',
+                # Marathi question words
+                'काय', 'कोण', 'कुठे', 'केव्हा', 'कसे', 'किती', 'कशासाठी',
+                # Common Marathi words
+                'पाहिजे', 'हवे', 'नको', 'चालू', 'बंद', 'नवीन', 'जुने', 'मोठे', 'छोटे',
+                'चांगले', 'वाईट', 'लवकर', 'उशीर', 'आज', 'उद्या', 'परवा'
+            ]
             
-            # STRONG MARATHI INDICATORS  
-            strong_marathi_words = ['आहे', 'आहेत', 'तुम्ही', 'मी', 'माहिती', 'येथे', 'करा', 'कसा', 
-                                  'बद्दल', 'द्या', 'तुम्हाला', 'मला', 'काय', 'कोण', 'कुठे',
-                                  'ahe', 'aahet', 'tumhi', 'mi', 'mahiti', 'yethe', 'kara', 
-                                  'kasa', 'baddal', 'dya', 'tumhala', 'mala', 'kay', 'kon', 'kuthe']
+            marathi_weak_indicators = [
+                # Additional Marathi markers
+                'ते', 'तो', 'ती', 'हे', 'हा', 'ही', 'या', 'यो', 'यू', 'त्या', 'त्यो',
+                'नाही', 'नसते', 'गेले', 'आले', 'झाले', 'केले', 'दिले', 'घेतले'
+            ]
             
-            # Count strong indicators
-            hindi_score = sum(1 for word in strong_hindi_words if word in clean_text)
-            marathi_score = sum(1 for word in strong_marathi_words if word in clean_text)
+            # ENHANCED HINDI DETECTION
+            hindi_strong_indicators = [
+                # Common Hindi verbs and auxiliaries  
+                'है', 'हैं', 'था', 'थी', 'थे', 'होगा', 'होगी', 'होंगे', 'गया', 'गई', 'गए',
+                # Hindi pronouns
+                'आप', 'आपका', 'आपकी', 'आपके', 'आपको', 'मैं', 'मेरा', 'मेरी', 'मेरे', 'मुझे', 'मुझको',
+                # Hindi specific words
+                'जानकारी', 'यहाँ', 'वहाँ', 'कहाँ', 'करना', 'कैसे', 'कैसा', 'कैसी', 'के बारे में', 'बताएं', 'बताओ',
+                'कहें', 'कहिए', 'मुझे', 'आपको', 'उसे', 'उसको', 'हमें', 'हमको', 'उन्हें',
+                # Hindi particles and postpositions
+                'को', 'का', 'की', 'के', 'में', 'पर', 'से', 'तक', 'के लिए', 'के साथ',
+                # Hindi question words
+                'क्या', 'कौन', 'कहाँ', 'कब', 'कैसे', 'कितना', 'कितनी', 'कितने', 'क्यों', 'किसलिए',
+                # Common Hindi words
+                'चाहिए', 'चाहें', 'मत', 'चालू', 'बंद', 'नया', 'पुराना', 'बड़ा', 'छोटा',
+                'अच्छा', 'बुरा', 'जल्दी', 'देर', 'आज', 'कल', 'परसों'
+            ]
             
-            print(f"🔍 Language scores - Hindi: {hindi_score}, Marathi: {marathi_score}")
-            
-            # Clear decision based on strong indicators
-            if marathi_score > hindi_score:
-                print(f"✅ Detected: MARATHI (score: {marathi_score})")
-                return 'marathi'
-            elif hindi_score > marathi_score:
-                print(f"✅ Detected: HINDI (score: {hindi_score})")
-                return 'hindi'
+            hindi_weak_indicators = [
+                # Additional Hindi markers
+                'वह', 'वो', 'यह', 'ये', 'इस', 'उस', 'इन', 'उन', 'वे', 'तुम', 'तू',
+                'नहीं', 'मत', 'रहा', 'रही', 'रहे', 'कर', 'किया', 'दिया', 'लिया'
+            ]
+
+            # Count strong indicators (weighted more heavily)
+            marathi_strong_count = sum(2 for word in marathi_strong_indicators if word in clean_text)
+            marathi_weak_count = sum(1 for word in marathi_weak_indicators if word in clean_text)
+            marathi_total = marathi_strong_count + marathi_weak_count
+
+            hindi_strong_count = sum(2 for word in hindi_strong_indicators if word in clean_text)
+            hindi_weak_count = sum(1 for word in hindi_weak_indicators if word in clean_text)
+            hindi_total = hindi_strong_count + hindi_weak_count
+
+            print(f"🔍 Devanagari analysis - Marathi: {marathi_total} (strong: {marathi_strong_count//2}, weak: {marathi_weak_count}), Hindi: {hindi_total} (strong: {hindi_strong_count//2}, weak: {hindi_weak_count})")
+
+            # Decision logic with bias handling
+            if marathi_total > hindi_total:
+                return 'mr'
+            elif hindi_total > marathi_total:
+                return 'hi'
             else:
-                # Fallback to default Hindi for Devanagari
-                print(f"⚠️ Ambiguous Devanagari, defaulting to HINDI")
-                return 'hindi'
-        elif english_chars:
-            return 'english'
+                # Equal scores - check for romanized hints
+                marathi_roman = ['baddal', 'mahiti', 'dya', 'kasa', 'kara', 'ahe', 'tumhi', 'mala', 'sangha', 'kay']
+                hindi_roman = ['kaise', 'karna', 'batao', 'mujhe', 'aapka', 'kya', 'hai', 'hain']
+                
+                marathi_roman_count = sum(1 for word in marathi_roman if word in clean_text)
+                hindi_roman_count = sum(1 for word in hindi_roman if word in clean_text)
+                
+                if marathi_roman_count > 0:
+                    return 'mr'
+                elif hindi_roman_count > 0:
+                    return 'hi'
+                else:
+                    # Final fallback - check for specific character patterns
+                    # Marathi tends to use certain conjuncts more frequently
+                    marathi_conjuncts = ['ण्', 'ळ', 'झ्', 'भ्र', 'क्ष्', 'ज्ञ्']
+                    hindi_patterns = ['त्र्', 'श्र्', 'क्र्', 'प्र्']
+                    
+                    marathi_pattern_count = sum(1 for pattern in marathi_conjuncts if pattern in clean_text)
+                    hindi_pattern_count = sum(1 for pattern in hindi_patterns if pattern in clean_text)
+                    
+                    if marathi_pattern_count > hindi_pattern_count:
+                        return 'mr'
+                    else:
+                        return 'hi'  # Default to Hindi for ambiguous Devanagari
+
+        elif english_chars and not devanagari_chars:
+            # Pure English/Roman script - check for romanized Indian languages
+            marathi_roman_words = [
+                'baddal', 'mahiti', 'dya', 'kasa', 'kara', 'ahe', 'aahe', 'tumhi', 
+                'mala', 'tula', 'sangha', 'sangu', 'kay', 'kuthe', 'kiti', 'kevha',
+                'pahije', 'have', 'nako', 'chalu', 'band', 'navin', 'june', 'mothe', 'chote',
+                'changale', 'vait', 'lavkar', 'ushir', 'aaj', 'udya', 'parva'
+            ]
+            
+            hindi_roman_words = [
+                'kaise', 'kaisa', 'kaisi', 'karna', 'batao', 'bataiye', 'mujhe', 'aapko', 
+                'usse', 'hamen', 'unhen', 'kya', 'kaun', 'kahan', 'kab', 'kitna', 'kitni',
+                'chahiye', 'chahen', 'mat', 'chalu', 'band', 'naya', 'purana', 'bada', 'chota',
+                'accha', 'bura', 'jaldi', 'der', 'aaj', 'kal', 'parson'
+            ]
+            
+            marathi_roman_count = sum(1 for word in marathi_roman_words if word in clean_text)
+            hindi_roman_count = sum(1 for word in hindi_roman_words if word in clean_text)
+            
+            print(f"🔍 Roman script analysis - Marathi: {marathi_roman_count}, Hindi: {hindi_roman_count}")
+            
+            if marathi_roman_count > 0 and marathi_roman_count >= hindi_roman_count:
+                return 'mr'
+            elif hindi_roman_count > 0:
+                return 'hi'
+            else:
+                return 'en'  # Default English for pure Roman script
+
         else:
-            return 'english'  # Default
+            return 'en'  # Default fallback
             
     except Exception as e:
-        logging.error(f"Language detection error: {e}")
-        return 'english'
+        print(f"❌ Language detection error: {e}")
+        return 'en'
 
 # FAST RESPONSE CACHE
 class FastResponseCache:
@@ -215,19 +304,32 @@ except ImportError:
     TRANSCRIPTION_AVAILABLE = False
 
 def handle_response_format(response_text, user_language):
-    """Fast response formatting for WhatsApp"""
+    """Enhanced response formatting with strict language matching"""
+    # Normalize language codes
+    lang_mapping = {
+        'english': 'en',
+        'hindi': 'hi', 
+        'marathi': 'mr',
+        'en': 'en',
+        'hi': 'hi',
+        'mr': 'mr'
+    }
+    
+    normalized_lang = lang_mapping.get(user_language.lower(), 'en')
+    
     helpline_endings = {
-        'english': "\n\n**For more details, please contact the 104/102 helpline numbers.**",
-        'hindi': "\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
-        'marathi': "\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**"
+        'en': "\n\n**For more details, please contact the 104/102 helpline numbers.**",
+        'hi': "\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+        'mr': "\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**"
     }
 
-    # Quick formatting check
-    has_ending = any(ending.strip() in response_text for ending in helpline_endings.values())
+    # Remove any existing helpline endings first
+    for ending in helpline_endings.values():
+        response_text = response_text.replace(ending.strip(), "")
     
-    if not has_ending:
-        ending = helpline_endings.get(user_language.lower(), helpline_endings['english'])
-        response_text += ending
+    # Add correct helpline ending based on detected language
+    correct_ending = helpline_endings.get(normalized_lang, helpline_endings['en'])
+    response_text = response_text.strip() + correct_ending
 
     return response_text
 
@@ -235,56 +337,59 @@ def validate_response_format(response_text, user_language):
     """Quick response validation"""
     return len(response_text) > 20 and ('104' in response_text or '102' in response_text)
 
-# FAST GREETING RESPONSES (bypass AI completely)
+def validate_devanagari_response(response_text: str, expected_language: str) -> bool:
+    """Validate that Devanagari responses match expected language"""
+    try:
+        if expected_language not in ['hi', 'mr']:
+            return True  # No validation needed for English
+        
+        has_devanagari = bool(re.search(r'[\u0900-\u097F]', response_text))
+        if not has_devanagari:
+            return False  # Should have Devanagari for Hindi/Marathi
+        
+        # Check for language-specific patterns in response
+        detected_lang = detect_language(response_text[:200])
+        return detected_lang == expected_language
+        
+    except Exception as e:
+        print(f"❌ Devanagari validation error: {e}")
+        return False
+
+# ENHANCED GREETING FUNCTION WITH BETTER DEVANAGARI SUPPORT
 def get_instant_greeting(query: str, language: str) -> Optional[str]:
-    """Get instant greeting responses without AI"""
+    """Get instant greeting responses with enhanced Devanagari handling"""
     query_lower = query.strip().lower()
     
-    greetings = ['hi', 'hello', 'hey', 'namaste', 'नमस्ते', 'नमस्कार', 'good morning', 'good afternoon']
+    # Normalize language
+    lang_mapping = {
+        'english': 'en',
+        'hindi': 'hi', 
+        'marathi': 'mr',
+        'en': 'en',
+        'hi': 'hi',
+        'mr': 'mr'
+    }
+    normalized_lang = lang_mapping.get(language.lower(), 'en')
+    
+    # Enhanced greeting detection including Devanagari
+    greetings = [
+        'hi', 'hello', 'hey', 'namaste', 'नमस्ते', 'नमस्कार', 
+        'good morning', 'good afternoon', 'good evening',
+        'हैलो', 'हाय', 'सुप्रभात', 'शुभ संध्या', 'शुभ सकाळ',
+        'धन्यवाद', 'thank you', 'thanks', 'आभार'
+    ]
     
     if query_lower in greetings or any(greet in query_lower for greet in greetings):
-        if language == 'hindi':
-            return "नमस्ते! मैं आपकी सरकारी योजनाओं में कैसे मदद कर सकती हूँ? 😊\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**"
-        elif language == 'marathi':
-            return "नमस्कार! मी तुम्हाला सरकारी योजनांमध्ये कशी मदत करू शकते? 😊\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**"
-        else:
-            return "Hello! How can I help you with government schemes today? 😊\n\n**For more details, please contact the 104/102 helpline numbers.**"
+        greetings_responses = {
+            'hi': "नमस्ते! मैं आपकी सरकारी योजनाओं संबंधी प्रश्नों में सहायता करती हूँ। आप कैसे पूछना चाहते हैं? 😊\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+            'mr': "नमस्कार! मी सरकारी योजनांविषयी तुमच्या प्रश्नांमध्ये मदत करते. तुम्हाला काय जाणून घ्यायचे आहे? 😊\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**",
+            'en': "Hello! I help with questions about government schemes and programs. What would you like to know? 😊\n\n**For more details, please contact the 104/102 helpline numbers.**"
+        }
+        return greetings_responses.get(normalized_lang, greetings_responses['en'])
     
     return None
 
-# ENHANCED WhatsApp message sending with typing indicator
-def send_whatsapp_typing_indicator(to: str) -> bool:
-    """Send typing indicator to WhatsApp"""
-    try:
-        headers = {
-            'Authorization': f'Bearer {WHATSAPP_TOKEN}',
-            'Content-Type': 'application/json'
-        }
-        
-        payload = {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": to,
-            "type": "text",
-            "text": {"body": "..."}  # This creates typing effect
-        }
-        
-        url = f"https://graph.facebook.com/v12.0/{WHATSAPP_PHONE_NUMBER_ID}/messages"
-        
-        # Quick typing indicator (shorter timeout)
-        response = requests.post(url, headers=headers, json=payload, timeout=5)
-        
-        if response.status_code == 200:
-            print("⌨️ Typing indicator sent")
-            return True
-        else:
-            print(f"⚠️ Typing indicator failed: {response.status_code}")
-            return False
-            
-    except Exception as e:
-        print(f"⚠️ Typing indicator error: {e}")
-        return False
-
+# ENHANCED WhatsApp message sending with better error handling
 def send_whatsapp_message(to: str, message: str) -> bool:
     """Enhanced WhatsApp message sending with network resilience"""
     max_retries = 3
@@ -480,7 +585,6 @@ def validate_environment():
 
 # Validate on startup
 validate_environment()
-
 # Redis Configuration
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
@@ -606,7 +710,7 @@ def rebuild_rag_chain():
         RAG_CHAIN = None
 
 def ultra_fast_rag_response(query: str) -> str:
-    """Ultra-fast response function optimized for WhatsApp"""
+    """Ultra-fast response function with enhanced Devanagari language consistency"""
     start_time = time.time()
     print(f"⚡ FAST processing: '{query[:40]}...'")
     
@@ -617,31 +721,34 @@ def ultra_fast_rag_response(query: str) -> str:
         print(f"💨 Instant cache response ({response_time:.2f}s)")
         return cached_response
     
-    # Step 2: Enhanced language detection
-    language = detect_language(query)
-    print(f"🗣️ Language: {language}")
+    # Step 2: Enhanced Devanagari-aware language detection
+    detected_language = detect_language(query)
+    print(f"🗣️ Language detected: {detected_language}")
     
-    # Step 3: Instant greeting responses (bypass AI)
-    instant_greeting = get_instant_greeting(query, language)
+    # Step 3: Instant greeting responses with consistent Devanagari handling
+    instant_greeting = get_instant_greeting(query, detected_language)
     if instant_greeting:
         fast_cache.set(query, instant_greeting)
         response_time = time.time() - start_time
         print(f"⚡ Instant greeting ({response_time:.2f}s)")
         return instant_greeting
     
-    # Step 4: Quick validation checks
+    # Step 4: Enhanced validation checks with proper Devanagari error messages
     if not RAG_SERVICES_AVAILABLE:
-        error_response = "AI services starting up. Please try again in 30 seconds."
-        return handle_response_format(error_response, language)
+        error_messages = {
+            'hi': "एआई सेवाएं शुरू हो रही हैं। कृपया 30 सेकंड में कोशिश करें।\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+            'mr': "एआय सेवा सुरू होत आहे. कृपया 30 सेकंदांनी प्रयत्न करा.\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**",
+            'en': "AI services starting up. Please try again in 30 seconds.\n\n**For more details, please contact the 104/102 helpline numbers.**"
+        }
+        return error_messages.get(detected_language, error_messages['en'])
     
     if not KNOWLEDGE_BASE["documents"]:
         error_messages = {
-            'hindi': "ज्ञान आधार उपलब्ध नहीं। कृपया बाद में कोशिश करें।",
-            'marathi': "ज्ञान आधार उपलब्ध नाही. कृपया नंतर प्रयत्न करा.",
-            'english': "Knowledge base not available. Please try again later."
+            'hi': "ज्ञान आधार उपलब्ध नहीं है। कृपया बाद में कोशिश करें।\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+            'mr': "ज्ञान आधार उपलब्ध नाही. कृपया नंतर प्रयत्न करा.\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**",
+            'en': "Knowledge base not available. Please try again later.\n\n**For more details, please contact the 104/102 helpline numbers.**"
         }
-        error_response = error_messages.get(language, error_messages['english'])
-        return handle_response_format(error_response, language)
+        return error_messages.get(detected_language, error_messages['en'])
     
     # Step 5: Build/use RAG chain
     global RAG_CHAIN
@@ -651,14 +758,26 @@ def ultra_fast_rag_response(query: str) -> str:
             rebuild_rag_chain()
         except Exception as e:
             print(f"❌ RAG chain build failed: {e}")
-            error_response = "System initializing. Please try again in 30 seconds."
-            return handle_response_format(error_response, language)
+            error_messages = {
+                'hi': "सिस्टम शुरू हो रहा है। कृपया 30 सेकंड में कोशिश करें।\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+                'mr': "सिस्टम सुरू होत आहे. कृपया 30 सेकंदांनी प्रयत्न करा.\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**",
+                'en': "System initializing. Please try again in 30 seconds.\n\n**For more details, please contact the 104/102 helpline numbers.**"
+            }
+            return error_messages.get(detected_language, error_messages['en'])
     
-    # Step 6: Process with AI (with timeout)
+    # Step 6: Process with AI with enhanced language validation
     try:
         print(f"🔄 Processing with {MODEL_NAME}...")
         
-        result = process_scheme_query_with_retry(RAG_CHAIN, query, max_retries=1)
+        # Add language hint to query for better AI language matching
+        language_hints = {
+            'hi': f"[HINDI DEVANAGARI] {query}",
+            'mr': f"[MARATHI DEVANAGARI] {query}", 
+            'en': f"[ENGLISH] {query}"
+        }
+        enhanced_query = language_hints.get(detected_language, query)
+        
+        result = process_scheme_query_with_retry(RAG_CHAIN, enhanced_query, max_retries=1)
         result_text = result[0] if isinstance(result, tuple) else str(result)
         
         response_time = time.time() - start_time
@@ -666,22 +785,46 @@ def ultra_fast_rag_response(query: str) -> str:
         
         if not result_text or len(result_text.strip()) < 10:
             error_messages = {
-                'hindi': "जानकारी नहीं मिली। कृपया दूसरे तरीके से पूछें।",
-                'marathi': "माहिती मिळाली नाही. कृपया वेगळ्या पद्धतीने विचारा.",
-                'english': "No information found. Please rephrase your question."
+                'hi': "जानकारी नहीं मिली। कृपया दूसरे तरीके से पूछें।\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+                'mr': "माहिती मिळाली नाही. कृपया वेगळ्या पद्धतीने विचारा.\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**",
+                'en': "No information found. Please rephrase your question.\n\n**For more details, please contact the 104/102 helpline numbers.**"
             }
-            error_response = error_messages.get(language, error_messages['english'])
-            return handle_response_format(error_response, language)
+            return error_messages.get(detected_language, error_messages['en'])
         
-        # Step 7: Format and cache response
+        # Step 7: Enhanced response validation with Devanagari script checking
         result_text = result_text.strip()
         
         # Convert markdown to WhatsApp formatting
         result_text = re.sub(r'\*\*(.*?)\*\*', r'*\1*', result_text)
         
-        # Ensure proper format
-        if not validate_response_format(result_text, language):
-            result_text = handle_response_format(result_text, language)
+        # Enhanced language validation for Devanagari scripts
+        response_lang = detect_language(result_text[:200])  # Check first 200 chars
+        
+        # Check if response has appropriate script for detected language
+        has_devanagari = bool(re.search(r'[\u0900-\u097F]', result_text))
+        
+        language_mismatch = False
+        if detected_language in ['hi', 'mr'] and not has_devanagari:
+            language_mismatch = True
+            print(f"⚠️ Script mismatch! {detected_language} query but no Devanagari in response")
+        elif detected_language == 'en' and has_devanagari:
+            language_mismatch = True
+            print(f"⚠️ Script mismatch! English query but Devanagari in response")
+        elif response_lang != detected_language:
+            language_mismatch = True
+            print(f"⚠️ Language mismatch! Query: {detected_language}, Response: {response_lang}")
+        
+        if language_mismatch:
+            error_messages = {
+                'hi': "भाषा की समस्या हुई। कृपया फिर से कोशिश करें।\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+                'mr': "भाषेची समस्या झाली. कृपया पुन्हा प्रयत्न करा.\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**",
+                'en': "Language processing issue. Please try again.\n\n**For more details, please contact the 104/102 helpline numbers.**"
+            }
+            return error_messages.get(detected_language, error_messages['en'])
+        
+        # Ensure proper format with correct language
+        if not validate_response_format(result_text, detected_language):
+            result_text = handle_response_format(result_text, detected_language)
         
         # Cache for future speed
         fast_cache.set(query, result_text)
@@ -697,21 +840,19 @@ def ultra_fast_rag_response(query: str) -> str:
         error_str = str(e).lower()
         if "timeout" in error_str:
             error_messages = {
-                'hindi': "Response धीमा है। छोटा प्रश्न पूछें।",
-                'marathi': "प्रतिसाद धीमा आहे. लहान प्रश्न विचारा.",
-                'english': "Response slow. Ask shorter question."
+                'hi': "जवाब धीमा है। छोटा प्रश्न पूछें।\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+                'mr': "उत्तर धीमे आहे. लहान प्रश्न विचारा.\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**",
+                'en': "Response slow. Ask shorter question.\n\n**For more details, please contact the 104/102 helpline numbers.**"
             }
         else:
             error_messages = {
-                'hindi': "तकनीकी समस्या। पुनः प्रयास करें।",
-                'marathi': "तांत्रिक समस्या. पुन्हा प्रयत्न करा.",
-                'english': "Technical issue. Please try again."
+                'hi': "तकनीकी समस्या हुई। पुनः प्रयास करें।\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+                'mr': "तांत्रिक समस्या झाली. पुन्हा प्रयत्न करा.\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**",
+                'en': "Technical issue occurred. Please try again.\n\n**For more details, please contact the 104/102 helpline numbers.**"
             }
         
-        error_response = error_messages.get(language, error_messages['english'])
-        return handle_response_format(error_response, language)
+        return error_messages.get(detected_language, error_messages['en'])
 
-# Continue with FastAPI setup and endpoints...
 # FastAPI setup
 class QueryRequest(BaseModel):
     input_text: str
@@ -759,6 +900,7 @@ async def root():
                 "redis": redis_manager.is_available()
             },
             "speed_optimization": "ENABLED",
+            "enhanced_devanagari_detection": "ENABLED",
             "docs": "/docs",
             "health": "/health/"
         }
@@ -777,6 +919,7 @@ async def health_check():
         "knowledge_base_documents": len(KNOWLEDGE_BASE["documents"]),
         "redis_available": redis_manager.is_available(),
         "rag_chain_ready": RAG_CHAIN is not None,
+        "enhanced_language_detection": True,
         "timestamp": time.time(),
         "speed_optimized": True
     }
@@ -857,7 +1000,7 @@ async def upload_knowledge_files(
 
 @app.post("/query/")
 async def query_knowledge_base(req: QueryRequest):
-    """Fast query processing"""
+    """Fast query processing with enhanced language detection"""
     try:
         query = req.input_text.strip()
         if not query:
@@ -877,7 +1020,7 @@ async def query_knowledge_base(req: QueryRequest):
 
         start_time = time.time()
         
-        # Fast response generation
+        # Fast response generation with enhanced language detection
         response = ultra_fast_rag_response(query)
         
         response_time = time.time() - start_time
@@ -892,6 +1035,7 @@ async def query_knowledge_base(req: QueryRequest):
             "response": response,
             "response_time_seconds": round(response_time, 2),
             "language_detected": user_language,
+            "has_devanagari": bool(re.search(r'[\u0900-\u097F]', query)),
             "knowledge_base_size": len(KNOWLEDGE_BASE["documents"]),
             "model": MODEL_NAME,
             "fast_mode": FAST_MODE,
@@ -927,7 +1071,7 @@ async def verify_whatsapp(request: Request):
 
 @app.post("/webhook")
 async def receive_whatsapp_message(request: Request):
-    """ULTRA-FAST WhatsApp message handler with enhanced error handling"""
+    """ULTRA-FAST WhatsApp message handler with enhanced language processing"""
     global PROCESSED_MESSAGE_IDS
     
     try:
@@ -990,26 +1134,22 @@ async def receive_whatsapp_message(request: Request):
                 # Set fast rate limit
                 redis_manager.set_rate_limit(rate_limit_key, RATE_LIMIT_SECONDS)
                 
-                # 🎯 SEND TYPING INDICATOR BEFORE PROCESSING
-                print("⌨️ Sending typing indicator...")
-                try:
-                    # Import from main module
-                    from __main__ import send_whatsapp_typing_indicator
-                    send_whatsapp_typing_indicator(user_number)
-                except:
-                    # Fallback - just log if function not available
-                    print("⚠️ Typing indicator not available")
-                
-                # ULTRA-FAST response generation
+                # ULTRA-FAST response generation with enhanced language detection
                 start_time = time.time()
+                detected_lang = detect_language(user_msg)
                 response = ultra_fast_rag_response(user_msg)
                 response_time = time.time() - start_time
                 
-                print(f"⚡ Response in {response_time:.2f}s")
+                print(f"⚡ Response in {response_time:.2f}s (Language: {detected_lang})")
                 
                 # Validate response quickly - NO TRUNCATION
                 if not response or len(response.strip()) < 5:
-                    response = "Please try rephrasing your question.\n\n**For more details, please contact the 104/102 helpline numbers.**"
+                    fallback_messages = {
+                        'hi': "कृपया अपना प्रश्न दोबारा पूछें।\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+                        'mr': "कृपया तुमचा प्रश्न पुन्हा विचारा.\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**",
+                        'en': "Please try rephrasing your question.\n\n**For more details, please contact the 104/102 helpline numbers.**"
+                    }
+                    response = fallback_messages.get(detected_lang, fallback_messages['en'])
                 
                 # Enhanced WhatsApp send with retries
                 success = send_whatsapp_message(user_number, response)
@@ -1023,6 +1163,8 @@ async def receive_whatsapp_message(request: Request):
                 return {
                     "status": "processed",
                     "message_id": message_id,
+                    "detected_language": detected_lang,
+                    "has_devanagari": bool(re.search(r'[\u0900-\u097F]', user_msg)),
                     "response_time_seconds": round(response_time, 2),
                     "send_success": success,
                     "model": MODEL_NAME,
@@ -1038,7 +1180,7 @@ async def receive_whatsapp_message(request: Request):
 
 @app.get("/usage/stats")
 async def get_usage_stats():
-    """Enhanced usage statistics with speed metrics"""
+    """Enhanced usage statistics with speed and language metrics"""
     uptime_hours = (time.time() - USAGE_STATS["start_time"]) / 3600
     cache_stats = fast_cache.get_stats()
     
@@ -1060,6 +1202,12 @@ async def get_usage_stats():
             "cache_hit_rate": cache_stats["hit_rate"],
             "cache_size": cache_stats["cache_size"]
         },
+        "language_capabilities": {
+            "supported_languages": ["English", "Hindi", "Marathi"],
+            "language_codes": ["en", "hi", "mr"],
+            "enhanced_devanagari_detection": True,
+            "romanized_text_support": True
+        },
         "system_info": {
             "model": MODEL_NAME,
             "fast_mode": FAST_MODE,
@@ -1076,13 +1224,15 @@ async def get_usage_stats():
 
 @app.get("/speed/test")
 async def speed_test():
-    """Test response speed"""
+    """Test response speed with enhanced language detection"""
     try:
         test_queries = [
             "Hello",
             "What is PM Awas Yojana?",
             "नमस्ते",
             "सरकारी योजना क्या है?",
+            "मला माहिती पाहिजे",
+            "सरकारी योजना बद्दल सांगा",
             "Jssk baddal mahiti dya"
         ]
         
@@ -1092,23 +1242,35 @@ async def speed_test():
             start_time = time.time()
             response = ultra_fast_rag_response(query)
             response_time = time.time() - start_time
+            detected_lang = detect_language(query)
             
             results.append({
                 "query": query,
-                "detected_language": detect_language(query),
+                "detected_language": detected_lang,
                 "response_time_seconds": round(response_time, 2),
                 "response_length": len(response),
+                "has_devanagari_input": bool(re.search(r'[\u0900-\u097F]', query)),
+                "has_devanagari_output": bool(re.search(r'[\u0900-\u097F]', response)),
+                "script_consistency": (detected_lang == 'en' and not bool(re.search(r'[\u0900-\u097F]', response))) or 
+                                    (detected_lang in ['hi', 'mr'] and bool(re.search(r'[\u0900-\u097F]', response))),
                 "status": "fast" if response_time < 5 else "slow"
             })
         
         avg_time = sum(r["response_time_seconds"] for r in results) / len(results)
+        script_accuracy = sum(1 for r in results if r["script_consistency"]) / len(results) * 100
         
         return {
             "test_results": results,
-            "average_response_time": round(avg_time, 2),
+            "summary": {
+                "average_response_time": round(avg_time, 2),
+                "script_consistency_rate": round(script_accuracy, 1),
+                "total_tests": len(results),
+                "fast_responses": sum(1 for r in results if r["status"] == "fast")
+            },
             "model": MODEL_NAME,
             "fast_mode": FAST_MODE,
             "performance_rating": "excellent" if avg_time < 3 else "good" if avg_time < 8 else "needs_optimization",
+            "language_detection_accuracy": "enhanced_devanagari_support",
             "timestamp": time.time()
         }
         
@@ -1143,7 +1305,7 @@ async def clear_all_caches():
 
 @app.get("/debug/performance")
 async def debug_performance():
-    """Performance debugging information"""
+    """Performance debugging information with language detection metrics"""
     try:
         # Test Ollama speed
         start_time = time.time()
@@ -1164,6 +1326,34 @@ async def debug_performance():
         
         cache_stats = fast_cache.get_stats()
         
+        # Test language detection accuracy
+        test_texts = {
+            "english_simple": "What is the PM Awas Yojana scheme?",
+            "english_complex": "Tell me about government housing schemes and eligibility criteria",
+            "hindi_simple": "मुझे सरकारी योजना के बारे में जानकारी चाहिए।",
+            "hindi_complex": "प्रधानमंत्री आवास योजना की पात्रता क्या है?",
+            "marathi_simple": "मला सरकारी योजनेची माहिती पाहिजे.",
+            "marathi_complex": "मुख्यमंत्री योजनेची अर्ज करण्याची प्रक्रिया काय आहे?",
+            "mixed_english": "What is सरकारी योजना benefits?",
+            "mixed_marathi": "मला government scheme माहिती हवी"
+        }
+        
+        language_detection_results = {}
+        for test_name, text in test_texts.items():
+            detected = detect_language(text)
+            expected = test_name.split('_')[0]
+            expected_code = {'english': 'en', 'hindi': 'hi', 'marathi': 'mr', 'mixed': 'en'}
+            
+            language_detection_results[test_name] = {
+                "text": text,
+                "expected_category": expected,
+                "detected_code": detected,
+                "has_devanagari": bool(re.search(r'[\u0900-\u097F]', text)),
+                "correct": detected == expected_code.get(expected, expected)
+            }
+        
+        accuracy = sum(1 for r in language_detection_results.values() if r["correct"]) / len(language_detection_results)
+        
         return {
             "performance_metrics": {
                 "ollama_response_time_seconds": round(ollama_response_time, 2),
@@ -1171,6 +1361,13 @@ async def debug_performance():
                 "cache_performance": cache_stats,
                 "model": MODEL_NAME,
                 "fast_mode": FAST_MODE
+            },
+            "language_detection": {
+                "test_results": language_detection_results,
+                "accuracy_percentage": round(accuracy * 100, 1),
+                "enhanced_devanagari": True,
+                "supported_scripts": ["Roman", "Devanagari"],
+                "supported_languages": ["English", "Hindi", "Marathi"]
             },
             "system_status": {
                 "knowledge_base_documents": len(KNOWLEDGE_BASE["documents"]),
@@ -1196,7 +1393,7 @@ async def test_whatsapp_message(request: Request):
     try:
         data = await request.json()
         phone_number = data.get("phone_number")
-        message = data.get("message", "Test message from FAST WhatsApp AI")
+        message = data.get("message", "Test message from FAST WhatsApp AI with Enhanced Devanagari Support")
         
         if not phone_number:
             return JSONResponse(status_code=400, content={"error": "phone_number is required"})
@@ -1217,72 +1414,276 @@ async def test_whatsapp_message(request: Request):
             "message": message,
             "send_time_seconds": round(send_time, 2),
             "timestamp": time.time(),
-            "model": MODEL_NAME
+            "model": MODEL_NAME,
+            "enhanced_features": ["devanagari_detection", "language_consistency", "fast_response"]
         }
         
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
 
-@app.post("/test/language")
-async def test_language_detection(request: Request):
-    """Test language detection with sample texts"""
+@app.get("/language/test")
+async def test_language_detection():
+    """Test enhanced language detection capabilities"""
     try:
-        data = await request.json()
-        test_text = data.get("text", "")
+        test_cases = [
+            # English tests
+            {"text": "What is PM Awas Yojana?", "expected": "en", "type": "english_simple"},
+            {"text": "Tell me about government schemes and eligibility", "expected": "en", "type": "english_complex"},
+            
+            # Hindi tests
+            {"text": "मुझे जानकारी चाहिए", "expected": "hi", "type": "hindi_simple"},
+            {"text": "सरकारी योजना के बारे में बताएं", "expected": "hi", "type": "hindi_complex"},
+            {"text": "प्रधानमंत्री आवास योजना क्या है?", "expected": "hi", "type": "hindi_scheme"},
+            {"text": "मैं आवेदन कैसे करूं?", "expected": "hi", "type": "hindi_application"},
+            
+            # Marathi tests
+            {"text": "मला माहिती पाहिजे", "expected": "mr", "type": "marathi_simple"},
+            {"text": "सरकारी योजना बद्दल सांगा", "expected": "mr", "type": "marathi_complex"},
+            {"text": "मुख्यमंत्री योजना कशी आहे?", "expected": "mr", "type": "marathi_scheme"},
+            {"text": "मी अर्ज कसा करावा?", "expected": "mr", "type": "marathi_application"},
+            
+            # Romanized tests
+            {"text": "kya hai PM Awas Yojana", "expected": "hi", "type": "hindi_romanized"},
+            {"text": "mahiti pahije government scheme", "expected": "mr", "type": "marathi_romanized"},
+            {"text": "mujhe chahiye information", "expected": "hi", "type": "hindi_mixed_roman"},
+            
+            # Mixed script tests
+            {"text": "What is सरकारी योजना?", "expected": "en", "type": "mixed_english_dominant"},
+            {"text": "मला government scheme माहिती हवी", "expected": "mr", "type": "mixed_marathi_dominant"},
+            {"text": "Tell me about योजना details", "expected": "en", "type": "mixed_english_query"}
+        ]
         
-        if not test_text:
-            return JSONResponse(status_code=400, content={"error": "Text is required"})
+        results = []
+        correct_detections = 0
         
-        # Test with both detection methods
-        from core.rag_services import detect_language as rag_detect_language
+        for test_case in test_cases:
+            detected = detect_language(test_case["text"])
+            is_correct = detected == test_case["expected"]
+            if is_correct:
+                correct_detections += 1
+            
+            results.append({
+                "text": test_case["text"],
+                "expected": test_case["expected"],
+                "detected": detected,
+                "correct": is_correct,
+                "test_type": test_case["type"],
+                "has_devanagari": bool(re.search(r'[\u0900-\u097F]', test_case["text"])),
+                "has_english": bool(re.search(r'[a-zA-Z]', test_case["text"])),
+                "script_type": "mixed" if (bool(re.search(r'[\u0900-\u097F]', test_case["text"])) and 
+                                         bool(re.search(r'[a-zA-Z]', test_case["text"]))) else
+                             "devanagari" if bool(re.search(r'[\u0900-\u097F]', test_case["text"])) else "roman"
+            })
         
-        fastapi_detection = detect_language(test_text)
-        rag_detection = rag_detect_language(test_text)
+        accuracy = (correct_detections / len(test_cases)) * 100
+        
+        # Group results by language
+        language_breakdown = {}
+        for result in results:
+            expected_lang = result["expected"]
+            if expected_lang not in language_breakdown:
+                language_breakdown[expected_lang] = {"total": 0, "correct": 0}
+            language_breakdown[expected_lang]["total"] += 1
+            if result["correct"]:
+                language_breakdown[expected_lang]["correct"] += 1
+        
+        # Calculate per-language accuracy
+        for lang in language_breakdown:
+            total = language_breakdown[lang]["total"]
+            correct = language_breakdown[lang]["correct"]
+            language_breakdown[lang]["accuracy"] = round((correct / total) * 100, 1) if total > 0 else 0
         
         return {
-            "input_text": test_text,
-            "fastapi_detection": fastapi_detection,
-            "rag_detection": rag_detection,
-            "match": fastapi_detection == rag_detection,
+            "test_summary": {
+                "total_tests": len(test_cases),
+                "correct_detections": correct_detections,
+                "overall_accuracy_percentage": round(accuracy, 1),
+                "enhanced_devanagari_support": True,
+                "language_breakdown": language_breakdown
+            },
+            "detailed_results": results,
+            "language_capabilities": {
+                "supported_languages": ["English", "Hindi", "Marathi"],
+                "language_codes": ["en", "hi", "mr"],
+                "script_support": ["Roman", "Devanagari"],
+                "mixed_script_handling": True,
+                "romanized_text_detection": True,
+                "weighted_scoring_system": True
+            },
+            "detection_features": {
+                "strong_indicators": "Weighted 2x (verbs, pronouns, particles)",
+                "weak_indicators": "Weighted 1x (common words)",
+                "character_patterns": "Marathi conjuncts vs Hindi patterns",
+                "fallback_mechanisms": "Multiple levels of detection"
+            },
             "timestamp": time.time()
         }
         
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
 
-@app.get("/test/language/samples")
-async def test_language_samples():
-    """Test language detection with predefined samples"""
+@app.get("/system/info")
+async def get_system_info():
+    """Get comprehensive system information"""
     try:
-        test_cases = [
-            {"text": "सरकारी योजना क्या है?", "expected": "hindi"},
-            {"text": "सरकारी योजनेबद्दल माहिती द्या", "expected": "marathi"},
-            {"text": "What is government scheme?", "expected": "english"},
-            {"text": "मुझे जानकारी चाहिए", "expected": "hindi"},
-            {"text": "मला माहिती हवी आहे", "expected": "marathi"},
-            {"text": "Jssk baddal mahiti dya", "expected": "marathi"}
-        ]
-        
-        results = []
-        for case in test_cases:
-            detected = detect_language(case["text"])
-            results.append({
-                "text": case["text"],
-                "expected": case["expected"],
-                "detected": detected,
-                "correct": detected == case["expected"]
-            })
-        
-        accuracy = sum(1 for r in results if r["correct"]) / len(results) * 100
+        cache_stats = fast_cache.get_stats()
+        uptime_hours = (time.time() - USAGE_STATS["start_time"]) / 3600
         
         return {
-            "test_results": results,
-            "accuracy_percentage": round(accuracy, 1),
-            "total_tests": len(results),
-            "passed": sum(1 for r in results if r["correct"]),
-            "failed": sum(1 for r in results if not r["correct"])
+            "application_info": {
+                "name": "FAST WhatsApp AI - Production Ready",
+                "version": "2.1.0",
+                "enhanced_features": [
+                    "Advanced Devanagari Language Detection",
+                    "Ultra-Fast Response Processing",
+                    "Enhanced Caching System",
+                    "Production-Ready Error Handling",
+                    "Script Consistency Validation",
+                    "Weighted Language Scoring"
+                ]
+            },
+            "language_capabilities": {
+                "supported_languages": ["English", "Hindi", "Marathi"],
+                "language_codes": ["en", "hi", "mr"],
+                "script_support": ["Roman", "Devanagari"],
+                "detection_method": "Enhanced weighted scoring with character patterns",
+                "advanced_detection": True,
+                "romanized_support": True,
+                "mixed_script_handling": True,
+                "script_consistency_validation": True
+            },
+            "performance_metrics": {
+                "model": MODEL_NAME,
+                "fast_mode": FAST_MODE,
+                "average_response_time": USAGE_STATS["average_response_time"],
+                "cache_hit_rate": cache_stats["hit_rate"],
+                "uptime_hours": round(uptime_hours, 2),
+                "total_messages_processed": USAGE_STATS["messages_sent"] + USAGE_STATS["messages_received"]
+            },
+            "system_status": {
+                "rag_chain_ready": RAG_CHAIN is not None,
+                "knowledge_base_size": len(KNOWLEDGE_BASE["documents"]),
+                "redis_available": redis_manager.is_available(),
+                "services_available": {
+                    "rag_services": RAG_SERVICES_AVAILABLE,
+                    "transcription": TRANSCRIPTION_AVAILABLE,
+                    "enhanced_language_detection": True
+                }
+            },
+            "configuration": {
+                "max_response_time": MAX_RESPONSE_TIME,
+                "rate_limit_seconds": RATE_LIMIT_SECONDS,
+                "cache_ttl": CACHE_TTL,
+                "cache_size": cache_stats["cache_size"],
+                "fast_mode_enabled": FAST_MODE
+            },
+            "api_endpoints": {
+                "core_endpoints": {
+                    "health_check": "/health/",
+                    "upload_files": "/upload/",
+                    "query_knowledge": "/query/",
+                    "whatsapp_webhook": "/webhook"
+                },
+                "testing_endpoints": {
+                    "speed_test": "/speed/test",
+                    "language_test": "/language/test",
+                    "whatsapp_test": "/whatsapp/test"
+                },
+                "admin_endpoints": {
+                    "system_stats": "/usage/stats",
+                    "debug_performance": "/debug/performance",
+                    "clear_cache": "/cache/clear",
+                    "system_info": "/system/info"
+                }
+            },
+            "timestamp": time.time()
         }
         
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+@app.post("/admin/reset")
+async def admin_reset_system():
+    """Admin endpoint to reset system state"""
+    try:
+        global RAG_CHAIN, PROCESSED_MESSAGE_IDS
+        
+        # Clear all caches
+        fast_cache.cache.clear()
+        fast_cache.stats = {"hits": 0, "misses": 0}
+        
+        if RAG_SERVICES_AVAILABLE:
+            try:
+                clear_query_cache()
+            except:
+                pass
+        
+        # Reset RAG chain
+        RAG_CHAIN = None
+        
+        # Clear processed message IDs
+        PROCESSED_MESSAGE_IDS.clear()
+        
+        # Reset usage stats
+        global USAGE_STATS
+        USAGE_STATS = {
+            "messages_sent": 0,
+            "messages_received": 0,
+            "api_calls": 0,
+            "start_time": time.time(),
+            "daily_messages": 0,
+            "last_reset": datetime.now().date(),
+            "average_response_time": 0,
+            "fast_responses": 0
+        }
+        
+        return {
+            "message": "System reset completed successfully",
+            "reset_components": [
+                "response_cache",
+                "rag_query_cache", 
+                "rag_chain",
+                "processed_message_ids",
+                "usage_statistics"
+            ],
+            "enhanced_features_maintained": [
+                "devanagari_language_detection",
+                "script_consistency_validation",
+                "weighted_scoring_system"
+            ],
+            "timestamp": time.time(),
+            "system_ready": True
+        }
+        
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+@app.get("/admin/logs")
+async def get_recent_logs():
+    """Get recent system logs"""
+    try:
+        log_file = "whatsapp.log"
+        if os.path.exists(log_file):
+            with open(log_file, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+                # Get last 50 lines
+                recent_lines = lines[-50:] if len(lines) > 50 else lines
+                
+            return {
+                "recent_logs": [line.strip() for line in recent_lines],
+                "total_lines": len(lines),
+                "showing_last": len(recent_lines),
+                "log_file": log_file,
+                "enhanced_logging": True,
+                "timestamp": time.time()
+            }
+        else:
+            return {
+                "message": "No log file found",
+                "log_file": log_file,
+                "timestamp": time.time()
+            }
+            
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
 
@@ -1295,21 +1696,5 @@ if __name__ == "__main__":
     print(f"   ⏱️ Max Response Time: {MAX_RESPONSE_TIME}s")
     print(f"   🔄 Rate Limit: {RATE_LIMIT_SECONDS}s")
     print(f"   💾 Cache TTL: {CACHE_TTL}s")
-    print("")
-    print("🎯 Performance Targets:")
-    print("   • Greetings: <0.5s (cached)")
-    print("   • Simple queries: 2-5s")
-    print("   • Complex queries: 5-15s")
-    print("   • Cache hit rate: >80%")
-    print("")
-    print("🔧 Quick Setup Commands:")
-    print("   1. ollama pull llama3.1:8b")
-    print("   2. Upload knowledge documents via /upload/")
-    print("   3. Test with: curl localhost:8080/speed/test")
-    print("")
-    print("🌐 Network Resilience:")
-    print("   • Auto-retry on connection failures")
-    print("   • Exponential backoff for rate limits")
-    print("   • Extended timeouts for stability")
-    print("")
+
     uvicorn.run(app, host="0.0.0.0", port=8080)

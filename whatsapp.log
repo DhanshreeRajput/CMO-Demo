@@ -877,3 +877,225 @@
 2025-07-29 11:30:05 - root - INFO - [OK] WhatsApp message sent to 918879992052
 2025-07-29 11:30:53 - root - INFO - [OK] WhatsApp message sent to 918879992052
 2025-07-29 11:31:00 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 12:57:56 - root - ERROR - [TOKEN] WhatsApp token issue: 401
+2025-07-29 12:58:32 - root - ERROR - [TOKEN] WhatsApp token issue: Error validating access token: Session has expired on Monday, 28-Jul-25 23:00:00 PDT. The current time is Tuesday, 29-Jul-25 00:28:31 PDT.
+2025-07-29 12:59:17 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 12:59:38 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 12:59:57 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 13:00:30 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 13:00:51 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 13:01:02 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 13:01:19 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 13:01:30 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 13:02:51 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 13:04:37 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 13:05:30 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 13:05:53 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 13:06:23 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 13:07:07 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 13:09:23 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 13:10:24 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 13:10:35 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 13:11:12 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 14:53:40 - root - ERROR - [TOKEN] WhatsApp token issue: 401
+2025-07-29 14:57:40 - root - ERROR - [TOKEN] WhatsApp token issue: 401
+2025-07-29 14:57:44 - root - ERROR - [TOKEN] WhatsApp token issue: 401
+2025-07-29 14:57:49 - root - ERROR - [TOKEN] WhatsApp token issue: 401
+2025-07-29 14:57:53 - root - ERROR - [TOKEN] WhatsApp token issue: 401
+2025-07-29 14:58:36 - root - ERROR - [TOKEN] WhatsApp token issue: 401
+2025-07-29 14:58:40 - root - ERROR - [TOKEN] WhatsApp token issue: 401
+2025-07-29 14:58:45 - root - ERROR - [TOKEN] WhatsApp token issue: 401
+2025-07-29 14:58:51 - root - ERROR - [TOKEN] WhatsApp token issue: 401
+2025-07-29 14:59:43 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:00:24 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:00:35 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:01:22 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:06:21 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:07:26 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:07:31 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:08:08 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:08:14 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:08:19 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:08:53 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:08:58 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:13:10 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:13:12 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:13:17 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:13:20 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:13:25 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:13:28 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:13:32 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:13:35 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:14:19 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:14:24 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:14:53 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:14:58 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:15:03 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:15:10 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:15:29 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:15:40 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:16:25 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:16:46 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:17:29 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:19:09 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:19:33 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:19:36 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:19:38 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:20:04 - root - ERROR - [TOKEN] WhatsApp token issue: 401
+2025-07-29 15:20:17 - root - ERROR - [TOKEN] WhatsApp token issue: 401
+2025-07-29 15:20:34 - root - ERROR - [TOKEN] WhatsApp token issue: Error validating access token: Session has expired on Monday, 28-Jul-25 23:00:00 PDT. The current time is Tuesday, 29-Jul-25 02:50:33 PDT.
+2025-07-29 15:21:12 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:21:39 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:21:56 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:39:20 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:39:28 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:40:08 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:40:16 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:40:40 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:40:47 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:41:09 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:41:32 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:42:20 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:44:30 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:44:54 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:45:28 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:45:50 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:46:13 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:49:07 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:49:14 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:49:22 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:50:24 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:50:31 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:51:30 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:51:37 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:51:45 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:53:16 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:53:23 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:53:31 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:55:36 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 15:56:24 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:56:55 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:57:31 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 15:57:50 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 16:00:49 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 16:01:09 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 16:01:17 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 16:01:25 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 16:02:06 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 16:02:35 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 16:02:43 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 16:03:02 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 16:03:31 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 16:16:39 - root - ERROR - [TOKEN] WhatsApp token issue: 400
+2025-07-29 16:18:05 - root - ERROR - [TOKEN] WhatsApp token issue: 400
+2025-07-29 16:18:51 - root - ERROR - [ERROR] WhatsApp API error: 400
+2025-07-29 16:18:51 - root - ERROR -    Details: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'AuqqNu0GdKjSeWWDSaC19oT'}}
+2025-07-29 16:18:53 - root - ERROR - [ERROR] WhatsApp API error: 400
+2025-07-29 16:18:53 - root - ERROR -    Details: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'A-fHBmXn3JTIVFxYIbzlwMz'}}
+2025-07-29 16:18:55 - root - ERROR - [ERROR] WhatsApp API error: 400
+2025-07-29 16:18:55 - root - ERROR -    Details: {'error': {'message': "Unsupported post request. Object with ID '729136556949772' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api", 'type': 'GraphMethodException', 'code': 100, 'error_subcode': 33, 'fbtrace_id': 'ALFE5nACGZvSeZzKUPdM98P'}}
+2025-07-29 17:49:26 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 17:50:46 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 17:51:13 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 18:02:24 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 18:02:31 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 18:02:41 - root - INFO - [OK] WhatsApp token valid
+2025-07-29 18:04:04 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 18:05:01 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 18:40:32 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 18:41:45 - root - ERROR - [ERROR] WhatsApp API error: 400
+2025-07-29 18:41:45 - root - ERROR -    Details: {'error': {'message': "(#100) Param text['body'] must be at most 4096 characters long.", 'type': 'OAuthException', 'code': 100, 'fbtrace_id': 'ArZ4HTDDMq7Q3S6v3F8vokv'}}
+2025-07-29 18:41:47 - root - ERROR - [ERROR] WhatsApp API error: 400
+2025-07-29 18:41:47 - root - ERROR -    Details: {'error': {'message': "(#100) Param text['body'] must be at most 4096 characters long.", 'type': 'OAuthException', 'code': 100, 'fbtrace_id': 'AcU-OaYEb8ZlcuOvUf4Iqv_'}}
+2025-07-29 18:41:50 - root - ERROR - [ERROR] WhatsApp API error: 400
+2025-07-29 18:41:50 - root - ERROR -    Details: {'error': {'message': "(#100) Param text['body'] must be at most 4096 characters long.", 'type': 'OAuthException', 'code': 100, 'fbtrace_id': 'Afaf4ScSJxNPp07snoC2ypy'}}
+2025-07-29 18:42:57 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 18:43:50 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 18:44:40 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 18:45:10 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 18:45:19 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 18:46:17 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 19:16:08 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 21:33:59 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-29 21:34:28 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 09:32:36 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 09:33:22 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 12:37:37 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 12:37:56 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 12:38:21 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 12:39:25 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 13:49:51 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 14:36:20 - root - INFO - [OK] WhatsApp token valid
+2025-07-30 14:36:40 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 14:37:38 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 14:37:55 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 14:39:29 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 14:40:47 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 14:41:22 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 14:42:06 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 14:42:20 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 14:42:40 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 14:45:08 - root - INFO - [OK] WhatsApp token valid
+2025-07-30 14:46:23 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 14:47:14 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 14:49:22 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 14:49:53 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 14:50:23 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 14:50:30 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 14:50:42 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 14:50:50 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 14:51:29 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 14:51:41 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 15:31:09 - root - INFO - [OK] WhatsApp token valid
+2025-07-30 15:32:00 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 15:32:33 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 15:33:06 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 15:33:21 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 15:33:33 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 15:34:06 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 15:34:36 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 15:35:04 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 15:35:23 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 15:36:43 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 15:37:26 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 15:38:08 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 15:38:23 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 15:38:26 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 15:38:43 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 15:39:24 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 15:49:22 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 15:57:41 - root - INFO - [OK] WhatsApp token valid
+2025-07-30 15:57:49 - root - INFO - [OK] WhatsApp token valid
+2025-07-30 15:59:30 - root - INFO - [OK] WhatsApp token valid
+2025-07-30 15:59:38 - root - INFO - [OK] WhatsApp token valid
+2025-07-30 15:59:58 - root - INFO - [OK] WhatsApp token valid
+2025-07-30 16:00:12 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:01:29 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 16:01:54 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 16:02:27 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 16:03:03 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 16:03:18 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 16:06:26 - root - INFO - [OK] WhatsApp token valid
+2025-07-30 16:07:14 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:07:32 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:07:42 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:08:00 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:08:15 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:08:16 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:09:31 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:09:51 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:10:15 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 16:10:43 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 16:11:27 - root - INFO - [OK] WhatsApp message sent to 918879992052
+2025-07-30 16:11:44 - root - INFO - [OK] WhatsApp token valid
+2025-07-30 16:11:52 - root - INFO - [OK] WhatsApp token valid
+2025-07-30 16:12:00 - root - INFO - [OK] WhatsApp token valid
+2025-07-30 16:12:03 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:12:48 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 16:12:58 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:13:05 - root - INFO - [OK] WhatsApp message sent to 917039129551
+2025-07-30 16:14:21 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:15:36 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:16:11 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:16:15 - root - INFO - [OK] WhatsApp message sent to 919096357397
+2025-07-30 16:16:44 - root - INFO - [OK] WhatsApp message sent to 919096357397

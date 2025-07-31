@@ -199,142 +199,210 @@ def get_cache_stats():
     }
 
 def detect_language(text):
-    """Enhanced language detection with better Hindi/Marathi separation"""
+    """Enhanced Devanagari-aware language detection for Marathi, Hindi, and English"""
     try:
         clean_text = text.strip().lower()
-        if len(clean_text) < 3:
+        if len(clean_text) < 2:
             return 'en'
 
-        # Check for Devanagari script
-        hindi_chars = bool(re.search(r'[\u0900-\u097F]', clean_text))
+        # Check for Devanagari characters
+        devanagari_chars = bool(re.search(r'[\u0900-\u097F]', clean_text))
         english_chars = bool(re.search(r'[a-zA-Z]', clean_text))
 
-        if hindi_chars and not english_chars:
-            # STRONG HINDI INDICATORS
-            strong_hindi_words = ['है', 'हैं', 'करें', 'होगा', 'यहां', 'आपके', 'जानकारी', 'कैसे', 
-                                'करना', 'के लिए', 'यहाँ', 'हमें', 'आप', 'मैं', 'हूं', 'हूँ',
-                                'hai', 'hain', 'karen', 'hoga', 'yahan', 'aapke', 'jaankari',
-                                'kaise', 'karna', 'ke liye', 'yaham', 'hamein', 'aap', 'main', 'hun']
+        if devanagari_chars:
+            # ENHANCED MARATHI DETECTION - More comprehensive word lists
+            marathi_strong_indicators = [
+                # Common Marathi verbs and auxiliaries
+                'आहे', 'आहेत', 'होते', 'होती', 'होता', 'असे', 'असा', 'अशी',
+                # Marathi pronouns
+                'तुम्ही', 'तुमचा', 'तुमची', 'तुमचे', 'तुमच्या', 'मी', 'माझा', 'माझी', 'माझे', 'माझ्या',
+                # Marathi specific words
+                'माहिती', 'येथे', 'तेथे', 'इथे', 'करा', 'कसा', 'कसे', 'कशी', 'बद्दल', 'द्या', 'घ्या',
+                'सांगा', 'सांगू', 'मला', 'तुला', 'त्याला', 'तिला', 'आम्हाला', 'तुमाला',
+                # Marathi particles and postpositions
+                'ला', 'च्या', 'मध्ये', 'वर', 'खाली', 'समोर', 'मागे', 'शेजारी',
+                # Marathi question words
+                'काय', 'कोण', 'कुठे', 'केव्हा', 'कसे', 'किती', 'कशासाठी',
+                # Common Marathi words
+                'पाहिजे', 'हवे', 'नको', 'चालू', 'बंद', 'नवीन', 'जुने', 'मोठे', 'छोटे',
+                'चांगले', 'वाईट', 'लवकर', 'उशीर', 'आज', 'उद्या', 'परवा'
+            ]
             
-            # STRONG MARATHI INDICATORS  
-            strong_marathi_words = ['आहे', 'आहेत', 'तुम्ही', 'मी', 'माहिती', 'येथे', 'करा', 'कसा', 
-                                  'बद्दल', 'द्या', 'तुम्हाला', 'मला', 'काय', 'कोण', 'कुठे',
-                                  'ahe', 'aahet', 'tumhi', 'mi', 'mahiti', 'yethe', 'kara', 
-                                  'kasa', 'baddal', 'dya', 'tumhala', 'mala', 'kay', 'kon', 'kuthe']
+            marathi_weak_indicators = [
+                # Additional Marathi markers
+                'ते', 'तो', 'ती', 'हे', 'हा', 'ही', 'या', 'यो', 'यू', 'त्या', 'त्यो',
+                'नाही', 'नसते', 'गेले', 'आले', 'झाले', 'केले', 'दिले', 'घेतले'
+            ]
             
-            # Count strong indicators
-            hindi_score = sum(1 for word in strong_hindi_words if word in clean_text)
-            marathi_score = sum(1 for word in strong_marathi_words if word in clean_text)
+            # ENHANCED HINDI DETECTION
+            hindi_strong_indicators = [
+                # Common Hindi verbs and auxiliaries  
+                'है', 'हैं', 'था', 'थी', 'थे', 'होगा', 'होगी', 'होंगे', 'गया', 'गई', 'गए',
+                # Hindi pronouns
+                'आप', 'आपका', 'आपकी', 'आपके', 'आपको', 'मैं', 'मेरा', 'मेरी', 'मेरे', 'मुझे', 'मुझको',
+                # Hindi specific words
+                'जानकारी', 'यहाँ', 'वहाँ', 'कहाँ', 'करना', 'कैसे', 'कैसा', 'कैसी', 'के बारे में', 'बताएं', 'बताओ',
+                'कहें', 'कहिए', 'मुझे', 'आपको', 'उसे', 'उसको', 'हमें', 'हमको', 'उन्हें',
+                # Hindi particles and postpositions
+                'को', 'का', 'की', 'के', 'में', 'पर', 'से', 'तक', 'के लिए', 'के साथ',
+                # Hindi question words
+                'क्या', 'कौन', 'कहाँ', 'कब', 'कैसे', 'कितना', 'कितनी', 'कितने', 'क्यों', 'किसलिए',
+                # Common Hindi words
+                'चाहिए', 'चाहें', 'मत', 'चालू', 'बंद', 'नया', 'पुराना', 'बड़ा', 'छोटा',
+                'अच्छा', 'बुरा', 'जल्दी', 'देर', 'आज', 'कल', 'परसों'
+            ]
             
-            print(f"🔍 Language scores - Hindi: {hindi_score}, Marathi: {marathi_score}")
-            
-            # Clear decision based on strong indicators
-            if marathi_score > hindi_score:
-                print(f"✅ Detected: MARATHI (score: {marathi_score})")
+            hindi_weak_indicators = [
+                # Additional Hindi markers
+                'वह', 'वो', 'यह', 'ये', 'इस', 'उस', 'इन', 'उन', 'वे', 'तुम', 'तू',
+                'नहीं', 'मत', 'रहा', 'रही', 'रहे', 'कर', 'किया', 'दिया', 'लिया'
+            ]
+
+            # Count strong indicators (weighted more heavily)
+            marathi_strong_count = sum(2 for word in marathi_strong_indicators if word in clean_text)
+            marathi_weak_count = sum(1 for word in marathi_weak_indicators if word in clean_text)
+            marathi_total = marathi_strong_count + marathi_weak_count
+
+            hindi_strong_count = sum(2 for word in hindi_strong_indicators if word in clean_text)
+            hindi_weak_count = sum(1 for word in hindi_weak_indicators if word in clean_text)
+            hindi_total = hindi_strong_count + hindi_weak_count
+
+            print(f"🔍 Devanagari analysis - Marathi: {marathi_total} (strong: {marathi_strong_count//2}, weak: {marathi_weak_count}), Hindi: {hindi_total} (strong: {hindi_strong_count//2}, weak: {hindi_weak_count})")
+
+            # Decision logic with bias handling
+            if marathi_total > hindi_total:
                 return 'mr'
-            elif hindi_score > marathi_score:
-                print(f"✅ Detected: HINDI (score: {hindi_score})")
+            elif hindi_total > marathi_total:
                 return 'hi'
             else:
-                # Fallback to default Hindi for Devanagari
-                print(f"⚠️ Ambiguous Devanagari, defaulting to HINDI")
-                return 'hi'
-        elif english_chars:
-            return 'en'
-        else:
-            return 'en'  # Default
+                # Equal scores - check for romanized hints
+                marathi_roman = ['baddal', 'mahiti', 'dya', 'kasa', 'kara', 'ahe', 'tumhi', 'mala', 'sangha', 'kay']
+                hindi_roman = ['kaise', 'karna', 'batao', 'mujhe', 'aapka', 'kya', 'hai', 'hain']
+                
+                marathi_roman_count = sum(1 for word in marathi_roman if word in clean_text)
+                hindi_roman_count = sum(1 for word in hindi_roman if word in clean_text)
+                
+                if marathi_roman_count > 0:
+                    return 'mr'
+                elif hindi_roman_count > 0:
+                    return 'hi'
+                else:
+                    # Final fallback - check for specific character patterns
+                    # Marathi tends to use certain conjuncts more frequently
+                    marathi_conjuncts = ['ण्', 'ळ', 'झ्', 'भ्र', 'क्ष्', 'ज्ञ्']
+                    hindi_patterns = ['त्र्', 'श्र्', 'क्र्', 'प्र्']
+                    
+                    marathi_pattern_count = sum(1 for pattern in marathi_conjuncts if pattern in clean_text)
+                    hindi_pattern_count = sum(1 for pattern in hindi_patterns if pattern in clean_text)
+                    
+                    if marathi_pattern_count > hindi_pattern_count:
+                        return 'mr'
+                    else:
+                        return 'hi'  # Default to Hindi for ambiguous Devanagari
 
+        elif english_chars and not devanagari_chars:
+            # Pure English/Roman script - check for romanized Indian languages
+            marathi_roman_words = [
+                'baddal', 'mahiti', 'dya', 'kasa', 'kara', 'ahe', 'aahe', 'tumhi', 
+                'mala', 'tula', 'sangha', 'sangu', 'kay', 'kuthe', 'kiti', 'kevha',
+                'pahije', 'have', 'nako', 'chalu', 'band', 'navin', 'june', 'mothe', 'chote',
+                'changale', 'vait', 'lavkar', 'ushir', 'aaj', 'udya', 'parva'
+            ]
+            
+            hindi_roman_words = [
+                'kaise', 'kaisa', 'kaisi', 'karna', 'batao', 'bataiye', 'mujhe', 'aapko', 
+                'usse', 'hamen', 'unhen', 'kya', 'kaun', 'kahan', 'kab', 'kitna', 'kitni',
+                'chahiye', 'chahen', 'mat', 'chalu', 'band', 'naya', 'purana', 'bada', 'chota',
+                'accha', 'bura', 'jaldi', 'der', 'aaj', 'kal', 'parson'
+            ]
+            
+            marathi_roman_count = sum(1 for word in marathi_roman_words if word in clean_text)
+            hindi_roman_count = sum(1 for word in hindi_roman_words if word in clean_text)
+            
+            print(f"🔍 Roman script analysis - Marathi: {marathi_roman_count}, Hindi: {hindi_roman_count}")
+            
+            if marathi_roman_count > 0 and marathi_roman_count >= hindi_roman_count:
+                return 'mr'
+            elif hindi_roman_count > 0:
+                return 'hi'
+            else:
+                return 'en'  # Default English for pure Roman script
+
+        else:
+            return 'en'  # Default fallback
+            
     except Exception as e:
-        print(f"❌ Language detection failed: {e}")
+        print(f"❌ Language detection error: {e}")
         return 'en'
 
 def get_whatsapp_prompt_template():
     """
-    ORIGINAL prompt template - keeping same detailed responses
-    Returns: PromptTemplate object
+    UPDATED prompt template with ENHANCED Devanagari language handling
     """
     template = """You are a female efficient Knowledge Assistant, designed for answering questions specifically from the knowledge base provided to you.
 
 Your task is as follows: give a detailed response for the user query in the user language (e.g., "what are some schemes?" --> "Here is a list of some schemes").
 
-Ensure your response follows these styles and tone:
+**CRITICAL DEVANAGARI LANGUAGE MATCHING RULES:**
+* **IDENTIFY THE EXACT LANGUAGE FIRST**: Carefully analyze if Devanagari text is Marathi or Hindi
+* **MARATHI INDICATORS**: आहे, तुम्ही, मी, माहिती, कसा, कसे, बद्दल, द्या, सांगा, मला, पाहिजे, येथे, करा
+* **HINDI INDICATORS**: है, आप, मैं, जानकारी, कैसे, कैसा, के बारे में, बताएं, मुझे, चाहिए, यहाँ, करना
+* **STRICTLY answer in the EXACT SAME LANGUAGE as the question**
+* If question is in English → Answer ONLY in English
+* If question is in Hindi (Devanagari) → Answer ONLY in Hindi (Devanagari)
+* If question is in Marathi (Devanagari) → Answer ONLY in Marathi (Devanagari)
+* **NEVER mix languages or use wrong script - this is mandatory**
 * Read numbers as digits, e.g., "104" instead of "one hundred four"
-* Always answer in the **same language as the Question**, regardless of the language of the source documents.
-* If the source documents are in Marathi and the question is in English, **translate and summarize the information into English**.
-* If the question is in Marathi, answer in Marathi. Do the same for English and Hindi.
-* Use direct, everyday language.
-* Maintain a personal and friendly tone, aligned with the user's language.
-* Provide detailed and comprehensive responses with minimum 150-200 words per scheme.
-* Include **toll-free numbers** and **complete visible website URLs** *only if those URLs are present in the knowledge base*.
-* When providing contact information, always include specific contact details from the knowledge base if available.
+* If the source documents are in different language than question, **translate the information to match question language and script**
+* Use direct, everyday language appropriate to the detected language
+* Maintain a personal and friendly tone in the user's language
+* Provide detailed and comprehensive responses with minimum 150-200 words per scheme
+* Include **toll-free numbers** and **complete visible website URLs** *only if those URLs are present in the knowledge base*
+* When providing contact information, always include specific contact details from the knowledge base if available
 
-**RESPONSE FORMAT REQUIREMENTS:**
-* **Always format your answer using markdown. Use markdown headings (##), bold (**text**), bullet lists (-), and other markdown features where appropriate. This applies to English, Hindi, and Marathi answers.**
-* Use clear section headers:
+**SCRIPT-SPECIFIC FORMATTING REQUIREMENTS:**
+* **Always format your answer using appropriate script and markdown**
+* **For Devanagari languages, use proper Devanagari script throughout**
+* Use clear section headers based on detected language and script:
   - **English**: "Description", "Eligibility", "Benefits", "How to Apply", "Required Documents", "Contact Information"
-  - **Hindi**: "विवरण", "पात्रता", "लाभ", "आवेदन कैसे करें", "आवश्यक दस्तावेज", "संपर्क जानकारी"
-  - **Marathi**: "वर्णन", "पात्रता", "फायदे", "अर्ज कसा करावा", "आवश्यक कागदपत्रे", "संपर्क माहिती"
+  - **Hindi (Devanagari)**: "विवरण", "पात्रता", "लाभ", "आवेदन कैसे करें", "आवश्यक दस्तावेज", "संपर्क जानकारी"
+  - **Marathi (Devanagari)**: "वर्णन", "पात्रता", "फायदे", "अर्ज कसा करावा", "आवश्यक कागदपत्रे", "संपर्क माहिती"
 
-**MANDATORY ENDING**: Always end every response with the helpline information in the user's language:
-  - **In English**: "**For more details, please contact the 104/102 helpline numbers.**"
-  - **In Hindi**: "**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**"
-  - **In Marathi**: "**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**"
+**MANDATORY SCRIPT-CORRECT ENDINGS:**
+* **For English questions**: "**For more details, please contact the 104/102 helpline numbers.**"
+* **For Hindi questions (Devanagari)**: "**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**"
+* **For Marathi questions (Devanagari)**: "**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**"
 
-* If there is no relevant context for the question, simply say:
-  - **In Marathi**: "क्षमस्व, मी या विषयावर तुमची मदत करू शकत नाही. अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा."
-  - **In Hindi**: "माफ़ कीजिए, मैं इस विषय पर आपकी मदत नहीं कर सकती। अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।"
-  - **In English**: "I'm sorry, I cannot assist with that topic. For more details, please contact the 104/102 helpline numbers."
+**NO RELEVANT CONTEXT RESPONSES (SCRIPT-SPECIFIC):**
+* **Marathi question (Devanagari)**: "क्षमस्व, मी या विषयावर तुमची मदत करू शकत नाही. अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा."
+* **Hindi question (Devanagari)**: "माफ़ कीजिए, मैं इस विषय पर आपकी मदत नहीं कर सकती। अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।"
+* **English question**: "I'm sorry, I cannot assist with that topic. For more details, please contact the 104/102 helpline numbers."
 
-**STRICT LANGUAGE MATCHING**: 
-  - Hindi input → Hindi output ONLY
-  - English input → English output ONLY
-  - Marathi input → Marathi output ONLY
-  - Never mix languages or use wrong language
+**IMPORTANT CONSTRAINTS:**
+* Do not provide answers based on assumptions or general knowledge - USE ONLY KNOWLEDGE BASE
+* **Response Length Requirements**: Minimum 150 words for single scheme, 300+ words for multiple schemes
+* **If user asks for jokes, casual conversation, or non-scheme topics, respond with appropriate "no relevant context" message above**
+* **Contact Information Priority**: Always include specific contact details from knowledge base when available
 
-**Remove duplicate information and provide only one consolidated answer.**
-* Do not provide answers based on assumptions or general knowledge. Use only the information provided in the knowledge base.
-* **Response Length Requirements**: Minimum 150 words for single scheme, 300+ words for multiple schemes.
-* **If the user asks for jokes, casual conversation, to 'talk like' someone, or anything not related to government schemes or the knowledge base, do not answer. Instead, respond with the helpline apology message above.**
-* **Contact Information Priority**: Always include specific contact details from knowledge base (phone numbers, office addresses, website URLs) when available for each scheme mentioned.
+**DEVANAGARI RESPONSE VALIDATION:**
+Before providing your answer, verify:
+1. Is the input Marathi or Hindi? (Check for language-specific words)
+2. Is the response in the SAME language AND script as the question?
+3. Does it use proper Devanagari script for Hindi/Marathi responses?
+4. Does it contain information from the knowledge base only?
+5. Does it have the correct helpline ending for the language?
+6. Is it properly formatted with appropriate script-based headers?
 
-**RESPONSE FORMAT TEMPLATE**:
-
-## **[Scheme Name]**
-
-**Description**: [Detailed explanation]
-
-**Eligibility**: 
-- [Criterion 1]
-- [Criterion 2]
-- [Criterion 3]
-
-**Benefits**:
-- [Benefit 1 with specific amounts/details]
-- [Benefit 2 with specific amounts/details]
-
-**How to Apply**:
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
-
-**Required Documents**:
-- [Document 1]
-- [Document 2]
-
-**Contact Information** *(if available in knowledge base)*:
-- **Phone**: [Specific numbers from knowledge base]
-- **Website**: [Full URL from knowledge base]
-- **Office Address**: [Complete address from knowledge base]
-
-**For more details, please contact the 104/102 helpline numbers.**
-
-Your goal is to help a citizen understand schemes and their eligibility criteria clearly, using only the verified data provided in the documents.
+**EXAMPLES OF CORRECT LANGUAGE MATCHING:**
+- Input: "मला माहिती पाहिजे" (Marathi) → Output must be in Marathi Devanagari
+- Input: "मुझे जानकारी चाहिए" (Hindi) → Output must be in Hindi Devanagari  
+- Input: "I need information" (English) → Output must be in English
 
 Here is the content you will work with: {context}
 
 Question: {question}
 
-Now perform the task as instructed above.
+**CRITICAL: Analyze the question language carefully. If it contains Devanagari script, determine if it's Marathi or Hindi before responding. Match your response language and script EXACTLY to the input.**
 
 Answer:"""
 
@@ -402,7 +470,7 @@ def build_rag_chain_from_documents(documents, ollama_model="llama3.1:8b", model_
         k=min(config["max_chunks"], len(splits))
     )
     
-    # ORIGINAL DETAILED PROMPT (keeping your format)
+    # ENHANCED DETAILED PROMPT
     whatsapp_prompt = get_whatsapp_prompt_template()
     
     # CREATE FAST OLLAMA LLM
@@ -629,5 +697,162 @@ def query_all_schemes_optimized(rag_chain):
     except Exception as e:
         return f"Error during optimized scheme query: {str(e)}"
 
+# ENHANCED VALIDATION AND FORMATTING FUNCTIONS
+def validate_devanagari_response(response_text: str, expected_language: str) -> bool:
+    """Validate that Devanagari responses match expected language"""
+    try:
+        if expected_language not in ['hi', 'mr']:
+            return True  # No validation needed for English
+        
+        has_devanagari = bool(re.search(r'[\u0900-\u097F]', response_text))
+        if not has_devanagari:
+            return False  # Should have Devanagari for Hindi/Marathi
+        
+        # Check for language-specific patterns in response
+        detected_lang = detect_language(response_text[:200])
+        return detected_lang == expected_language
+        
+    except Exception as e:
+        print(f"❌ Devanagari validation error: {e}")
+        return False
+
+def handle_response_format(response_text, user_language):
+    """Enhanced response formatting with strict language matching"""
+    # Normalize language codes
+    lang_mapping = {
+        'english': 'en',
+        'hindi': 'hi', 
+        'marathi': 'mr',
+        'en': 'en',
+        'hi': 'hi',
+        'mr': 'mr'
+    }
+    
+    normalized_lang = lang_mapping.get(user_language.lower(), 'en')
+    
+    helpline_endings = {
+        'en': "\n\n**For more details, please contact the 104/102 helpline numbers.**",
+        'hi': "\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+        'mr': "\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**"
+    }
+
+    # Remove any existing helpline endings first
+    for ending in helpline_endings.values():
+        response_text = response_text.replace(ending.strip(), "")
+    
+    # Add correct helpline ending based on detected language
+    correct_ending = helpline_endings.get(normalized_lang, helpline_endings['en'])
+    response_text = response_text.strip() + correct_ending
+
+    return response_text
+
+def validate_response_format(response_text, user_language):
+    """Quick response validation"""
+    return len(response_text) > 20 and ('104' in response_text or '102' in response_text)
+
+# ENHANCED GREETING FUNCTION WITH BETTER DEVANAGARI SUPPORT
+def get_instant_greeting(query: str, language: str) -> Optional[str]:
+    """Get instant greeting responses with enhanced Devanagari handling"""
+    query_lower = query.strip().lower()
+    
+    # Normalize language
+    lang_mapping = {
+        'english': 'en',
+        'hindi': 'hi', 
+        'marathi': 'mr',
+        'en': 'en',
+        'hi': 'hi',
+        'mr': 'mr'
+    }
+    normalized_lang = lang_mapping.get(language.lower(), 'en')
+    
+    # Enhanced greeting detection including Devanagari
+    greetings = [
+        'hi', 'hello', 'hey', 'namaste', 'नमस्ते', 'नमस्कार', 
+        'good morning', 'good afternoon', 'good evening',
+        'हैलो', 'हाय', 'सुप्रभात', 'शुभ संध्या', 'शुभ सकाळ',
+        'धन्यवाद', 'thank you', 'thanks', 'आभार'
+    ]
+    
+    if query_lower in greetings or any(greet in query_lower for greet in greetings):
+        greetings_responses = {
+            'hi': "नमस्ते! मैं आज आपकी किस प्रकार से मदद कर सकती हूँ? 😊",
+            'mr': "नमस्कार! मी तुम्हाला आज कशा प्रकारे मदत करू शकते? 😊",
+            'en': "How can I help you today? 😊"
+        }
+        return greetings_responses.get(normalized_lang, greetings_responses['en'])
+    
+    return None
+
+# ENHANCED ERROR HANDLING FUNCTIONS
+def get_language_specific_error(error_type: str, language: str) -> str:
+    """Get language-specific error messages"""
+    error_templates = {
+        'no_context': {
+            'hi': "जानकारी नहीं मिली। कृपया दूसरे तरीके से पूछें।\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+            'mr': "माहिती मिळाली नाही. कृपया वेगळ्या पद्धतीने विचारा.\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**",
+            'en': "No information found. Please rephrase your question.\n\n**For more details, please contact the 104/102 helpline numbers.**"
+        },
+        'technical_error': {
+            'hi': "तकनीकी समस्या हुई। पुनः प्रयास करें।\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+            'mr': "तांत्रिक समस्या झाली. पुन्हा प्रयत्न करा.\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**",
+            'en': "Technical issue occurred. Please try again.\n\n**For more details, please contact the 104/102 helpline numbers.**"
+        },
+        'timeout_error': {
+            'hi': "जवाब धीमा है। छोटा प्रश्न पूछें।\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+            'mr': "उत्तर धीमे आहे. लहान प्रश्न विचारा.\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**",
+            'en': "Response slow. Ask shorter question.\n\n**For more details, please contact the 104/102 helpline numbers.**"
+        },
+        'system_starting': {
+            'hi': "सिस्टम शुरू हो रहा है। कृपया 30 सेकंड में कोशिश करें।\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+            'mr': "सिस्टम सुरू होत आहे. कृपया 30 सेकंदांनी प्रयत्न करा.\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**",
+            'en': "System initializing. Please try again in 30 seconds.\n\n**For more details, please contact the 104/102 helpline numbers.**"
+        },
+        'language_mismatch': {
+            'hi': "भाषा की समस्या हुई। कृपया फिर से कोशिश करें।\n\n**अधिक जानकारी के लिए कृपया 104/102 हेल्पलाइन नंबर पर संपर्क करें।**",
+            'mr': "भाषेची समस्या झाली. कृपया पुन्हा प्रयत्न करा.\n\n**अधिक माहितीसाठी, कृपया 104/102 हेल्पलाइन क्रमांकावर संपर्क साधा.**",
+            'en': "Language processing issue. Please try again.\n\n**For more details, please contact the 104/102 helpline numbers.**"
+        }
+    }
+    
+    return error_templates.get(error_type, {}).get(language, error_templates.get(error_type, {}).get('en', 'Error occurred. Please try again.'))
+
+# ADDITIONAL UTILITY FUNCTIONS
+def clean_response_text(text: str) -> str:
+    """Clean and format response text"""
+    # Remove extra whitespace
+    text = re.sub(r'\s+', ' ', text).strip()
+    
+    # Convert markdown to WhatsApp formatting
+    text = re.sub(r'\*\*(.*?)\*\*', r'*\1*', text)
+    
+    # Ensure proper line breaks
+    text = text.replace('\n\n\n', '\n\n')
+    
+    return text
+
+def is_greeting_query(query: str) -> bool:
+    """Check if query is a greeting"""
+    greetings = ['hi', 'hello', 'hey', 'namaste', 'नमस्ते', 'नमस्कार', 'हैलो', 'हाय']
+    query_lower = query.strip().lower()
+    return query_lower in greetings or any(greet in query_lower for greet in greetings)
+
+def is_casual_query(query: str) -> bool:
+    """Check if query is casual conversation"""
+    casual_patterns = ['joke', 'funny', 'chat', 'talk', 'weather', 'how are you', 'what\'s up']
+    query_lower = query.strip().lower()
+    return any(pattern in query_lower for pattern in casual_patterns)
+
+# PERFORMANCE MONITORING
+def log_performance_metrics(operation: str, duration: float, language: str = None, success: bool = True):
+    """Log performance metrics for monitoring"""
+    status = "SUCCESS" if success else "FAILED"
+    lang_info = f" [{language}]" if language else ""
+    print(f"📊 {operation}{lang_info}: {duration:.2f}s - {status}")
+
+# FINAL INITIALIZATION MESSAGE
 print("⚡ RAG services optimized for ULTRA-FAST WhatsApp responses!")
 print(f"📊 Cache size: {_cache_max_size}, Default model: llama3.1:8b")
+print("🔍 Enhanced Devanagari language detection enabled")
+print("✅ All language validation functions loaded")
+print("🚀 Ready for production WhatsApp deployment!")
