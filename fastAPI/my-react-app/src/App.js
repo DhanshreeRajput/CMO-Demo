@@ -377,13 +377,13 @@ function App() {
                   <img
                   src="saar_logo_black.png"
                   alt="Logo"
-                  className="h-20 w-auto"
+                  className="h-10 w-auto"
                   style={{ imageRendering: "auto" }}
                   />
                   </p>
                   </div>
               <p className="text-sm text-gray-500 mt-2">
-                Features: AI RAG System & 📝 TTS 🗣️ STT
+                Features: AI Agent System & 📝 TTS 🗣️ STT
               </p>
             </div>
           </div>
