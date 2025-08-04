@@ -1,4 +1,4 @@
-# CMRF AI Agent with Speech-to-Text
+# SAMNEX AI
 
 This project includes a FastAPI backend with speech-to-text capabilities and a React frontend with microphone input and wave animation.
 
@@ -147,4 +147,4 @@ The wave animation provides visual feedback during recording:
 
 ## License
 
-This project is part of the CMRF AI Agent system. 
+This project is part of the Samnex AI system. 
